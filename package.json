@@ -1,0 +1,38 @@
+{
+  "name": "dane-record-generator",
+  "version": "0.3.0",
+  "description": "Standalone HNS/ICANN DNSSEC + DANE record generator for wallet/registrar and authoritative DNS outputs.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.3",
+    "typescript": "6.0.3",
+    "vite": "8.1.2",
+    "vitest": "4.1.9"
+  },
+  "keywords": [
+    "handshake",
+    "hns",
+    "dnssec",
+    "dane",
+    "tlsa",
+    "dns",
+    "record-generator",
+    "glue",
+    "ds-record"
+  ],
+  "license": "MIT"
+}

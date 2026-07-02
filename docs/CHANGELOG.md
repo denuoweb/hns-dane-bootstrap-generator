@@ -1,0 +1,30 @@
+# Changelog
+
+## Unreleased
+
+- Added hosted DNS provider preset for web admins using a DNS host instead of running an authoritative daemon.
+- Added IDNA normalization for internationalized domain input and documented i18n standards.
+- Expanded new-admin FAQ coverage for DNSKEY timing, parent/server record split, TLSA provider support, and DANE web-server requirements.
+- Removed the DANE basic/advanced toggle, made optional fields visible by default, always shows integrator JSON, and added focused field-level "How to get this" help for certificate/PUBLIC KEY and DNSKEY inputs.
+- Audited the "How to get this" command examples so certificate and DNSKEY help updates with the current domain, website IP, nameserver, and HTTPS port.
+- Added UI localization with a persisted language selector for English, Spanish, French, German, Portuguese, and Japanese.
+- Localized generated guidance, notices, setup-status details, output explanations, web-server notes, and help tips through a result-localization pass.
+
+## 0.3.0
+
+- Refactored the scaffold into a focused first production version.
+- Added output sections for verification commands and optional integrator JSON.
+- Added NSD preset.
+- Hardened DNSKEY parsing for parenthesized/multiline zone-file input.
+- Improved TLSA PEM handling and private-key rejection.
+- Replaced long visible explanations with concise help text.
+- Pinned dependency versions in `package.json`.
+- Added tests for integrator output and multiline DNSKEY parsing.
+
+## 0.2.0
+
+- Added the onboarding UI, server presets, Docker/Nginx deployment files, and production docs.
+
+## 0.1.0
+
+- Initial HNS/ICANN DNSSEC + DANE bootstrap scaffold.
