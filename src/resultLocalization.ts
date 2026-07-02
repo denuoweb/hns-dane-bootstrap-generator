@@ -143,7 +143,7 @@ const detailsEn = {
   dsOk: 'Parent-side DS is generated from DNSKEY.',
   dsMissing: 'Paste DNSKEY after signing the authoritative zone.',
   tlsaOk: 'TLSA is generated from certificate/public key.',
-  tlsaMissing: 'Paste a certificate or PUBLIC KEY to generate TLSA.'
+  tlsaMissing: 'Paste a certificate or PUBLIC KEY in the DANE section to generate TLSA.'
 } as const;
 
 const explanationsEn = {

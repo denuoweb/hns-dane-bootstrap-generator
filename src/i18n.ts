@@ -44,8 +44,8 @@ export const localeText = {
       websiteIpv6Help: 'Optional AAAA record for the web server.',
       port: 'HTTPS port',
       portHelp: '443 is the default for normal HTTPS. Change it only if the TLS service uses another port.',
-      certificate: 'Certificate or PUBLIC KEY',
-      certificateHelp: 'Paste the leaf certificate or PEM PUBLIC KEY. Private keys are not needed.',
+      certificate: 'TLSA certificate or PUBLIC KEY',
+      certificateHelp: 'Paste the leaf certificate or PEM PUBLIC KEY here to generate the TLSA record. Private keys are not needed.',
       dnskey: 'DNSKEY',
       dnskeyHelp: 'After DNSSEC signing is enabled on the DNS server, paste the zone DNSKEY here to generate DS.'
     },
@@ -63,7 +63,7 @@ export const localeText = {
     },
     howTo: {
       summary: 'How to get this',
-      certIntro: 'Paste the public certificate your TLS server serves for this exact hostname, port, protocol, and SNI name, or paste the matching PEM PUBLIC KEY. Do not paste a private key.',
+      certIntro: 'This is the TLSA source field. Paste the public certificate your TLS server serves for this exact hostname, port, protocol, and SNI name, or paste the matching PEM PUBLIC KEY. Do not paste a private key.',
       certFetch: 'If you have shell access, fetch the leaf certificate from the live service:',
       certFile: 'If you already have a certificate file, paste the block from BEGIN CERTIFICATE through END CERTIFICATE. To paste only the public key from a certificate file, run:',
       dnskeyIntro: 'First enable DNSSEC signing on the exact authoritative child zone being delegated. The DNS server or hosted DNS provider creates the public DNSKEY; this app uses that public record to generate the parent-side DS record.',

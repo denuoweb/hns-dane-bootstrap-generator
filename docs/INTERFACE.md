@@ -95,9 +95,9 @@ Help copy:
 
 Field-level help:
 
-- Certificate or PUBLIC KEY includes a `How to get this` disclosure with OpenSSL examples and private-key warnings. The command uses the current website IP or domain, current HTTPS port, and current normalized domain for SNI.
+- TLSA certificate or PUBLIC KEY includes a `How to get this` disclosure with OpenSSL examples and private-key warnings. The command uses the current website IP or domain, current HTTPS port, and current normalized domain for SNI.
 - DNSKEY includes a `How to get this` disclosure that explains when to enable DNSSEC, where hosted DNS panels expose DNSKEY/DS, and how to query DNSKEY with `dig`. The command uses the current nameserver IP or hostname and current normalized zone name.
-- The same disclosures appear in `Needs attention` when the relevant field is blank.
+- The same disclosures appear in `Needs attention` when the relevant field is blank, including HNS SYNTH mode. This prevents a `TLSA Needed` status from appearing without a nearby TLSA input explanation.
 - Generated web notes must warn that TLSA `3 1 1` pins the service public key, key rollover needs current + next TLSA records across TTL windows, and DANE is enforced only by clients that validate DNSSEC and check TLSA.
 
 ## Verification behavior

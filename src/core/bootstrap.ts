@@ -146,14 +146,14 @@ function buildStatusChecks(input: BootstrapInput, effectiveMode: BootstrapInput[
   if (effectiveMode === 'hns-inline') {
     checks.push(check('Nameserver', nonEmpty(input.nameserverIpv4) || nonEmpty(input.nameserverIpv6) ? 'ok' : 'missing', nonEmpty(input.nameserverIpv4) || nonEmpty(input.nameserverIpv6) ? 'SYNTH nameserver IP can be generated.' : 'Add at least one nameserver IPv4 or IPv6 address.'));
     checks.push(check('DS', hasDs ? 'ok' : 'missing', hasDs ? 'Parent-side DS is generated from DNSKEY.' : 'Paste DNSKEY after signing the authoritative zone.'));
-    checks.push(check('TLSA', hasTlsa ? 'ok' : 'missing', hasTlsa ? 'TLSA is generated from certificate/public key.' : 'Paste a certificate or PUBLIC KEY to generate TLSA.'));
+    checks.push(check('TLSA', hasTlsa ? 'ok' : 'missing', hasTlsa ? 'TLSA is generated from certificate/public key.' : 'Paste a certificate or PUBLIC KEY in the DANE section to generate TLSA.'));
     return checks;
   }
 
   checks.push(check('Nameserver', nonEmpty(input.nameserverHost) ? 'ok' : 'missing', nonEmpty(input.nameserverHost) ? 'Delegation target is present.' : 'Add the authoritative nameserver hostname.'));
   checks.push(check('Glue', inBailiwickNameserver ? (nonEmpty(input.nameserverIpv4) || nonEmpty(input.nameserverIpv6) ? 'ok' : 'missing') : 'ok', inBailiwickNameserver ? 'Nameserver is inside the zone, so glue must be in the parent records.' : 'Nameserver is external, so glue is handled by its own parent.'));
   checks.push(check('DS', hasDs ? 'ok' : 'missing', hasDs ? 'Parent-side DS is generated from DNSKEY.' : 'Paste DNSKEY after signing the authoritative zone.'));
-  checks.push(check('TLSA', hasTlsa ? 'ok' : 'missing', hasTlsa ? 'TLSA is generated from certificate/public key.' : 'Paste a certificate or PUBLIC KEY to generate TLSA.'));
+  checks.push(check('TLSA', hasTlsa ? 'ok' : 'missing', hasTlsa ? 'TLSA is generated from certificate/public key.' : 'Paste a certificate or PUBLIC KEY in the DANE section to generate TLSA.'));
 
   return checks;
 }

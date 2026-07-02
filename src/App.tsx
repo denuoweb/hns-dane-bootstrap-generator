@@ -488,11 +488,11 @@ function App() {
           <StatusList checks={displayResult.statusChecks} t={t} />
           <Notices
             notices={displayResult.notices}
-            hasHelp={displayResult.diagnostics.mode === 'delegated' && (!pemInput.trim() || !dnskeyInput.trim())}
+            hasHelp={!pemInput.trim() || !dnskeyInput.trim()}
             t={t}
           >
-            {displayResult.diagnostics.mode === 'delegated' && !pemInput.trim() && <CertificateHowTo attention context={howToContext} t={t} />}
-            {displayResult.diagnostics.mode === 'delegated' && !dnskeyInput.trim() && <DnskeyHowTo attention context={howToContext} t={t} />}
+            {!pemInput.trim() && <CertificateHowTo attention context={howToContext} t={t} />}
+            {!dnskeyInput.trim() && <DnskeyHowTo attention context={howToContext} t={t} />}
           </Notices>
 
           {sections.map((section) => <OutputBox key={section.id} section={section} result={displayResult} t={t} />)}
