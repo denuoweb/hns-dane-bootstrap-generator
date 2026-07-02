@@ -92,6 +92,88 @@ DS <keytag> <algorithm> 2 <sha256-digest>
 
 The app does not sign zones and does not store private keys. DNSSEC signing remains the DNS server’s job.
 
+## Operational requirements
+
+This tool generates bootstrap records. A working delegated authoritative DNS and DANE deployment still depends on the operator running and validating the DNS service correctly.
+
+### Authoritative nameserver baseline
+
+If you run your own authoritative nameserver:
+
+- Listen publicly on both UDP/53 and TCP/53.
+- Disable recursion on the authoritative service. Do not expose an open recursive resolver.
+- Allow DNS through the host firewall, network firewall, and hosting-provider security groups.
+- Keep the SOA serial increasing for every zone-file change.
+- Prefer at least two authoritative nameservers on separate hosts or networks.
+- Monitor DNSSEC signature freshness and re-sign before RRSIG expiration.
+- Publish authenticated denial of existence with NSEC or NSEC3, depending on the signer/server policy.
+
+The server presets are starter snippets, not complete daemon hardening or service-management guides.
+
+### DNSSEC validation
+
+`dig +dnssec` shows DNSSEC records in the answer. It does not, by itself, prove that the delegation chain validates. After publishing the parent DS, also test with a validating resolver.
+
+For ICANN DNS:
+
+```bash
+delv example.com. A
+delv _443._tcp.example.com. TLSA
+dig @<validating-recursive-resolver> _443._tcp.example.com. TLSA +dnssec
+```
+
+In a validating `dig` response, confirm `status: NOERROR` and the `ad` flag. `SERVFAIL` commonly means a broken DNSSEC chain, expired signatures, unsupported algorithms, a wrong parent DS, or a missing DNSKEY/RRSIG/NSEC/NSEC3 record.
+
+For HNS names, perform the same checks through an HNS-aware validating resolver after the wallet/name-resource update confirms:
+
+```bash
+dig @<hns-validating-recursive-resolver> example. A +dnssec
+dig @<hns-validating-recursive-resolver> _443._tcp.example. TLSA +dnssec
+```
+
+### DNSSEC signing lifecycle
+
+A production signer normally separates the key-signing key (KSK, usually flags 257) from the zone-signing key (ZSK, usually flags 256), though some managed systems hide that detail. Parent DS records are normally derived from the KSK. Keep the parent DS, child DNSKEY, and signed child zone in sync, and follow TTL-safe rollover order when changing keys:
+
+1. Publish the new DNSKEY in the child zone and wait for caches.
+2. Add or update the parent DS.
+3. Confirm validation succeeds.
+4. Remove old DNSKEY/DS material only after the old TTL and signature windows are safely past.
+
+### TLSA rollover
+
+The default `TLSA 3 1 1` record pins the TLS service public key. If the web server changes to a new key before resolvers can see the new TLSA association, DANE-aware clients can fail authentication.
+
+Safe key rollover:
+
+1. Publish TLSA records for both the current key and next key.
+2. Wait at least the relevant DNS TTL and any operational cache window.
+3. Switch the TLS service to the new key/certificate.
+4. Verify live TLSA matching.
+5. Remove the old TLSA record after another TTL window.
+
+### Client support and service scope
+
+Publishing TLSA creates a DANE policy in DNS. It is enforced only by clients that validate DNSSEC and implement DANE checks. Mainstream HTTPS browser behavior is not uniform, so distinguish "TLSA is published and signed" from "the client actually enforces DANE."
+
+This package is apex-HTTPS focused by default, for example `_443._tcp.example.`. Other services need their own TLSA owners:
+
+- `www.example.` on HTTPS: `_443._tcp.www.example.`
+- SMTP over STARTTLS for an MX host: `_25._tcp.mail.example.`
+- IMAP over TLS: `_993._tcp.imap.example.`
+- SRV-based services: follow the service-specific DANE owner-name rules.
+
+SMTP DANE is a separate workflow defined by RFC 7672 and is not implemented by this generator yet.
+
+### Input correctness
+
+The app computes DS from the DNSKEY you paste and TLSA from the PEM certificate or public key you paste. Before publishing:
+
+- Confirm the DNSKEY is from the exact signed child zone and normally from the KSK/SEP key.
+- Confirm the parent DS matches the active child DNSKEY after signing.
+- Confirm the certificate or PUBLIC KEY is the exact key served for the hostname, port, protocol, and SNI name represented by the TLSA owner.
+- Confirm the live service still presents a certificate chain compatible with the selected TLSA usage.
+
 ## Internationalized domain names
 
 Unicode domain input is accepted when the browser can convert it through IDNA processing. Generated DNS, wallet, registrar, server, and verification output uses ASCII A-labels such as `xn--bcher-kva.example.`.

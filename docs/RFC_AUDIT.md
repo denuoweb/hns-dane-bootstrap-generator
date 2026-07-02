@@ -8,6 +8,8 @@ This file records the standards assumptions used by the scaffold.
 
 Use RFC 4034 as the base for DNSKEY, DS, RRSIG, and NSEC formatting and DS/key-tag derivation. The scaffold implements DNSKEY parsing, DNSKEY RDATA construction, key-tag computation, canonical owner-name encoding, and DS digest construction.
 
+Operational documentation now distinguishes DNSSEC record presence from DNSSEC validation. `dig +dnssec` can show DNSSEC material without proving that a validator accepts the parent-to-child chain. Validation guidance points operators to `delv`, validating-recursive-resolver AD-bit checks, and HNS-aware validation for Handshake names.
+
 ### DS digest
 
 Use digest type 2, SHA-256, as the default DS digest. SHA-256 DS is the conservative default. Digest type 4, SHA-384, is structurally supported in the helper and can be exposed later.
@@ -21,6 +23,10 @@ TLSA 3 1 1 <spki-sha256>
 ```
 
 That is DANE-EE, selector SPKI, matching SHA-256.
+
+Operational documentation now calls out that DANE is enforced only by clients that validate DNSSEC and perform TLSA checks. Publishing a signed TLSA record is necessary, but not sufficient to guarantee that every HTTPS client enforces DANE.
+
+The default flow remains apex HTTPS oriented. Other TLS services need service-specific TLSA owner names, and SMTP DANE remains a separate RFC 7672 workflow.
 
 ### Internationalized domain names
 
@@ -48,9 +54,10 @@ The app localizes the UI shell with a static translation table plus a result-loc
 4. Warn when a DNSKEY does not look like a normal KSK/SEP key, but do not block advanced users.
 5. Make HNS parent output separate from ICANN registrar output. HNS resource records are not normal registrar UI fields.
 6. Keep server presets small. DNS server installation and service management are OS-specific.
-7. Treat live validation as a future phase. The first production scaffold is deterministic and offline.
-8. Treat certificate/key rollover as a future phase. The UI should eventually support current + next TLSA records so users can rotate keys without outage.
-9. Keep Unicode labels out of generated DNS text. DNS output, verification commands, wallet fields, registrar fields, and server presets use A-labels.
+7. Document authoritative-server hardening requirements without pretending to manage the OS, firewall, daemon, or secondary nameserver topology.
+8. Treat automated live validation as a future phase. The current scaffold emits validation commands but does not query resolvers itself.
+9. Document certificate/key rollover order now. The UI should eventually support current + next TLSA generation so users can rotate keys without outage.
+10. Keep Unicode labels out of generated DNS text. DNS output, verification commands, wallet fields, registrar fields, and server presets use A-labels.
 
 ## Next RFC features to consider
 
@@ -64,7 +71,7 @@ The app localizes the UI shell with a static translation table plus a result-loc
 
 - Full DNSSEC zone signing.
 - Authoritative server management.
-- Live resolver validation.
+- Automated live resolver validation.
 - HNS proof verification.
 - Automatic wallet or registrar updates.
 - Private-key persistence.

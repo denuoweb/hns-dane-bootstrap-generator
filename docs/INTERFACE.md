@@ -68,6 +68,8 @@ Preset choices:
 - BIND 9
 - NSD
 
+Preset output must remind self-hosting admins that authoritative service still needs UDP/TCP 53 reachability, recursion disabled, firewall access, SOA serial discipline, DNSSEC signature refresh, authenticated denial records, and validation after parent DS publication.
+
 ## Compatibility Matrix
 
 | Domain type | Setup mode | Parent-side output | Authoritative DNS output | DNSSEC + DANE support |
@@ -96,6 +98,16 @@ Field-level help:
 - Certificate or PUBLIC KEY includes a `How to get this` disclosure with OpenSSL examples and private-key warnings. The command uses the current website IP or domain, current HTTPS port, and current normalized domain for SNI.
 - DNSKEY includes a `How to get this` disclosure that explains when to enable DNSSEC, where hosted DNS panels expose DNSKEY/DS, and how to query DNSKEY with `dig`. The command uses the current nameserver IP or hostname and current normalized zone name.
 - The same disclosures appear in `Needs attention` when the relevant field is blank.
+- Generated web notes must warn that TLSA `3 1 1` pins the service public key, key rollover needs current + next TLSA records across TTL windows, and DANE is enforced only by clients that validate DNSSEC and check TLSA.
+
+## Verification behavior
+
+Generated verification commands must separate two checks:
+
+1. Direct authoritative checks with `dig @server ... +norecurse`, which prove the DNS server answers.
+2. Chain-validation checks with `delv`, AD-bit checks through a validating recursive resolver, or HNS-aware validating resolver checks, which prove DNSSEC validation.
+
+The UI should explain that `dig +dnssec` alone does not prove validation and that `SERVFAIL` from a validating resolver commonly means a parent DS mismatch, missing DNSKEY/RRSIG/NSEC/NSEC3 data, expired signatures, unsupported algorithms, or authoritative reachability problems.
 
 ## Output order
 
@@ -104,10 +116,11 @@ Field-level help:
 3. Parent-side records
 4. Authoritative DNS records
 5. Server preset
-6. Web server note
-7. Integrator JSON
-8. Warnings
-9. Help tips
+6. Verify commands
+7. Web server note
+8. Integrator JSON
+9. Warnings
+10. Help tips
 
 ## Copy policy
 
@@ -137,3 +150,8 @@ Avoid long paragraphs on the main path. Put deeper explanations in collapsible b
 - What must a hosted DNS provider support?
 - Does the web server need a DANE plugin?
 - How do I get the certificate/PUBLIC KEY and DNSKEY inputs?
+- Why does `dig +dnssec` not prove validation?
+- What does validating-resolver `SERVFAIL` usually mean?
+- How should TLSA current + next key rollover work?
+- Which clients actually enforce DANE?
+- Do other hostnames and services need separate TLSA records?

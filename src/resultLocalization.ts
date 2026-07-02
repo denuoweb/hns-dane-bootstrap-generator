@@ -27,7 +27,9 @@ type CoreCopy = {
   };
   webNotes: {
     serve: string;
+    rollover: string;
     noPlugin: string;
+    clientSupport: string;
   };
   verify: {
     hnsInline: string;
@@ -74,7 +76,9 @@ const en: CoreCopy = {
   },
   webNotes: {
     serve: 'Serve the certificate whose public key matches the TLSA SPKI hash.',
-    noPlugin: 'Nginx/Apache/Caddy do not need a DANE plugin; DANE lives in DNS.'
+    rollover: 'For key rollover, publish current and next TLSA records, wait at least one TTL, switch the server key, then remove the old TLSA after another TTL.',
+    noPlugin: 'Nginx/Apache/Caddy do not need a DANE plugin; DANE lives in DNS.',
+    clientSupport: 'DANE is enforced only by clients that validate DNSSEC and check TLSA records; ordinary HTTPS clients may ignore the published TLSA policy.'
   },
   verify: {
     hnsInline: '# After the HNS update confirms, test full-chain resolution with an HNS-aware resolver/browser.',
@@ -161,7 +165,9 @@ const explanationsEn = {
   authTlsa: 'Authoritative-zone DANE/TLSA record for the TLS service.',
   authTlsaPlaceholder: 'Placeholder: paste a PEM certificate or PUBLIC KEY to generate the exact TLSA association data.',
   webServe: 'If the certificate key changes, publish the new TLSA record before switching the web server to the new key.',
+  webRollover: 'TLSA 3 1 1 pins the service public key, so DANE clients can fail while caches still hold only the old association.',
   webNoPlugin: 'The TLS server serves a normal certificate. A DANE-aware client verifies the DNSSEC-protected TLSA record.',
+  webClientSupport: 'Publishing TLSA is necessary for DANE, but client software must actually perform DNSSEC validation and DANE authentication.',
   serverPreset: 'Server-side starter snippet. Create the zone, publish NS/A/AAAA/TLSA, enable DNSSEC signing, then publish DS at the parent.',
   verifyDelegated: 'Commands to check that the authoritative server answers before and after parent-side delegation.',
   verifyInline: 'Commands to check that the SYNTH-addressed authoritative server answers before and after the HNS update.',
@@ -287,7 +293,9 @@ const copy: Record<LanguageCode, CoreCopy> = {
       },
       webNotes: {
         serve: 'Sirve el certificado cuya clave pública coincide con el hash SPKI de TLSA.',
-        noPlugin: 'Nginx/Apache/Caddy no necesitan plugin DANE; DANE vive en DNS.'
+        rollover: 'Para rotar claves, publica TLSA actual y siguiente, espera al menos un TTL, cambia la clave del servidor y elimina el TLSA antiguo después de otro TTL.',
+        noPlugin: 'Nginx/Apache/Caddy no necesitan plugin DANE; DANE vive en DNS.',
+        clientSupport: 'DANE solo se aplica en clientes que validan DNSSEC y revisan TLSA; los clientes HTTPS comunes pueden ignorar la política TLSA publicada.'
       },
       verify: {
         hnsInline: '# Cuando confirme la actualización HNS, prueba con un resolvedor/navegador compatible con HNS.',
@@ -385,7 +393,9 @@ const copy: Record<LanguageCode, CoreCopy> = {
       },
       webNotes: {
         serve: 'Servez le certificat dont la clé publique correspond au hachage SPKI TLSA.',
-        noPlugin: 'Nginx/Apache/Caddy n’ont pas besoin de plugin DANE ; DANE vit dans DNS.'
+        rollover: 'Pour une rotation de clé, publiez les TLSA actuel et suivant, attendez au moins un TTL, changez la clé du serveur, puis supprimez l’ancien TLSA après un autre TTL.',
+        noPlugin: 'Nginx/Apache/Caddy n’ont pas besoin de plugin DANE ; DANE vit dans DNS.',
+        clientSupport: 'DANE n’est appliqué que par les clients qui valident DNSSEC et vérifient TLSA ; les clients HTTPS ordinaires peuvent ignorer la politique TLSA publiée.'
       },
       verify: {
         hnsInline: '# Après confirmation de la mise à jour HNS, testez avec un résolveur/navigateur compatible HNS.',
@@ -471,7 +481,9 @@ const copy: Record<LanguageCode, CoreCopy> = {
       },
       webNotes: {
         serve: 'Liefern Sie das Zertifikat aus, dessen Public Key zum TLSA-SPKI-Hash passt.',
-        noPlugin: 'Nginx/Apache/Caddy brauchen kein DANE-Plugin; DANE lebt in DNS.'
+        rollover: 'Für Schlüsselwechsel aktuellen und nächsten TLSA veröffentlichen, mindestens eine TTL warten, Serverschlüssel wechseln und den alten TLSA nach einer weiteren TTL entfernen.',
+        noPlugin: 'Nginx/Apache/Caddy brauchen kein DANE-Plugin; DANE lebt in DNS.',
+        clientSupport: 'DANE wird nur von Clients erzwungen, die DNSSEC validieren und TLSA prüfen; normale HTTPS-Clients können die veröffentlichte TLSA-Richtlinie ignorieren.'
       },
       verify: {
         hnsInline: '# Nach Bestätigung des HNS-Updates mit HNS-fähigem Resolver/Browser testen.',
@@ -557,7 +569,9 @@ const copy: Record<LanguageCode, CoreCopy> = {
       },
       webNotes: {
         serve: 'Sirva o certificado cuja chave pública corresponde ao hash SPKI TLSA.',
-        noPlugin: 'Nginx/Apache/Caddy não precisam de plugin DANE; DANE fica no DNS.'
+        rollover: 'Para rotação de chave, publique TLSA atual e próximo, espere ao menos um TTL, troque a chave do servidor e remova o TLSA antigo depois de outro TTL.',
+        noPlugin: 'Nginx/Apache/Caddy não precisam de plugin DANE; DANE fica no DNS.',
+        clientSupport: 'DANE só é aplicado por clientes que validam DNSSEC e verificam TLSA; clientes HTTPS comuns podem ignorar a política TLSA publicada.'
       },
       verify: {
         hnsInline: '# Depois que a atualização HNS confirmar, teste com resolvedor/navegador compatível com HNS.',
@@ -643,7 +657,9 @@ const copy: Record<LanguageCode, CoreCopy> = {
       },
       webNotes: {
         serve: 'TLSA SPKI ハッシュと一致する公開鍵の証明書を配信します。',
-        noPlugin: 'Nginx/Apache/Caddy に DANE プラグインは不要です。DANE は DNS 側にあります。'
+        rollover: '鍵をロールオーバーする場合は、現在と次の TLSA を公開し、少なくとも 1 TTL 待ってからサーバー鍵を切り替え、さらに 1 TTL 後に古い TLSA を削除します。',
+        noPlugin: 'Nginx/Apache/Caddy に DANE プラグインは不要です。DANE は DNS 側にあります。',
+        clientSupport: 'DANE は DNSSEC を検証し TLSA を確認するクライアントだけが強制します。通常の HTTPS クライアントは公開された TLSA ポリシーを無視する場合があります。'
       },
       verify: {
         hnsInline: '# HNS 更新が確認されたら、HNS 対応リゾルバ/ブラウザでテストします。',
@@ -762,7 +778,9 @@ export function localizeBootstrapResult(result: BootstrapResult, input: Bootstra
   const quickSteps = localizeQuickSteps(result, input, c);
   const webServerNotes = [
     { value: c.webNotes.serve, explanation: translatedExplanation(c, explanationsEn.webServe) },
-    { value: c.webNotes.noPlugin, explanation: translatedExplanation(c, explanationsEn.webNoPlugin) }
+    { value: c.webNotes.rollover, explanation: translatedExplanation(c, explanationsEn.webRollover) },
+    { value: c.webNotes.noPlugin, explanation: translatedExplanation(c, explanationsEn.webNoPlugin) },
+    { value: c.webNotes.clientSupport, explanation: translatedExplanation(c, explanationsEn.webClientSupport) }
   ];
   const sections = result.sections.map((section) => {
     if (section.id === 'steps') return { ...section, lines: quickSteps };

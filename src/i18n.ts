@@ -63,12 +63,12 @@ export const localeText = {
     },
     howTo: {
       summary: 'How to get this',
-      certIntro: 'Paste the public certificate your HTTPS server serves for this exact name, or paste the matching PEM PUBLIC KEY. Do not paste a private key.',
+      certIntro: 'Paste the public certificate your TLS server serves for this exact hostname, port, protocol, and SNI name, or paste the matching PEM PUBLIC KEY. Do not paste a private key.',
       certFetch: 'If you have shell access, fetch the leaf certificate from the live service:',
       certFile: 'If you already have a certificate file, paste the block from BEGIN CERTIFICATE through END CERTIFICATE. To paste only the public key from a certificate file, run:',
-      dnskeyIntro: 'First enable DNSSEC signing on the authoritative DNS zone. The DNS server or hosted DNS provider creates the public DNSKEY; this app uses that public record to generate the parent-side DS record.',
+      dnskeyIntro: 'First enable DNSSEC signing on the exact authoritative child zone being delegated. The DNS server or hosted DNS provider creates the public DNSKEY; this app uses that public record to generate the parent-side DS record.',
       dnskeyHosted: 'In a hosted DNS panel, look for DNSSEC, DS, or DNSKEY settings. If the provider gives you a DS record directly, you can publish that DS at the wallet or registrar without pasting DNSKEY here.',
-      dnskeyQuery: 'If your authoritative server is already answering, query the public DNSKEY and paste the DNSKEY line for the zone, usually the key-signing key with flags 257:'
+      dnskeyQuery: 'If your authoritative server is already answering, query the public DNSKEY and paste the DNSKEY line for this zone, usually the key-signing key with flags 257:'
     },
     copy: {
       copy: 'Copy',
@@ -130,11 +130,11 @@ export const localeText = {
       splitSummary: 'What goes in the wallet versus the DNS server?',
       splitBody: 'The wallet or registrar gets NS/GLUE or SYNTH, plus DS. The authoritative DNS server gets NS/A/AAAA/TLSA and signs the zone. TLSA is a DNS-server record, not a wallet record.',
       dnskeySummary: 'When do I paste the DNSKEY?',
-      dnskeyBody: 'Paste DNSKEY after the authoritative zone is DNSSEC-signed. This page uses it to generate the parent-side DS record; it does not sign the zone or store private DNSSEC keys.',
+      dnskeyBody: 'Paste DNSKEY after the exact authoritative child zone is DNSSEC-signed. This page uses it to generate the parent-side DS record; it does not sign the zone or store private DNSSEC keys. Validate the chain after the DS is published.',
       idnSummary: 'Can I use an internationalized domain name?',
       idnBody: 'Yes. Unicode domain input is converted to IDNA ASCII A-labels such as xn--bcher-kva.example. Use the A-label form in DNS records, wallet fields, registrar fields, and server configs.',
       hostedSummary: 'What must a hosted DNS provider support?',
-      hostedBody: 'The provider needs authoritative DNS hosting, DNSSEC signing, DS or DNSKEY export, and custom TLSA records. If any of those are missing, use your own authoritative server preset instead.'
+      hostedBody: 'The provider needs authoritative DNS hosting, DNSSEC signing, DS or DNSKEY export, custom TLSA records, signature refresh, authenticated denial records, and enough diagnostics to confirm DNSSEC validation.'
     }
   },
   es: {

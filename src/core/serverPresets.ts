@@ -21,6 +21,19 @@ function tlsaOwnerRelative(input: ServerPresetInput): string {
   return relativeName(input.tlsaOwner, input.domain);
 }
 
+function operationalChecklist(prefix: '#' | ';' = '#'): string[] {
+  return [
+    `${prefix} Authoritative nameserver operational checks:`,
+    `${prefix} - Listen publicly on both UDP/53 and TCP/53.`,
+    `${prefix} - Disable recursion on the authoritative service; do not run an open resolver.`,
+    `${prefix} - Allow DNS through host firewalls, network firewalls, and provider security groups.`,
+    `${prefix} - Increment the SOA serial for every unsigned-source zone change.`,
+    `${prefix} - Prefer at least two authoritative nameservers on separate hosts or networks.`,
+    `${prefix} - Keep DNSSEC signatures fresh and publish authenticated denial records (NSEC/NSEC3).`,
+    `${prefix} - Validate through a DNSSEC-validating resolver after publishing the parent DS.`
+  ];
+}
+
 function makeZoneFile(input: ServerPresetInput): string {
   const zone = input.domain;
   const zoneNoRoot = zoneNameWithoutRoot(zone);
@@ -42,7 +55,8 @@ function makeZoneFile(input: ServerPresetInput): string {
     `${tlsaOwnerRelative(input)} ${input.ttl} IN TLSA ${tlsaRdata(input)}`,
     '',
     `; Zone name: ${zoneNoRoot}`,
-    '; Enable DNSSEC signing in your DNS server, then publish the resulting DS at the parent.'
+    '; Enable DNSSEC signing in your DNS server, then publish the resulting DS at the parent.',
+    ...operationalChecklist(';')
   ];
   return lines.join('\n');
 }
@@ -59,7 +73,8 @@ function hostedDnsPreset(input: ServerPresetInput): string {
     `TLSA  ${tlsaOwnerRelative(input).padEnd(17)} ${tlsaRdata(input)}`,
     '',
     '# Turn on provider-managed DNSSEC for the zone.',
-    '# Copy the provider DNSKEY or DS back into this tool, then publish DS at the parent.'
+    '# Copy the provider DNSKEY or DS back into this tool, then publish DS at the parent.',
+    '# Confirm the provider signs TLSA records, serves NSEC/NSEC3 denial records, refreshes RRSIGs, and supports DNSSEC validation checks.'
   ].join('\n');
 }
 
@@ -73,6 +88,9 @@ function bindPreset(input: ServerPresetInput): string {
     '  dnssec-policy default;',
     '  inline-signing yes;',
     '};',
+    '',
+    '# For an authoritative-only BIND service, keep recursion disabled in global options.',
+    '# Example global intent: recursion no; allow-recursion { none; };',
     '',
     `# /etc/bind/zones/db.${zoneNoRoot}`,
     makeZoneFile(input),
@@ -111,7 +129,8 @@ function nsdPreset(input: ServerPresetInput): string {
     `# Unsigned source zone: ${zoneNoRoot}.zone`,
     makeZoneFile(input),
     '',
-    '# Sign the zone outside NSD with your DNSSEC signer, then serve the signed zonefile.'
+    '# Sign the zone outside NSD with your DNSSEC signer, then serve the signed zonefile.',
+    '# Re-sign before RRSIG expiration and update the served signed zone after each source-zone change.'
   ].join('\n');
 }
 
@@ -126,7 +145,9 @@ function powerDnsPreset(input: ServerPresetInput): string {
     ...(input.websiteIpv6 ? [`AAAA @                 ${input.websiteIpv6}`] : []),
     `TLSA ${tlsaOwnerRelative(input).padEnd(17)} ${tlsaRdata(input)}`,
     '',
-    '# Then enable DNSSEC for the zone in PowerDNS and publish the resulting DS at the parent.'
+    '# Then enable DNSSEC for the zone in PowerDNS and publish the resulting DS at the parent.',
+    '# Keep authoritative service separate from recursion, validate after DS publication, and monitor RRSIG freshness.',
+    ...operationalChecklist('#')
   ].join('\n');
 }
 

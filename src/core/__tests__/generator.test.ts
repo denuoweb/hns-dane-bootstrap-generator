@@ -56,6 +56,8 @@ describe('domain normalization', () => {
     });
 
     expect(result.verificationCommands[0].value).toContain('dig @203.0.113.10 example. SOA');
+    expect(result.verificationCommands[0].value).toContain('Direct authoritative queries above prove the server answers');
+    expect(result.verificationCommands[0].value).toContain('<hns-validating-recursive-resolver>');
     expect(result.integrationRecords[0].value).toContain('hns-parent-record-draft');
     expect(result.sections.some((section) => section.id === 'integrator')).toBe(true);
   });
@@ -123,6 +125,8 @@ describe('bootstrap generator', () => {
     expect(result.parentRecords.some((line) => line.value.startsWith('GLUE4 ns1.example.'))).toBe(true);
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN A 203.0.113.20'))).toBe(true);
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN TLSA 3 1 1 '))).toBe(true);
+    expect(result.webServerNotes.some((line) => line.value.includes('current and next TLSA'))).toBe(true);
+    expect(result.webServerNotes.some((line) => line.value.includes('ordinary HTTPS clients may ignore'))).toBe(true);
     expect(result.quickSteps.length).toBeGreaterThan(3);
   });
 
@@ -182,6 +186,8 @@ describe('bootstrap generator', () => {
     expect(result.serverPresetTitle).toBe('BIND 9 starter config');
     expect(result.serverPresetRecords[0].value).toContain('named.conf.local');
     expect(result.serverPresetRecords[0].value).toContain('$ORIGIN example.');
+    expect(result.serverPresetRecords[0].value).toContain('Disable recursion');
+    expect(result.serverPresetRecords[0].value).toContain('UDP/53 and TCP/53');
   });
 
   it('generates a hosted DNS provider checklist', async () => {

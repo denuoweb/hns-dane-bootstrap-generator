@@ -159,6 +159,8 @@ function buildStatusChecks(input: BootstrapInput, effectiveMode: BootstrapInput[
 }
 
 function buildVerificationCommands(input: BootstrapInput, effectiveMode: BootstrapInput['setupMode'], domain: string, ns: string, owner: string): GeneratedLine[] {
+  const addressType = input.websiteIpv4 ? 'A' : input.websiteIpv6 ? 'AAAA' : 'A';
+
   if (effectiveMode === 'hns-inline') {
     return [{
       value: [
@@ -166,7 +168,11 @@ function buildVerificationCommands(input: BootstrapInput, effectiveMode: Bootstr
         ...(input.websiteIpv4 ? [`dig @${input.nameserverIpv4 || input.nameserverIpv6 || '<nameserver-ip>'} ${domain} A +dnssec +norecurse`] : []),
         ...(input.websiteIpv6 ? [`dig @${input.nameserverIpv4 || input.nameserverIpv6 || '<nameserver-ip>'} ${domain} AAAA +dnssec +norecurse`] : []),
         `dig @${input.nameserverIpv4 || input.nameserverIpv6 || '<nameserver-ip>'} ${owner} TLSA +dnssec +norecurse`,
-        '# After the HNS update confirms, test full-chain resolution with an HNS-aware resolver/browser.'
+        '# Direct authoritative queries above prove the server answers; they do not prove DNSSEC chain validation.',
+        '# After the HNS update confirms, test full-chain resolution with an HNS-aware resolver/browser.',
+        `dig @<hns-validating-recursive-resolver> ${domain} ${addressType} +dnssec`,
+        `dig @<hns-validating-recursive-resolver> ${owner} TLSA +dnssec`,
+        '# Confirm the validating response has status NOERROR and the ad flag; SERVFAIL usually means a broken DNSSEC chain, expired RRSIGs, or parent DS mismatch.'
       ].join('\n'),
       explanation: 'Commands to check that the SYNTH-addressed authoritative server answers before and after the HNS update.'
     }];
@@ -178,9 +184,20 @@ function buildVerificationCommands(input: BootstrapInput, effectiveMode: Bootstr
     ...(input.websiteIpv4 ? [`dig @${atServer} ${domain} A +dnssec +norecurse`] : []),
     ...(input.websiteIpv6 ? [`dig @${atServer} ${domain} AAAA +dnssec +norecurse`] : []),
     `dig @${atServer} ${owner} TLSA +dnssec +norecurse`,
+    '# Direct authoritative queries above prove the server answers; they do not prove DNSSEC chain validation.',
     input.domainType === 'icann'
-      ? `delv ${domain} A`
-      : `# For HNS full-chain tests, query through your HNS-aware resolver after the wallet update confirms.`
+      ? [
+        `delv ${domain} ${addressType}`,
+        `delv ${owner} TLSA`,
+        `dig @<validating-recursive-resolver> ${owner} TLSA +dnssec`,
+        '# Confirm the validating response has status NOERROR and the ad flag; SERVFAIL usually means a broken DNSSEC chain, expired RRSIGs, or parent DS mismatch.'
+      ].join('\n')
+      : [
+        '# For HNS full-chain tests, query through your HNS-aware resolver after the wallet update confirms.',
+        `dig @<hns-validating-recursive-resolver> ${domain} ${addressType} +dnssec`,
+        `dig @<hns-validating-recursive-resolver> ${owner} TLSA +dnssec`,
+        '# Confirm the validating response has status NOERROR and the ad flag; SERVFAIL usually means a broken DNSSEC chain, expired RRSIGs, or parent DS mismatch.'
+      ].join('\n')
   ];
 
   return [{
@@ -358,8 +375,16 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
     explanation: 'If the certificate key changes, publish the new TLSA record before switching the web server to the new key.'
   });
   webServerNotes.push({
+    value: 'For key rollover, publish current and next TLSA records, wait at least one TTL, switch the server key, then remove the old TLSA after another TTL.',
+    explanation: 'TLSA 3 1 1 pins the service public key, so DANE clients can fail while caches still hold only the old association.'
+  });
+  webServerNotes.push({
     value: 'Nginx/Apache/Caddy do not need a DANE plugin; DANE lives in DNS.',
     explanation: 'The TLS server serves a normal certificate. A DANE-aware client verifies the DNSSEC-protected TLSA record.'
+  });
+  webServerNotes.push({
+    value: 'DANE is enforced only by clients that validate DNSSEC and check TLSA records; ordinary HTTPS clients may ignore the published TLSA policy.',
+    explanation: 'Publishing TLSA is necessary for DANE, but client software must actually perform DNSSEC validation and DANE authentication.'
   });
 
   const serverPresetRecords = effectiveMode === 'delegated' || effectiveMode === 'hns-inline'

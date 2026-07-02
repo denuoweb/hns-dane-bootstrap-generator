@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added production DANE/DNSSEC guidance for validation, authoritative nameserver hardening, DNSSEC lifecycle, TLSA rollover, client enforcement, service scope, and pasted-input correctness.
+- Expanded generated verification commands to distinguish direct authoritative answers from DNSSEC chain validation with `delv`, AD-bit checks, and HNS-aware resolver checks.
+- Added generated web-server notes for TLSA current/next key rollover and DANE client-support limits.
+- Added authoritative-server operational checklists to server presets.
 - Added hosted DNS provider preset for web admins using a DNS host instead of running an authoritative daemon.
 - Added IDNA normalization for internationalized domain input and documented i18n standards.
 - Expanded new-admin FAQ coverage for DNSKEY timing, parent/server record split, TLSA provider support, and DANE web-server requirements.
