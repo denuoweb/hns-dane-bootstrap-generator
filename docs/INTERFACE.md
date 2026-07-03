@@ -124,6 +124,8 @@ The UI should explain that `dig +dnssec` alone does not prove validation and tha
 
 Every output box should be copyable. The copied text should be plain text and usable in a wallet, registrar panel, DNS zone file, or server notes without UI decoration.
 
+Output cards default to collapsed. The heading row expands or collapses the card content, and the Copy action remains available while collapsed.
+
 ## Tone policy
 
 Use short operational labels:

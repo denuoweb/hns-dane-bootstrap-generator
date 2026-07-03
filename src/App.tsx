@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BootstrapInput, BootstrapNotice, BootstrapResult, DnsServerPreset, DomainType, GeneratedLine, OutputSection, SetupMode, StatusCheck } from './core/types';
 import { generateBootstrap } from './core/bootstrap';
 import { guidanceForIntent, type HandoffGuidance } from './handoffGuidance';
@@ -128,6 +128,8 @@ function localizedSectionTitle(section: OutputSection, result: BootstrapResult, 
 }
 
 function OutputBox(props: { section: OutputSection; result: BootstrapResult; t: LocaleText }) {
+  const contentId = useId();
+  const [expanded, setExpanded] = useState(false);
   const tabOptions = props.section.lines.filter(isTabbedOption);
   const recordLines = tabOptions.length > 0 ? props.section.lines.filter((line) => !isTabbedOption(line)) : props.section.lines;
   const defaultTab = tabOptions.find((line) => line.presentation.defaultSelected)?.presentation.tabId ?? tabOptions[0]?.presentation.tabId ?? '';
@@ -147,50 +149,61 @@ function OutputBox(props: { section: OutputSection; result: BootstrapResult; t: 
   }, [defaultTab]);
 
   return (
-    <section className={`output-card audience-${props.section.audience}`}>
+    <section className={`output-card audience-${props.section.audience}${expanded ? ' expanded' : ' collapsed'}`}>
       <div className="output-heading">
-        <div>
-          <p className="section-tag">{props.t.output.audiences[props.section.audience]}</p>
-          <h2>{localizedSectionTitle(props.section, props.result, props.t)}</h2>
-        </div>
+        <button
+          type="button"
+          className="output-toggle"
+          aria-expanded={expanded}
+          aria-controls={contentId}
+          onClick={() => setExpanded((current) => !current)}
+        >
+          <span className="output-toggle-marker" aria-hidden="true">{expanded ? '-' : '+'}</span>
+          <span>
+            <span className="section-tag">{props.t.output.audiences[props.section.audience]}</span>
+            <span className="output-title">{localizedSectionTitle(props.section, props.result, props.t)}</span>
+          </span>
+        </button>
         <CopyButton text={text} t={props.t} />
       </div>
-      <pre className={props.section.compact ? 'compact-pre' : undefined}>{recordText || props.t.copy.nothing}</pre>
-      {!props.section.compact && (
-        <div className="line-notes">
-          {recordLines.map((line) => (
-            <details key={line.value}>
-              <summary>{line.value.split('\n')[0]}</summary>
-              <p>{line.explanation}</p>
-            </details>
-          ))}
-        </div>
-      )}
-      {tabOptions.length > 0 && activeOption && (
-        <div className="entry-options">
-          <div className="entry-tab-list" role="tablist" aria-label={tabListLabel}>
-            {tabOptions.map((line) => {
-              const selected = line.presentation.tabId === activeOption.presentation.tabId;
-              return (
-                <button
-                  type="button"
-                  className={`entry-tab-button${selected ? ' active' : ''}`}
-                  role="tab"
-                  aria-selected={selected}
-                  key={line.presentation.tabId}
-                  onClick={() => setActiveTab(line.presentation.tabId)}
-                >
-                  {line.presentation.tabLabel}
-                </button>
-              );
-            })}
+      <div id={contentId} className="output-content" hidden={!expanded}>
+        <pre className={props.section.compact ? 'compact-pre' : undefined}>{recordText || props.t.copy.nothing}</pre>
+        {!props.section.compact && (
+          <div className="line-notes">
+            {recordLines.map((line) => (
+              <details key={line.value}>
+                <summary>{line.value.split('\n')[0]}</summary>
+                <p>{line.explanation}</p>
+              </details>
+            ))}
           </div>
-          <div className="entry-tab-panel" role="tabpanel">
-            <pre>{activeOption.value}</pre>
-            <p>{activeOption.explanation}</p>
+        )}
+        {tabOptions.length > 0 && activeOption && (
+          <div className="entry-options">
+            <div className="entry-tab-list" role="tablist" aria-label={tabListLabel}>
+              {tabOptions.map((line) => {
+                const selected = line.presentation.tabId === activeOption.presentation.tabId;
+                return (
+                  <button
+                    type="button"
+                    className={`entry-tab-button${selected ? ' active' : ''}`}
+                    role="tab"
+                    aria-selected={selected}
+                    key={line.presentation.tabId}
+                    onClick={() => setActiveTab(line.presentation.tabId)}
+                  >
+                    {line.presentation.tabLabel}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="entry-tab-panel" role="tabpanel">
+              <pre>{activeOption.value}</pre>
+              <p>{activeOption.explanation}</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 }

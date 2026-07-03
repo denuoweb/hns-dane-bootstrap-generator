@@ -135,6 +135,52 @@ details p,
 
 .output-heading { justify-content: space-between; }
 
+.output-toggle {
+  flex: 1 1 320px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #181816;
+  text-align: left;
+}
+
+.output-toggle:hover { filter: none; }
+
+.output-toggle-marker {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  border: 1px solid #cfc7b8;
+  border-radius: 999px;
+  background: #fffdf8;
+  color: #181816;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.output-toggle .section-tag {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.output-title {
+  display: block;
+  font-size: 1.08rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.output-content {
+  margin-top: 14px;
+}
+
 button {
   appearance: none;
   border: 1px solid #181816;
