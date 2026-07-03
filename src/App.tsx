@@ -12,6 +12,7 @@ const EXAMPLE_NAMESERVER_IPV4 = '203.0.113.10';
 const EXAMPLE_WEBSITE_IPV4 = '203.0.113.20';
 const DONATION_ADDRESS = 'hs1q5997733eq7f4yyk2vq2z8gz3yqyvpz422ypggh';
 const DONATION_URI = `handshake:${DONATION_ADDRESS}`;
+const GITHUB_REPOSITORY_URL = 'https://github.com/denuoweb/dane-record-generator';
 const CERTIFICATE_PLACEHOLDER = `-----BEGIN CERTIFICATE-----
 ...
 -----END CERTIFICATE-----
@@ -532,6 +533,8 @@ function App() {
       <footer className="site-footer">
         <span>Donation:</span>
         <a href={DONATION_URI}>{DONATION_ADDRESS}</a>
+        <span>GitHub:</span>
+        <a href={GITHUB_REPOSITORY_URL}>denuoweb/dane-record-generator</a>
       </footer>
     </main>
   );
