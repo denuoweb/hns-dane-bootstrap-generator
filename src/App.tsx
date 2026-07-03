@@ -103,8 +103,8 @@ function lineText(lines: GeneratedLine[]): string {
   return lines.map((line) => line.value).join('\n\n');
 }
 
-function isHnsWalletOption(line: GeneratedLine): line is GeneratedLine & { presentation: NonNullable<GeneratedLine['presentation']> } {
-  return line.presentation?.kind === 'hns-wallet-option';
+function isTabbedOption(line: GeneratedLine): line is GeneratedLine & { presentation: NonNullable<GeneratedLine['presentation']> } {
+  return Boolean(line.presentation);
 }
 
 function localizedSectionTitle(section: OutputSection, result: BootstrapResult, t: LocaleText): string {
@@ -119,18 +119,23 @@ function localizedSectionTitle(section: OutputSection, result: BootstrapResult, 
 }
 
 function OutputBox(props: { section: OutputSection; result: BootstrapResult; t: LocaleText }) {
-  const walletOptions = props.section.lines.filter(isHnsWalletOption);
-  const recordLines = walletOptions.length > 0 ? props.section.lines.filter((line) => !isHnsWalletOption(line)) : props.section.lines;
-  const defaultWalletTab = walletOptions.find((line) => line.presentation.defaultSelected)?.presentation.tabId ?? walletOptions[0]?.presentation.tabId ?? '';
-  const [activeWalletTab, setActiveWalletTab] = useState(defaultWalletTab);
-  const activeWalletOption = walletOptions.find((line) => line.presentation.tabId === activeWalletTab) ?? walletOptions[0];
+  const tabOptions = props.section.lines.filter(isTabbedOption);
+  const recordLines = tabOptions.length > 0 ? props.section.lines.filter((line) => !isTabbedOption(line)) : props.section.lines;
+  const defaultTab = tabOptions.find((line) => line.presentation.defaultSelected)?.presentation.tabId ?? tabOptions[0]?.presentation.tabId ?? '';
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  const activeOption = tabOptions.find((line) => line.presentation.tabId === activeTab) ?? tabOptions[0];
   const recordText = lineText(recordLines);
-  const text = walletOptions.length > 0 && activeWalletOption ? [recordText, activeWalletOption.value].filter(Boolean).join('\n\n') : lineText(props.section.lines);
+  const text = tabOptions.length > 0 && activeOption ? [recordText, activeOption.value].filter(Boolean).join('\n\n') : lineText(props.section.lines);
+  const tabListLabel = props.section.id === 'authoritative' ? 'Authoritative DNS entry method' : 'HNS wallet entry method';
 
   useEffect(() => {
-    if (walletOptions.length === 0) return;
-    if (!walletOptions.some((line) => line.presentation.tabId === activeWalletTab)) setActiveWalletTab(defaultWalletTab);
-  }, [activeWalletTab, defaultWalletTab, walletOptions]);
+    if (tabOptions.length === 0) return;
+    if (!tabOptions.some((line) => line.presentation.tabId === activeTab)) setActiveTab(defaultTab);
+  }, [activeTab, defaultTab, tabOptions]);
+
+  useEffect(() => {
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
 
   return (
     <section className={`output-card audience-${props.section.audience}`}>
@@ -152,28 +157,28 @@ function OutputBox(props: { section: OutputSection; result: BootstrapResult; t: 
           ))}
         </div>
       )}
-      {walletOptions.length > 0 && activeWalletOption && (
-        <div className="wallet-entry-options">
-          <div className="wallet-tab-list" role="tablist" aria-label="HNS wallet entry method">
-            {walletOptions.map((line) => {
-              const selected = line.presentation.tabId === activeWalletOption.presentation.tabId;
+      {tabOptions.length > 0 && activeOption && (
+        <div className="entry-options">
+          <div className="entry-tab-list" role="tablist" aria-label={tabListLabel}>
+            {tabOptions.map((line) => {
+              const selected = line.presentation.tabId === activeOption.presentation.tabId;
               return (
                 <button
                   type="button"
-                  className={`wallet-tab-button${selected ? ' active' : ''}`}
+                  className={`entry-tab-button${selected ? ' active' : ''}`}
                   role="tab"
                   aria-selected={selected}
                   key={line.presentation.tabId}
-                  onClick={() => setActiveWalletTab(line.presentation.tabId)}
+                  onClick={() => setActiveTab(line.presentation.tabId)}
                 >
                   {line.presentation.tabLabel}
                 </button>
               );
             })}
           </div>
-          <div className="wallet-tab-panel" role="tabpanel">
-            <pre>{activeWalletOption.value}</pre>
-            <p>{activeWalletOption.explanation}</p>
+          <div className="entry-tab-panel" role="tabpanel">
+            <pre>{activeOption.value}</pre>
+            <p>{activeOption.explanation}</p>
           </div>
         </div>
       )}

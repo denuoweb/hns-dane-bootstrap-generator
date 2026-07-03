@@ -1,6 +1,8 @@
 import type { BootstrapInput, DnsServerPreset, GeneratedLine } from './types';
 import { relativeName, zoneNameWithoutRoot } from './domain';
 
+export const DNS_SERVER_PRESETS: DnsServerPreset[] = ['generic-zone', 'hosted-dns', 'bind', 'powerdns', 'knot', 'nsd'];
+
 export interface ServerPresetInput {
   preset: DnsServerPreset;
   domain: string;
@@ -159,6 +161,17 @@ export function serverPresetLabel(preset: DnsServerPreset): string {
     case 'nsd': return 'NSD starter config';
     case 'powerdns': return 'PowerDNS Authoritative records';
     default: return 'Generic zone-file records';
+  }
+}
+
+export function serverPresetTabLabel(preset: DnsServerPreset): string {
+  switch (preset) {
+    case 'bind': return 'BIND 9';
+    case 'hosted-dns': return 'Hosted DNS';
+    case 'knot': return 'Knot';
+    case 'nsd': return 'NSD';
+    case 'powerdns': return 'PowerDNS';
+    default: return 'Zone file';
   }
 }
 

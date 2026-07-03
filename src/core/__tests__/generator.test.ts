@@ -66,7 +66,9 @@ describe('domain normalization', () => {
     expect(result.verificationCommands[0]!.value).toContain('Direct authoritative queries above prove the server answers');
     expect(result.verificationCommands[0]!.value).toContain('<hns-validating-recursive-resolver>');
     expect(result.integrationRecords[0]!.value).toContain('hns-parent-record-draft');
+    expect(result.integrationRecords[0]!.value).not.toContain('Hosted DNS provider panel');
     expect(result.sections.some((section) => section.id === 'integrator')).toBe(true);
+    expect(result.sections.some((section) => section.id === 'server')).toBe(false);
   });
 
   it('handles parenthesized multiline DNSKEY input', () => {
@@ -204,6 +206,11 @@ describe('bootstrap generator', () => {
     expect(shakeOption?.value).toContain('"type": "GLUE4"');
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN A 203.0.113.20'))).toBe(true);
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN TLSA 3 1 1 '))).toBe(true);
+    const zoneFileOption = result.authoritativeRecords.find((line) => line.presentation?.tabId === 'generic-zone');
+    expect(zoneFileOption?.presentation?.tabLabel).toBe('Zone file');
+    expect(zoneFileOption?.presentation?.defaultSelected).toBe(true);
+    expect(zoneFileOption?.value).toContain('$ORIGIN example.');
+    expect(result.authoritativeRecords.find((line) => line.presentation?.tabId === 'hosted-dns')?.value).toContain('Hosted DNS provider panel');
     expect(result.webServerNotes.some((line) => line.value.includes('current and next TLSA'))).toBe(true);
     expect(result.webServerNotes.some((line) => line.value.includes('ordinary HTTPS clients may ignore'))).toBe(true);
     expect(result.quickSteps.length).toBeGreaterThan(3);
@@ -265,9 +272,13 @@ describe('bootstrap generator', () => {
 
     expect(result.serverPresetTitle).toBe('BIND 9 starter config');
     expect(result.serverPresetRecords[0]!.value).toContain('named.conf.local');
+    const bindOption = result.authoritativeRecords.find((line) => line.presentation?.tabId === 'bind');
+    expect(bindOption?.presentation?.defaultSelected).toBe(true);
+    expect(bindOption?.value).toContain('named.conf.local');
     expect(result.serverPresetRecords[0]!.value).toContain('$ORIGIN example.');
     expect(result.serverPresetRecords[0]!.value).toContain('Disable recursion');
     expect(result.serverPresetRecords[0]!.value).toContain('UDP/53 and TCP/53');
+    expect(result.sections.some((section) => section.id === 'server')).toBe(false);
   });
 
   it('generates a hosted DNS provider checklist', async () => {

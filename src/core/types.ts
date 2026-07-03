@@ -6,6 +6,8 @@ export type CheckStatus = 'ok' | 'warn' | 'missing';
 export type Severity = 'info' | 'warning' | 'error';
 export type OutputAudience = 'parent' | 'authoritative' | 'server' | 'web' | 'verify' | 'integrator';
 export type HnsWalletOptionId = 'cli' | 'bob' | 'shake';
+export type OutputTabKind = 'hns-wallet-option' | 'authoritative-dns-option';
+export type OutputTabId = HnsWalletOptionId | DnsServerPreset;
 
 export interface BootstrapInput {
   domainType: DomainType;
@@ -32,8 +34,8 @@ export interface GeneratedLine {
   value: string;
   explanation: string;
   presentation?: {
-    kind: 'hns-wallet-option';
-    tabId: HnsWalletOptionId;
+    kind: OutputTabKind;
+    tabId: OutputTabId;
     tabLabel: string;
     defaultSelected?: boolean;
   };

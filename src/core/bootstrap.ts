@@ -1,7 +1,7 @@
 import type { BootstrapInput, BootstrapNotice, BootstrapResult, DnsServerPreset, DsRecord, GeneratedLine, HnsParentRecordDraft, OutputSection, StatusCheck } from './types';
 import { displayDomain, isInBailiwick, normalizeDomain, normalizeHostname, synthNameserverName, tlsaOwnerName, validateDomainName, validateHostname, validateIpv4, validateIpv6, validateTtl } from './domain';
 import { dnskeyWarnings, formatDsRecord, generateDsRecord } from './dnssec';
-import { generateServerPreset, recommendedPresetTip, serverPresetLabel } from './serverPresets';
+import { DNS_SERVER_PRESETS, generateServerPreset, recommendedPresetTip, serverPresetLabel, serverPresetTabLabel, type ServerPresetInput } from './serverPresets';
 import { generateTlsaRecord } from './tlsa';
 
 function optionalLine(condition: boolean, line: GeneratedLine): GeneratedLine[] {
@@ -350,6 +350,18 @@ function buildShakeWalletOption(parentDraft: HnsParentRecordDraft[], domain: str
   };
 }
 
+function buildAuthoritativeDnsOptions(baseInput: Omit<ServerPresetInput, 'preset'>, selectedPreset: DnsServerPreset): GeneratedLine[] {
+  return DNS_SERVER_PRESETS.flatMap((serverPreset) => generateServerPreset({ ...baseInput, preset: serverPreset }).map((line) => ({
+    ...line,
+    presentation: {
+      kind: 'authoritative-dns-option',
+      tabId: serverPreset,
+      tabLabel: serverPresetTabLabel(serverPreset),
+      ...(serverPreset === selectedPreset ? { defaultSelected: true } : {})
+    }
+  })));
+}
+
 function buildSections(result: Omit<BootstrapResult, 'sections'>): OutputSection[] {
   const sections: OutputSection[] = [
     { id: 'steps', title: 'Do these steps', audience: 'verify', lines: result.quickSteps, compact: true },
@@ -357,7 +369,6 @@ function buildSections(result: Omit<BootstrapResult, 'sections'>): OutputSection
     { id: 'authoritative', title: result.authoritativeTitle, audience: 'authoritative', lines: result.authoritativeRecords }
   ];
 
-  if (result.serverPresetRecords.length) sections.push({ id: 'server', title: result.serverPresetTitle, audience: 'server', lines: result.serverPresetRecords });
   sections.push({ id: 'verify', title: result.verificationTitle, audience: 'verify', lines: result.verificationCommands, compact: true });
   sections.push({ id: 'web', title: 'Web server note', audience: 'web', lines: result.webServerNotes, compact: true });
   sections.push({ id: 'integrator', title: result.integrationTitle, audience: 'integrator', lines: result.integrationRecords });
@@ -527,9 +538,8 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
     explanation: 'Publishing TLSA is necessary for DANE, but client software must actually perform DNSSEC validation and DANE authentication.'
   });
 
-  const serverPresetRecords = effectiveMode === 'delegated' || effectiveMode === 'hns-inline'
-    ? generateServerPreset({
-      preset,
+  const serverPresetInput: Omit<ServerPresetInput, 'preset'> | undefined = effectiveMode === 'delegated' || effectiveMode === 'hns-inline'
+    ? {
       domain: normalizedDomain,
       nameserverHost: ns,
       nameserverHosts: authoritativeNsHosts,
@@ -538,8 +548,10 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
       ...(input.websiteIpv4 !== undefined ? { websiteIpv4: input.websiteIpv4 } : {}),
       ...(input.websiteIpv6 !== undefined ? { websiteIpv6: input.websiteIpv6 } : {}),
       ...(tlsaRecord !== undefined ? { tlsaRecord } : {})
-    })
-    : [];
+    }
+    : undefined;
+  const serverPresetRecords = serverPresetInput ? generateServerPreset({ ...serverPresetInput, preset }) : [];
+  const authoritativeDnsOptions = serverPresetInput ? buildAuthoritativeDnsOptions(serverPresetInput, preset) : [];
 
   const hasDs = Boolean(dsRecordText);
   const hasTlsa = Boolean(tlsaRecord);
@@ -547,6 +559,7 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
   const quickSteps = buildQuickSteps(input, effectiveMode, hasDs, hasTlsa);
   const verificationCommands = buildVerificationCommands(input, effectiveMode, normalizedDomain, ns, owner);
   const integrationRecords = buildIntegrationRecord(parentDraft, input, effectiveMode, parentRecords, authoritativeRecords);
+  authoritativeRecords.push(...authoritativeDnsOptions);
   const hnsResourceSizeBytes = input.domainType === 'hns' ? estimateHnsResourceSize(parentDraft) : undefined;
 
   if (input.domainType === 'hns' && hnsResourceSizeBytes !== undefined && hnsResourceSizeBytes > 512) {
