@@ -21,6 +21,7 @@ main {
 .tips-card,
 .error-card,
 .status-card,
+.handoff-card,
 .summary-strip {
   border: 1px solid #ddd8cd;
   background: white;
@@ -33,6 +34,24 @@ main {
   background: #fffdf8;
   margin-bottom: 20px;
   padding: 30px;
+}
+
+.handoff-card {
+  border-left: 6px solid #2f5f78;
+  background: #f5fbff;
+  margin-bottom: 20px;
+}
+
+.handoff-card p {
+  color: #3f4f58;
+  line-height: 1.55;
+  max-width: 860px;
+}
+
+.handoff-card ul {
+  margin-bottom: 0;
+  color: #3f4f58;
+  line-height: 1.55;
 }
 
 .hero-top {

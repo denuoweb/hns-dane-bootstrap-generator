@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { BootstrapInput, BootstrapNotice, BootstrapResult, DnsServerPreset, DomainType, GeneratedLine, OutputSection, SetupMode, StatusCheck } from './core/types';
 import { generateBootstrap } from './core/bootstrap';
+import { guidanceForIntent, type HandoffGuidance } from './handoffGuidance';
 import { isLanguageCode, languageOptions, localeText, type LanguageCode, type LocaleText } from './i18n';
 import { localizeBootstrapResult } from './resultLocalization';
 import { readUrlPrefill } from './urlPrefill';
@@ -188,6 +189,20 @@ function SetupSummary(props: { result: BootstrapResult; t: LocaleText }) {
   );
 }
 
+function HandoffCard(props: { guidance: HandoffGuidance | null }) {
+  if (!props.guidance) return null;
+  return (
+    <section className="handoff-card" aria-label="Report handoff">
+      <p className="section-tag">{props.guidance.badge}</p>
+      <h2>{props.guidance.title}</h2>
+      <p>{props.guidance.body}</p>
+      <ul>
+        {props.guidance.next.map((item) => <li key={item}>{item}</li>)}
+      </ul>
+    </section>
+  );
+}
+
 function App() {
   const urlPrefill = useMemo(() => readUrlPrefill(), []);
   const [language, setLanguage] = useState<LanguageCode>(() => {
@@ -356,6 +371,7 @@ function App() {
 
   const displayResult = useMemo(() => result ? localizeBootstrapResult(result, input, language) : null, [input, language, result]);
   const sections = useMemo(() => displayResult?.sections ?? [], [displayResult]);
+  const handoffGuidance = useMemo(() => guidanceForIntent(urlPrefill.intent), [urlPrefill.intent]);
   const domainPlaceholder = domainType === 'hns' ? HNS_EXAMPLE_DOMAIN : ICANN_EXAMPLE_DOMAIN;
   const nameserverPlaceholder = domainType === 'hns' ? HNS_EXAMPLE_NAMESERVER : ICANN_EXAMPLE_NAMESERVER;
   const howToContext = useMemo<HowToContext>(() => {
@@ -403,6 +419,8 @@ function App() {
           <button type="button" onClick={() => loadExample('icann')}>{t.examples.icann}</button>
         </div>
       </header>
+
+      <HandoffCard guidance={handoffGuidance} />
 
       <section className="panel grid">
         <div className="form-card">

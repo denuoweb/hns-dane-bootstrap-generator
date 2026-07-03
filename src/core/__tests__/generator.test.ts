@@ -3,6 +3,7 @@ import { generateBootstrap } from '../bootstrap';
 import { normalizeDomain, normalizeHostname, isInBailiwick, synthNameserverName, tlsaOwnerName, validateIpv6 } from '../domain';
 import { parseDnskey, dnskeyKeyTag, canonicalNameWire } from '../dnssec';
 import { extractSpkiFromPem, generateTlsaRecord } from '../tlsa';
+import { guidanceForIntent } from '../../handoffGuidance';
 import { readUrlPrefillFromSearch } from '../../urlPrefill';
 
 const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
@@ -100,6 +101,17 @@ describe('URL prefill', () => {
     expect(prefill.setupMode).toBe('delegated');
     expect(prefill.nameserverHost).toBe('ns1.example.com.');
     expect(prefill.dnsServerPreset).toBe('bind');
+  });
+
+  it('maps report intents to handoff guidance', () => {
+    expect(guidanceForIntent('generate_tlsa')?.title).toBe('Generate TLSA next');
+    expect(guidanceForIntent('missing_glue')?.title).toBe('Fix nameserver bootstrap');
+    expect(guidanceForIntent('ds_dnskey_mismatch')?.title).toBe('Regenerate or check DS');
+  });
+
+  it('returns generic handoff guidance for unknown non-empty intents', () => {
+    expect(guidanceForIntent('future_intent')?.title).toBe('Continue setup');
+    expect(guidanceForIntent('')).toBeNull();
   });
 });
 

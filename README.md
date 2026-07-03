@@ -250,6 +250,8 @@ The UI accepts query parameters so HNScrawler or another report can hand off a s
 /dane-generator/?domain=example&mode=synth&ns4=203.0.113.10&a=203.0.113.20
 ```
 
+When `intent` is present, the UI shows a report handoff card that explains the next action, such as generating TLSA, fixing missing GLUE, checking DS/DNSKEY mismatch, replacing stale TLSA, or completing SYNTH DNS setup.
+
 Accepted aliases:
 
 - Domain: `domain`, `name`, `domainInput`, `domain_input`
