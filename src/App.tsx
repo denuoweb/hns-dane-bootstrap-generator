@@ -62,10 +62,10 @@ function Field(props: { label: string; help?: string; children: ReactNode }) {
   );
 }
 
-function CertificateHowTo(props: { attention?: boolean; context: HowToContext; t: LocaleText }) {
+function CertificateHowTo(props: { attention?: boolean; context: HowToContext; summaryLabel?: string; t: LocaleText }) {
   return (
     <details className={props.attention ? 'attention-howto' : 'field-howto'}>
-      <summary>{props.t.howTo.summary}</summary>
+      <summary>{props.summaryLabel ?? props.t.howTo.summary}</summary>
       <p>{props.t.howTo.certIntro}</p>
       <p>{props.t.howTo.certFetch}</p>
       <pre className="inline-code">{`openssl s_client -connect ${props.context.certConnectTarget} -servername ${props.context.certServerName} -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM`}</pre>
@@ -75,10 +75,10 @@ function CertificateHowTo(props: { attention?: boolean; context: HowToContext; t
   );
 }
 
-function DnskeyHowTo(props: { attention?: boolean; context: HowToContext; t: LocaleText }) {
+function DnskeyHowTo(props: { attention?: boolean; context: HowToContext; summaryLabel?: string; t: LocaleText }) {
   return (
     <details className={props.attention ? 'attention-howto' : 'field-howto'}>
-      <summary>{props.t.howTo.summary}</summary>
+      <summary>{props.summaryLabel ?? props.t.howTo.summary}</summary>
       <p>{props.t.howTo.dnskeyIntro}</p>
       <p>{props.t.howTo.dnskeyHosted}</p>
       <p>{props.t.howTo.dnskeyQuery}</p>
@@ -161,14 +161,12 @@ function Notices(props: { notices: BootstrapNotice[]; hasHelp?: boolean; childre
   return (
     <section className="notice-card">
       <h2>{props.t.notices.title}</h2>
-      {props.notices.length > 0 && (
-        <ul>
-          {props.notices.map((item) => (
-            <li className={item.severity} key={`${item.severity}-${item.message}`}>{item.message}</li>
-          ))}
-        </ul>
-      )}
-      {props.children}
+      <ul>
+        {props.notices.map((item) => (
+          <li className={item.severity} key={`${item.severity}-${item.message}`}>{item.message}</li>
+        ))}
+        {props.children}
+      </ul>
     </section>
   );
 }
@@ -512,8 +510,26 @@ function App() {
             hasHelp={!pemInput.trim() || !dnskeyInput.trim()}
             t={t}
           >
-            {!pemInput.trim() && <CertificateHowTo attention context={howToContext} t={t} />}
-            {!dnskeyInput.trim() && <DnskeyHowTo attention context={howToContext} t={t} />}
+            {!pemInput.trim() && (
+              <li className="info">
+                <CertificateHowTo
+                  attention
+                  context={howToContext}
+                  summaryLabel={`${t.fields.certificate} - ${t.howTo.summary}`}
+                  t={t}
+                />
+              </li>
+            )}
+            {!dnskeyInput.trim() && (
+              <li className="info">
+                <DnskeyHowTo
+                  attention
+                  context={howToContext}
+                  summaryLabel={`${t.fields.dnskey} - ${t.howTo.summary}`}
+                  t={t}
+                />
+              </li>
+            )}
           </Notices>
 
           {sections.map((section) => <OutputBox key={section.id} section={section} result={displayResult} t={t} />)}

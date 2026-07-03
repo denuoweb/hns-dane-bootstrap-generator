@@ -277,7 +277,9 @@ summary { cursor: pointer; font-weight: 750; }
 }
 
 .attention-howto {
-  margin-top: 12px;
+  border-top: 0;
+  margin-top: 0;
+  padding: 0;
 }
 
 .inline-code {
