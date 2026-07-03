@@ -3,6 +3,7 @@ import { generateBootstrap } from '../bootstrap';
 import { normalizeDomain, normalizeHostname, isInBailiwick, synthNameserverName, tlsaOwnerName, validateIpv6 } from '../domain';
 import { parseDnskey, dnskeyKeyTag, canonicalNameWire } from '../dnssec';
 import { extractSpkiFromPem, generateTlsaRecord } from '../tlsa';
+import { readUrlPrefillFromSearch } from '../../urlPrefill';
 
 const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE7Z2aT5FJk4M3UgR6pW/8T4zQIErB
@@ -68,6 +69,37 @@ describe('domain normalization', () => {
     ) ; comment`);
     expect(dnskey.flags).toBe(257);
     expect(dnskey.algorithm).toBe(13);
+  });
+});
+
+describe('URL prefill', () => {
+  it('prefills a plain HNS name and TLSA intent', () => {
+    const prefill = readUrlPrefillFromSearch('?domain=example&intent=generate_tlsa');
+
+    expect(prefill.hasPrefill).toBe(true);
+    expect(prefill.domainInput).toBe('example');
+    expect(prefill.domainType).toBe('hns');
+    expect(prefill.setupMode).toBe('delegated');
+    expect(prefill.intent).toBe('generate_tlsa');
+  });
+
+  it('prefills SYNTH nameserver mode with nameserver and website addresses', () => {
+    const prefill = readUrlPrefillFromSearch('?domain=example&mode=synth&ns4=203.0.113.10&a=203.0.113.20&port=8443');
+
+    expect(prefill.domainType).toBe('hns');
+    expect(prefill.setupMode).toBe('hns-inline');
+    expect(prefill.nameserverIpv4).toBe('203.0.113.10');
+    expect(prefill.websiteIpv4).toBe('203.0.113.20');
+    expect(prefill.port).toBe(8443);
+  });
+
+  it('prefills delegated ICANN mode and rejects incompatible inline mode', () => {
+    const prefill = readUrlPrefillFromSearch('?domain=example.com&domain_type=icann&mode=hns-inline&nameserver=ns1.example.com.&preset=bind');
+
+    expect(prefill.domainType).toBe('icann');
+    expect(prefill.setupMode).toBe('delegated');
+    expect(prefill.nameserverHost).toBe('ns1.example.com.');
+    expect(prefill.dnsServerPreset).toBe('bind');
   });
 });
 

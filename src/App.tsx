@@ -3,6 +3,7 @@ import type { BootstrapInput, BootstrapNotice, BootstrapResult, DnsServerPreset,
 import { generateBootstrap } from './core/bootstrap';
 import { isLanguageCode, languageOptions, localeText, type LanguageCode, type LocaleText } from './i18n';
 import { localizeBootstrapResult } from './resultLocalization';
+import { readUrlPrefill } from './urlPrefill';
 
 const HNS_EXAMPLE_DOMAIN = 'example/';
 const ICANN_EXAMPLE_DOMAIN = 'example.com';
@@ -188,23 +189,24 @@ function SetupSummary(props: { result: BootstrapResult; t: LocaleText }) {
 }
 
 function App() {
+  const urlPrefill = useMemo(() => readUrlPrefill(), []);
   const [language, setLanguage] = useState<LanguageCode>(() => {
     if (typeof window === 'undefined') return 'en';
     const saved = window.localStorage.getItem('hns-dane-language');
     return isLanguageCode(saved) ? saved : 'en';
   });
-  const [domainType, setDomainType] = useState<DomainType>('hns');
-  const [setupMode, setSetupMode] = useState<SetupMode>('delegated');
-  const [domainInput, setDomainInput] = useState('');
-  const [nameserverHost, setNameserverHost] = useState('');
-  const [nameserverIpv4, setNameserverIpv4] = useState('');
-  const [nameserverIpv6, setNameserverIpv6] = useState('');
-  const [websiteIpv4, setWebsiteIpv4] = useState('');
-  const [websiteIpv6, setWebsiteIpv6] = useState('');
-  const [port, setPort] = useState(443);
-  const [pemInput, setPemInput] = useState('');
-  const [dnskeyInput, setDnskeyInput] = useState('');
-  const [dnsServerPreset, setDnsServerPreset] = useState<DnsServerPreset>('generic-zone');
+  const [domainType, setDomainType] = useState<DomainType>(urlPrefill.domainType);
+  const [setupMode, setSetupMode] = useState<SetupMode>(urlPrefill.setupMode);
+  const [domainInput, setDomainInput] = useState(urlPrefill.domainInput);
+  const [nameserverHost, setNameserverHost] = useState(urlPrefill.nameserverHost);
+  const [nameserverIpv4, setNameserverIpv4] = useState(urlPrefill.nameserverIpv4);
+  const [nameserverIpv6, setNameserverIpv6] = useState(urlPrefill.nameserverIpv6);
+  const [websiteIpv4, setWebsiteIpv4] = useState(urlPrefill.websiteIpv4);
+  const [websiteIpv6, setWebsiteIpv6] = useState(urlPrefill.websiteIpv6);
+  const [port, setPort] = useState(urlPrefill.port);
+  const [pemInput, setPemInput] = useState(urlPrefill.pemInput);
+  const [dnskeyInput, setDnskeyInput] = useState(urlPrefill.dnskeyInput);
+  const [dnsServerPreset, setDnsServerPreset] = useState<DnsServerPreset>(urlPrefill.dnsServerPreset);
   const [result, setResult] = useState<BootstrapResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const interactionScrollY = useRef<number | null>(null);

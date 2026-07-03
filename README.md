@@ -241,6 +241,26 @@ const result = await generateBootstrap({
 });
 ```
 
+## URL prefill
+
+The UI accepts query parameters so HNScrawler or another report can hand off a specific next step:
+
+```text
+/dane-generator/?domain=example&intent=generate_tlsa
+/dane-generator/?domain=example&mode=synth&ns4=203.0.113.10&a=203.0.113.20
+```
+
+Accepted aliases:
+
+- Domain: `domain`, `name`, `domainInput`, `domain_input`
+- Domain type: `domainType`, `domain_type`, `type` with `hns` or `icann`
+- Setup mode: `setupMode`, `setup_mode`, `mode` with `delegated` or `synth`/`hns-inline`
+- Next-step hint: `intent`, `action`, `next_step`
+- Nameserver: `nameserver`, `nameserverHost`, `ns`
+- Nameserver IPs: `ns4`, `ns6`, `glue4`, `glue6`
+- Website IPs: `a`, `aaaa`, `websiteIpv4`, `websiteIpv6`
+- Other fields: `port`, `preset`, `dnskey`, `pem`, `cert`, `certificate`
+
 ## Design rules
 
 - **DRY**: one generator core feeds the UI, docs examples, tests, and integrator JSON.
