@@ -11,14 +11,14 @@ Completed foundation:
 - TLSA 3 1 1 from PEM CERTIFICATE
 - DS SHA-256 from DNSKEY
 - Copyable output boxes
-- Help tips
+- Field-level setup hints
 
 ## v0.2: web-admin onboarding
 
 Current scaffold target:
 
 - Setup status checklist
-- Copyable quick steps
+- Copyable parent, authoritative, verification, web, and integrator outputs
 - Generic zone-file preset
 - PowerDNS Authoritative preset
 - Knot DNS preset

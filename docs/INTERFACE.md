@@ -111,16 +111,14 @@ The UI should explain that `dig +dnssec` alone does not prove validation and tha
 
 ## Output order
 
-1. Setup status
-2. Quick steps
-3. Parent-side records
-4. Authoritative DNS records
-5. Server preset
+1. Setup summary
+2. Setup status
+3. Needs attention
+4. Parent-side records
+5. Authoritative DNS records with server preset tabs
 6. Verify commands
 7. Web server note
 8. Integrator JSON
-9. Warnings
-10. Help tips
 
 ## Copy policy
 
@@ -141,17 +139,13 @@ Use short operational labels:
 
 Avoid long paragraphs on the main path. Put deeper explanations in collapsible blocks.
 
-## FAQ topics
+## Field-Level Hint Topics
 
-- Which preset should I pick?
-- What goes in the wallet or registrar versus the DNS server?
-- When should DNSKEY be pasted?
-- Can internationalized domain names be used?
-- What must a hosted DNS provider support?
-- Does the web server need a DANE plugin?
-- How do I get the certificate/PUBLIC KEY and DNSKEY inputs?
-- Why does `dig +dnssec` not prove validation?
-- What does validating-resolver `SERVFAIL` usually mean?
-- How should TLSA current + next key rollover work?
-- Which clients actually enforce DANE?
-- Do other hostnames and services need separate TLSA records?
+- Domain type: what goes in the wallet or registrar versus the DNS server.
+- Setup mode: delegated nameserver mode versus HNS `SYNTH`.
+- Domain: HNS slash form, ICANN DNS names, and IDNA handling.
+- DNS server preset: hosted DNS, generic zone file, and server-specific examples.
+- Nameserver IPv4: nameserver address use for `SYNTH4` and parent-side `GLUE4`.
+- Website IPv4: website `A` records versus nameserver `SYNTH`/glue.
+- DANE certificate/PUBLIC KEY: how to fetch or extract the TLSA source material.
+- DNSKEY: when to paste DNSKEY and how to query it after DNSSEC signing.

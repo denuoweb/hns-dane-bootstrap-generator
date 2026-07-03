@@ -12,10 +12,8 @@ The app keeps the workflow simple:
 
 ## Main outputs
 
-- **Do these steps**: short ordered setup path.
 - **HNS wallet / registrar**: NS, GLUE, DS, SYNTH records as appropriate.
-- **Authoritative DNS server**: NS, A, AAAA, and TLSA records.
-- **Server preset**: compact starter config for hosted DNS panels, Generic zone file, PowerDNS, Knot, BIND, or NSD.
+- **Authoritative DNS server**: tabbed starter config for hosted DNS panels, Generic zone file, PowerDNS, Knot, BIND, or NSD, including NS, A, AAAA, and TLSA records.
 - **Verify commands**: `dig`/`delv` checks.
 - **Integrator JSON**: optional machine-readable output for wallets and future APIs.
 
@@ -182,9 +180,18 @@ The app shell includes English, Spanish, French, German, Portuguese, and Japanes
 
 See [Internationalization standards](docs/I18N_STANDARDS.md) for the UI localization policy plus IDNA, Punycode, UTS #46, and future email internationalization references.
 
-## New web-admin FAQ
+## Input guidance
 
-### Which preset should I start with?
+The app keeps setup guidance beside the field it explains:
+
+- **Domain type** explains the wallet/registrar versus authoritative DNS split.
+- **Setup mode** explains delegated DNS versus HNS `SYNTH`.
+- **Domain** explains HNS slash form, ICANN DNS names, and IDNA handling.
+- **DNS server preset** explains when to use hosted DNS, generic zone files, or server-specific examples.
+- **Nameserver IPv4** explains `SYNTH4` and `GLUE4` nameserver address use.
+- **Website IPv4** explains that website `A` records are separate from nameserver `SYNTH`/glue.
+
+### DNS server preset
 
 Use **Hosted DNS provider panel** if your provider supports DNSSEC signing, DS or DNSKEY export, and custom TLSA records. Use **Generic zone file** when adapting records into another authoritative server. Use **PowerDNS** when you want API/database-backed DNS.
 

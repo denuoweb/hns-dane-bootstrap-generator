@@ -364,7 +364,6 @@ function buildAuthoritativeDnsOptions(baseInput: Omit<ServerPresetInput, 'preset
 
 function buildSections(result: Omit<BootstrapResult, 'sections'>): OutputSection[] {
   const sections: OutputSection[] = [
-    { id: 'steps', title: 'Do these steps', audience: 'verify', lines: result.quickSteps, compact: true },
     { id: 'parent', title: result.parentTitle, audience: 'parent', lines: result.parentRecords },
     { id: 'authoritative', title: result.authoritativeTitle, audience: 'authoritative', lines: result.authoritativeRecords }
   ];

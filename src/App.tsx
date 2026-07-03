@@ -62,6 +62,15 @@ function Field(props: { label: string; help?: string; children: ReactNode }) {
   );
 }
 
+function FieldHowToText(props: { body: string; summary: string }) {
+  return (
+    <details className="field-howto">
+      <summary>{props.summary}</summary>
+      <p>{props.body}</p>
+    </details>
+  );
+}
+
 function CertificateHowTo(props: { attention?: boolean; context: HowToContext; summaryLabel?: string; t: LocaleText }) {
   return (
     <details className={props.attention ? 'attention-howto' : 'field-howto'}>
@@ -480,6 +489,7 @@ function App() {
               <option value="hns">{t.options.hns}</option>
               <option value="icann">{t.options.icann}</option>
             </select>
+            <FieldHowToText summary={t.faq.splitSummary} body={t.faq.splitBody} />
           </Field>
           <Field label={t.fields.setupMode} help={t.fields.setupModeHelp}>
             <select
@@ -492,6 +502,7 @@ function App() {
               <option value="delegated">{t.options.delegated}</option>
               <option value="hns-inline" disabled={domainType !== 'hns'}>{t.options.hnsInline}</option>
             </select>
+            <FieldHowToText summary={t.faq.setupModeSummary} body={t.faq.setupModeBody} />
           </Field>
           <Field label={t.fields.domain} help={domainType === 'hns' ? t.fields.hnsDomainHelp : t.fields.domainHelp}>
             <input
@@ -504,6 +515,8 @@ function App() {
               pattern={domainType === 'hns' ? '[a-z0-9](?:[a-z0-9_-]{0,61}[a-z0-9])?/' : undefined}
               title={domainType === 'hns' ? t.fields.hnsDomainHelp : undefined}
             />
+            <FieldHowToText summary={t.faq.domainSummary} body={t.faq.domainBody} />
+            {domainType === 'icann' && <FieldHowToText summary={t.faq.idnSummary} body={t.faq.idnBody} />}
           </Field>
         </div>
 
@@ -518,6 +531,8 @@ function App() {
               <option value="bind">{t.options.bind}</option>
               <option value="nsd">{t.options.nsd}</option>
             </select>
+            <FieldHowToText summary={t.faq.presetSummary} body={t.faq.presetBody} />
+            <FieldHowToText summary={t.faq.hostedSummary} body={t.faq.hostedBody} />
           </Field>
           {setupMode !== 'hns-inline' && (
             <Field label={t.fields.nameserverHost} help={t.fields.nameserverHostHelp}>
@@ -526,12 +541,14 @@ function App() {
           )}
           <Field label={t.fields.nameserverIpv4} help={t.fields.nameserverIpv4Help}>
             <input value={nameserverIpv4} onChange={(event) => setNameserverIpv4(event.target.value)} placeholder={EXAMPLE_NAMESERVER_IPV4} autoComplete="off" />
+            <FieldHowToText summary={t.faq.nameserverIpv4Summary} body={t.faq.nameserverIpv4Body} />
           </Field>
           <Field label={t.fields.nameserverIpv6} help={t.fields.nameserverIpv6Help}>
             <input value={nameserverIpv6} onChange={(event) => setNameserverIpv6(event.target.value)} autoComplete="off" />
           </Field>
           <Field label={t.fields.websiteIpv4} help={t.fields.websiteIpv4Help}>
             <input value={websiteIpv4} onChange={(event) => setWebsiteIpv4(event.target.value)} placeholder={EXAMPLE_WEBSITE_IPV4} autoComplete="off" />
+            <FieldHowToText summary={t.faq.websiteIpv4Summary} body={t.faq.websiteIpv4Body} />
           </Field>
           <Field label={t.fields.websiteIpv6} help={t.fields.websiteIpv6Help}>
             <input value={websiteIpv6} onChange={(event) => setWebsiteIpv6(event.target.value)} autoComplete="off" />
@@ -588,36 +605,6 @@ function App() {
           </Notices>
 
           {sections.map((section) => <OutputBox key={section.id} section={section} result={displayResult} t={t} />)}
-
-          <section className="tips-card">
-            <h2>{t.faq.title}</h2>
-            <details open>
-              <summary>{t.faq.presetSummary}</summary>
-              <p>{t.faq.presetBody}</p>
-            </details>
-            <details>
-              <summary>{t.faq.splitSummary}</summary>
-              <p>{t.faq.splitBody}</p>
-            </details>
-            <details>
-              <summary>{t.faq.dnskeySummary}</summary>
-              <p>{t.faq.dnskeyBody}</p>
-            </details>
-            <details>
-              <summary>{t.faq.idnSummary}</summary>
-              <p>{t.faq.idnBody}</p>
-            </details>
-            <details>
-              <summary>{t.faq.hostedSummary}</summary>
-              <p>{t.faq.hostedBody}</p>
-            </details>
-            {displayResult.helpTips.map((tip) => (
-              <details key={tip}>
-                <summary>{tip.slice(0, 90)}{tip.length > 90 ? '…' : ''}</summary>
-                <p>{tip}</p>
-              </details>
-            ))}
-          </section>
         </section>
       )}
 

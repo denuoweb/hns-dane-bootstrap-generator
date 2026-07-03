@@ -44,7 +44,7 @@ The app accepts Unicode domain input when it can be converted by the runtime URL
 
 ### UI localization
 
-The app localizes the UI shell with a static translation table plus a result-localization pass. Localized text covers field labels, short help, status labels, notices, generated guidance, output explanations, FAQ text, and field-level "How to get this" guidance. Generated DNS records, command snippets, JSON, and protocol keywords are not translated.
+The app localizes the UI shell with a static translation table plus a result-localization pass. Localized text covers field labels, short help, status labels, notices, generated guidance, output explanations, field-level hints, and field-level "How to get this" guidance. Generated DNS records, command snippets, JSON, and protocol keywords are not translated.
 
 ## Future-proofing decisions
 

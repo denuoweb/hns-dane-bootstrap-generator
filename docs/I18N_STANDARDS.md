@@ -44,7 +44,7 @@ The app ships a small static localization table for the main UI shell:
 - Portuguese
 - Japanese
 
-Localized UI includes field labels, short help text, setup status labels, generated guidance, notices, output explanations, copy buttons, FAQ text, and "How to get this" explanations. DNS records, command snippets, JSON, DNS keywords, record types, and generated machine-readable values are not translated.
+Localized UI includes field labels, short help text, setup status labels, generated guidance, notices, output explanations, copy buttons, field-level hints, and "How to get this" explanations. DNS records, command snippets, JSON, DNS keywords, record types, and generated machine-readable values are not translated.
 
 The selected language is stored in local browser storage and applied to the document `lang` attribute.
 
