@@ -192,7 +192,7 @@ The app computes DS from the DNSKEY you paste and TLSA from the PEM certificate 
 
 Unicode domain input is accepted when the browser can convert it through IDNA processing. Generated DNS, wallet, registrar, server, and verification output uses ASCII A-labels such as `xn--bcher-kva.example.`.
 
-The app shell includes English, Spanish, French, German, Portuguese, and Japanese UI localization. The language selector translates the interface; generated records and command snippets are unchanged.
+The app shell includes English, Spanish, French, German, Portuguese, Japanese, Arabic, Persian, and Hebrew UI localization. The language selector translates the interface; Arabic, Persian, and Hebrew use RTL page direction, while generated records and command snippets remain unchanged.
 
 See [Internationalization standards](docs/I18N_STANDARDS.md) for the UI localization policy plus IDNA, Punycode, UTS #46, and future email internationalization references.
 

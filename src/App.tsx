@@ -5,7 +5,7 @@ import { isInBailiwick, normalizeDomain, validateDomainName, validateHostname, v
 import { parseDnskey } from './core/dnssec';
 import { extractSpkiFromPem } from './core/tlsa';
 import { guidanceForIntent, type HandoffGuidance } from './handoffGuidance';
-import { isLanguageCode, languageOptions, localeText, type LanguageCode, type LocaleText } from './i18n';
+import { isLanguageCode, isRtlLanguage, languageOptions, localeText, type LanguageCode, type LocaleText } from './i18n';
 import { localizeBootstrapResult } from './resultLocalization';
 import { readUrlPrefill } from './urlPrefill';
 
@@ -364,6 +364,7 @@ function App() {
 
   useEffect(() => {
     document.documentElement.lang = language;
+    document.documentElement.dir = isRtlLanguage(language) ? 'rtl' : 'ltr';
     window.localStorage.setItem('hns-dane-language', language);
   }, [language]);
 

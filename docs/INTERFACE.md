@@ -25,8 +25,11 @@ Supported UI languages:
 - German
 - Portuguese
 - Japanese
+- Arabic
+- Persian
+- Hebrew
 
-The selected language localizes the app shell and persists in local browser storage. Generated records and command snippets are not translated.
+The selected language localizes the app shell and persists in local browser storage. Arabic, Persian, and Hebrew set the document direction to RTL. Generated records and command snippets are not translated.
 
 ### 1. Domain
 

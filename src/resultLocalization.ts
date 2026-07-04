@@ -700,6 +700,342 @@ const copy: Record<LanguageCode, CoreCopy> = {
         }
       }
     }
+  ),
+  ar: buildCopy(
+    {
+      invalidDomain: 'تنسيق النطاق غير صالح لإخراج DNS.',
+      idna: 'يتم تحويل إدخال النطاق الدولي إلى DNS ASCII A-labels مثل xn--... في السجلات المولدة.',
+      ttl: 'يجب أن يكون TTL عادة بين 60 و 86400 ثانية.',
+      inlineIcann: 'وضع خادم أسماء SYNTH خاص بـ HNS فقط. إخراج ICANN يستخدم تفويض DNS باسم خادم.',
+      synthNsMissing: 'وضع HNS SYNTH يحتاج إلى عنوان IP واحد على الأقل لخادم الأسماء.',
+      websiteIpv4: 'عنوان IPv4 للموقع غير صالح.',
+      websiteIpv6: 'عنوان IPv6 للموقع غير صالح.',
+      nsIpv4: 'عنوان IPv4 لخادم الأسماء غير صالح.',
+      nsIpv6: 'عنوان IPv6 لخادم الأسماء غير صالح.',
+      nsMissing: 'الوضع المفوض يحتاج إلى اسم مضيف لخادم الأسماء.',
+      nsInvalid: 'اسم مضيف خادم الأسماء غير صالح.',
+      noWebsiteIp: 'لم يتم إدخال عنوان IPv4 أو IPv6 للموقع.',
+      glueRequired: 'خادم الأسماء داخل المنطقة نفسها، لذلك glue مطلوب. أضف عنوان IP واحدا على الأقل لخادم الأسماء.',
+      tlsaNoDs: 'تم توليد TLSA، لكن DNSSEC لا يكتمل حتى تنشر سجل DS في جهة الأصل.',
+      tlsaUsage: 'TLSA usage 3 هو الافتراضي لهذا التدفق. الاستخدامات الأخرى متقدمة وتعتمد على CA/TA.',
+      tlsaError: 'تعذر توليد سجل TLSA.',
+      dsError: 'تعذر توليد سجل DS من إدخال DNSKEY.',
+      dnskeyProtocol: 'بروتوكول DNSKEY يكون عادة 3. تحقق من لصق سطر DNSKEY بشكل صحيح.',
+      dnskeySep: 'لا يحتوي DNSKEY على علم SEP/KSK. سجلات DS تنشأ عادة من KSK.',
+      dnskeySha1: 'خوارزمية DNSKEY هذه غير موصى بها لتواقيع DNSSEC الجديدة. فضّل خوارزمية مدعومة حاليا مثل 8 أو 13 أو 15 عندما يدعمها الخادم.'
+    },
+    {
+      domainOk: 'تم تطبيع النطاق لإخراج DNS.',
+      domainMissing: 'أدخل اسم HNS أو نطاق ICANN.',
+      websiteOk: 'يمكن توليد سجلات A/AAAA للموقع.',
+      websiteMissing: 'أضف عنوان IPv4 أو IPv6 واحدا على الأقل للموقع.',
+      synthNsOk: 'يمكن توليد IP لخادم أسماء SYNTH.',
+      synthNsMissing: 'أضف عنوان IPv4 أو IPv6 واحدا على الأقل لخادم الأسماء.',
+      nsOk: 'هدف التفويض موجود.',
+      nsMissing: 'أضف اسم مضيف خادم DNS السلطوي.',
+      glueInZone: 'خادم الأسماء داخل المنطقة، لذلك يجب أن يكون glue في سجلات الأصل.',
+      glueExternal: 'خادم الأسماء خارجي، لذلك يدير الأصل الخاص به glue.',
+      dsOk: 'تم توليد DS في جهة الأصل من DNSKEY.',
+      dsMissing: 'الصق DNSKEY بعد توقيع المنطقة السلطوية.',
+      tlsaOk: 'تم توليد TLSA من الشهادة/المفتاح العام.',
+      tlsaMissing: 'الصق شهادة أو PUBLIC KEY لتوليد TLSA.'
+    },
+    {
+      serverPreset: 'مقتطف بداية لجهة الخادم. أنشئ المنطقة، وانشر NS/A/AAAA/TLSA، وفعّل DNSSEC، ثم انشر DS عند الأصل.',
+      verifyDelegated: 'أوامر للتحقق من أن الخادم السلطوي يجيب قبل وبعد تفويض الأصل.',
+      verifyInline: 'أوامر للتحقق من أن الخادم السلطوي الموجه عبر SYNTH يجيب قبل وبعد تحديث HNS.',
+      inline4: 'إحالة خادم أسماء IPv4 اصطناعية من جهة محفظة HNS.',
+      inline6: 'إحالة خادم أسماء IPv6 اصطناعية من جهة محفظة HNS.',
+      stepInline1: 'SYNTH يوجه المحللات إلى عناوين IP لخادم الأسماء؛ وتبقى المنطقة تقدم سجلات A/AAAA للموقع وسجلات TLSA.',
+      stepInline2: 'يجب أن يدير خادم DNS مفاتيح التوقيع والمنطقة الموقعة.',
+      stepInline3: 'SYNTH هو إحالة جهة الأصل؛ و DS يصل DNSSEC بالمنطقة الموقعة.',
+      integrator: 'إخراج قابل للقراءة آليا للمحافظ أو APIs مستقبلية أو اختبارات التكامل. لا يتم إرساله تلقائيا.'
+    },
+    {
+      quickSteps: {
+        inline: {
+          server: '1. ضع سجلات الخادم على خادم DNS السلطوي.',
+          dnssec: '2. فعّل توقيع DNSSEC على المنطقة.',
+          dsReady: '3. أرسل سجلات SYNTH و DS إلى محفظة HNS.',
+          dsMissing: '3. الصق DNSKEY هنا، ثم أرسل سجلات SYNTH و DS إلى محفظة HNS.',
+          tlsaReady: '4. قدّم شهادة/مفتاح HTTPS المطابق.',
+          tlsaMissing: '4. الصق شهادة leaf أو PUBLIC KEY لتوليد TLSA.'
+        },
+        delegated: {
+          server: '1. ضع سجلات الخادم على خادم DNS السلطوي.',
+          dnssec: '2. فعّل توقيع DNSSEC على المنطقة.',
+          dsReady: '3. انسخ DS إلى المحفظة أو المحضر.',
+          dsMissing: '3. الصق DNSKEY هنا، ثم انسخ DS المولد إلى المحفظة أو المحضر.',
+          tlsaReady: '4. قدّم شهادة/مفتاح HTTPS المطابق.',
+          tlsaMissing: '4. الصق شهادة leaf أو PUBLIC KEY لتوليد TLSA.',
+          parentHns: '5. أرسل تحديث مورد اسم HNS.',
+          parentIcann: '5. احفظ إعدادات nameserver و glue و DS عند المحضر.'
+        }
+      },
+      webNotes: {
+        serve: 'قدّم الشهادة التي يطابق مفتاحها العام hash TLSA SPKI.',
+        rollover: 'لتدوير المفاتيح، انشر سجلات TLSA الحالية والتالية، وانتظر TTL واحدا على الأقل، ثم بدّل مفتاح الخادم واحذف TLSA القديم بعد TTL آخر.',
+        noPlugin: 'لا يحتاج Nginx/Apache/Caddy إلى إضافة DANE؛ DANE موجود في DNS.',
+        clientSupport: 'يتم فرض DANE فقط من العملاء الذين يتحققون من DNSSEC ويفحصون سجلات TLSA؛ وقد تتجاهل عملاء HTTPS العادية سياسة TLSA المنشورة.'
+      },
+      verify: {
+        hnsInline: '# بعد تأكيد تحديث HNS، اختبر عبر محلل/متصفح يدعم HNS.',
+        expectedAddress: '# العنوان المتوقع',
+        hnsFullChain: '# لاختبارات سلسلة HNS الكاملة، استعلم عبر محلل HNS بعد تأكيد تحديث المحفظة.'
+      },
+      fallbackNotice: 'تعذرت معالجة الإدخال. راجع الحقل المناسب وحاول مرة أخرى.',
+      fallbackStatusDetail: 'راجع هذا العنصر قبل نشر السجلات.',
+      fallbackExplanation: 'سطر مولد لهذه الخطوة. انسخ القيمة فقط إلى الوجهة التي يوضحها العنوان.',
+      helpTips: {
+        fastPath: 'أسرع مسار موثوق: أنشئ المنطقة السلطوية، فعّل DNSSEC، الصق DNSKEY هنا، ثم انسخ DS المولد إلى المحفظة أو المحضر.',
+        tlsaPin: 'TLSA 3 1 1 يثبت المفتاح العام للخدمة باستخدام SHA-256. يمكن أن يكون تجديد الشهادة سهلا إذا احتفظ الخادم بزوج المفاتيح نفسه.',
+        parentSplit: 'سجلات الأصل وسجلات الخادم مختلفة. المحفظة أو المحضر يفوض. خادم DNS ينشر سجلات الموقع و TLSA.',
+        idna: 'تقبل الأسماء الدولية كإدخال، لكن سجلات DNS تستخدم IDNA A-labels مثل xn--bcher-kva.example.',
+        hnsGlue: (nameserver, domain) => `في وضع HNS المفوض، GLUE4/GLUE6 مطلوب عندما يعيش خادم الأسماء تحت اسم HNS نفسه، مثل ${nameserver} لـ ${domain}/.`,
+        hnsInline: 'وضع HNS SYNTH يخزن عناوين IP لخوادم الأسماء في مورد HNS. سجلات A/AAAA للموقع وسجلات TLSA تبقى على خادم DNS السلطوي.',
+        preset: {
+          'generic-zone': 'إخراج ملف zone عام يعمل مع BIND و Knot و NSD والعديد من أدوات استيراد DNS.',
+          'hosted-dns': 'DNS المستضاف هو أقصر مسار إذا كان المزود يدعم DNSSEC وتصدير DS و TLSA.',
+          powerdns: 'PowerDNS مسار قصير عندما تريد DNS بواجهة API أو قاعدة بيانات.',
+          knot: 'Knot DNS خادم سلطوي حديث مع أتمتة DNSSEC بسيطة.',
+          bind: 'BIND 9 موثق على نطاق واسع وسهل التثبيت من الحزم، لكنه أكثر تفصيلا في الإعداد.',
+          'windows-server': 'Windows Server DNS يمكنه استضافة وتوقيع المنطقة السلطوية عبر DNS Manager أو PowerShell.',
+          nsd: 'NSD صغير وموثوق، لكن توقيع DNSSEC غالبا يتم بخطوة منفصلة.'
+        }
+      }
+    }
+  ),
+  fa: buildCopy(
+    {
+      invalidDomain: 'قالب دامنه برای خروجی DNS معتبر نیست.',
+      idna: 'ورودی دامنه بین‌المللی در رکوردهای تولیدشده به DNS ASCII A-label مانند xn--... تبدیل می‌شود.',
+      ttl: 'TTL معمولا باید بین 60 و 86400 ثانیه باشد.',
+      inlineIcann: 'حالت SYNTH nameserver فقط برای HNS است. خروجی ICANN از delegation نام‌دار DNS استفاده می‌کند.',
+      synthNsMissing: 'حالت HNS SYNTH حداقل به یک IP برای nameserver نیاز دارد.',
+      websiteIpv4: 'آدرس IPv4 وب‌سایت معتبر نیست.',
+      websiteIpv6: 'آدرس IPv6 وب‌سایت معتبر نیست.',
+      nsIpv4: 'آدرس IPv4 nameserver معتبر نیست.',
+      nsIpv6: 'آدرس IPv6 nameserver معتبر نیست.',
+      nsMissing: 'حالت delegated به hostname یک nameserver نیاز دارد.',
+      nsInvalid: 'Hostname nameserver معتبر نیست.',
+      noWebsiteIp: 'هیچ آدرس IPv4 یا IPv6 برای وب‌سایت وارد نشده است.',
+      glueRequired: 'Nameserver داخل همان zone است، پس glue لازم است. حداقل یک IP برای nameserver اضافه کنید.',
+      tlsaNoDs: 'TLSA تولید شده است، اما DNSSEC تا زمان انتشار DS در parent کامل نیست.',
+      tlsaUsage: 'TLSA usage 3 مقدار پیش‌فرض این جریان است. usageهای دیگر پیشرفته‌اند و به CA/TA وابسته‌اند.',
+      tlsaError: 'تولید رکورد TLSA ممکن نبود.',
+      dsError: 'تولید رکورد DS از ورودی DNSKEY ممکن نبود.',
+      dnskeyProtocol: 'پروتکل DNSKEY معمولا 3 است. بررسی کنید خط DNSKEY درست چسبانده شده باشد.',
+      dnskeySep: 'این DNSKEY پرچم SEP/KSK ندارد. رکوردهای DS معمولا از KSK ساخته می‌شوند.',
+      dnskeySha1: 'این الگوریتم DNSKEY برای امضای DNSSEC جدید توصیه نمی‌شود. اگر سرور پشتیبانی می‌کند از الگوریتم‌های فعلی مانند 8، 13 یا 15 استفاده کنید.'
+    },
+    {
+      domainOk: 'دامنه برای خروجی DNS نرمال شده است.',
+      domainMissing: 'نام HNS یا دامنه ICANN را وارد کنید.',
+      websiteOk: 'رکوردهای A/AAAA وب‌سایت قابل تولید هستند.',
+      websiteMissing: 'حداقل یک آدرس IPv4 یا IPv6 وب‌سایت اضافه کنید.',
+      synthNsOk: 'IP nameserver SYNTH قابل تولید است.',
+      synthNsMissing: 'حداقل یک آدرس IPv4 یا IPv6 برای nameserver اضافه کنید.',
+      nsOk: 'هدف delegation موجود است.',
+      nsMissing: 'Hostname سرور DNS مقتدر را اضافه کنید.',
+      glueInZone: 'Nameserver داخل zone است، پس glue باید در رکوردهای parent باشد.',
+      glueExternal: 'Nameserver خارجی است، پس parent خودش glue را مدیریت می‌کند.',
+      dsOk: 'DS سمت parent از DNSKEY تولید شده است.',
+      dsMissing: 'بعد از امضای zone مقتدر، DNSKEY را بچسبانید.',
+      tlsaOk: 'TLSA از گواهی/کلید عمومی تولید شده است.',
+      tlsaMissing: 'برای تولید TLSA یک گواهی یا PUBLIC KEY بچسبانید.'
+    },
+    {
+      serverPreset: 'نمونه شروع سمت سرور. Zone را بسازید، NS/A/AAAA/TLSA را منتشر کنید، DNSSEC را فعال کنید، سپس DS را در parent منتشر کنید.',
+      verifyDelegated: 'دستورهایی برای بررسی اینکه سرور مقتدر قبل و بعد از delegation parent پاسخ می‌دهد.',
+      verifyInline: 'دستورهایی برای بررسی اینکه سرور مقتدر آدرس‌دهی‌شده با SYNTH قبل و بعد از به‌روزرسانی HNS پاسخ می‌دهد.',
+      inline4: 'ارجاع nameserver مصنوعی IPv4 در سمت کیف پول HNS.',
+      inline6: 'ارجاع nameserver مصنوعی IPv6 در سمت کیف پول HNS.',
+      stepInline1: 'SYNTH resolverها را به IPهای nameserver هدایت می‌کند؛ zone همچنان رکوردهای A/AAAA وب‌سایت و TLSA را سرو می‌کند.',
+      stepInline2: 'سرور DNS باید کلیدهای امضا و zone امضاشده را مدیریت کند.',
+      stepInline3: 'SYNTH ارجاع سمت parent است؛ DS، DNSSEC را به zone امضاشده وصل می‌کند.',
+      integrator: 'خروجی قابل خواندن توسط ماشین برای کیف پول‌ها، APIهای آینده یا تست‌های یکپارچه‌سازی. این خروجی خودکار ارسال نمی‌شود.'
+    },
+    {
+      quickSteps: {
+        inline: {
+          server: '1. رکوردهای سرور را روی DNS مقتدر قرار دهید.',
+          dnssec: '2. امضای DNSSEC را روی zone فعال کنید.',
+          dsReady: '3. رکوردهای SYNTH و DS را به کیف پول HNS بفرستید.',
+          dsMissing: '3. DNSKEY را اینجا بچسبانید، سپس رکوردهای SYNTH و DS را به کیف پول HNS بفرستید.',
+          tlsaReady: '4. گواهی/کلید HTTPS مطابق را سرو کنید.',
+          tlsaMissing: '4. گواهی leaf یا PUBLIC KEY را بچسبانید تا TLSA تولید شود.'
+        },
+        delegated: {
+          server: '1. رکوردهای سرور را روی DNS مقتدر قرار دهید.',
+          dnssec: '2. امضای DNSSEC را روی zone فعال کنید.',
+          dsReady: '3. DS را در کیف پول یا رجیسترار کپی کنید.',
+          dsMissing: '3. DNSKEY را اینجا بچسبانید، سپس DS تولیدشده را در کیف پول یا رجیسترار کپی کنید.',
+          tlsaReady: '4. گواهی/کلید HTTPS مطابق را سرو کنید.',
+          tlsaMissing: '4. گواهی leaf یا PUBLIC KEY را بچسبانید تا TLSA تولید شود.',
+          parentHns: '5. به‌روزرسانی منبع نام HNS را ارسال کنید.',
+          parentIcann: '5. تنظیمات nameserver، glue و DS را در رجیسترار ذخیره کنید.'
+        }
+      },
+      webNotes: {
+        serve: 'گواهی‌ای را سرو کنید که کلید عمومی آن با hash TLSA SPKI مطابق است.',
+        rollover: 'برای rollover کلید، TLSA فعلی و بعدی را منتشر کنید، حداقل یک TTL صبر کنید، کلید سرور را عوض کنید و TLSA قدیمی را بعد از یک TTL دیگر حذف کنید.',
+        noPlugin: 'Nginx/Apache/Caddy به افزونه DANE نیاز ندارند؛ DANE در DNS قرار دارد.',
+        clientSupport: 'DANE فقط توسط کلاینت‌هایی اعمال می‌شود که DNSSEC را اعتبارسنجی و TLSA را بررسی می‌کنند؛ کلاینت‌های HTTPS معمولی ممکن است سیاست TLSA منتشرشده را نادیده بگیرند.'
+      },
+      verify: {
+        hnsInline: '# بعد از تایید به‌روزرسانی HNS، با resolver/مرورگر سازگار با HNS تست کنید.',
+        expectedAddress: '# آدرس مورد انتظار',
+        hnsFullChain: '# برای تست کامل زنجیره HNS، بعد از تایید کیف پول از طریق resolver سازگار با HNS query بگیرید.'
+      },
+      fallbackNotice: 'ورودی قابل پردازش نبود. فیلد مربوطه را بررسی کنید و دوباره تلاش کنید.',
+      fallbackStatusDetail: 'قبل از انتشار رکوردها این مورد را بررسی کنید.',
+      fallbackExplanation: 'خط تولیدشده برای این مرحله. مقدار را فقط در مقصدی که عنوان نشان می‌دهد کپی کنید.',
+      helpTips: {
+        fastPath: 'سریع‌ترین مسیر قابل اعتماد: zone مقتدر را بسازید، DNSSEC را فعال کنید، DNSKEY را اینجا بچسبانید، سپس DS تولیدشده را به کیف پول یا رجیسترار کپی کنید.',
+        tlsaPin: 'TLSA 3 1 1 کلید عمومی سرویس را با SHA-256 pin می‌کند. اگر سرور همان keypair را نگه دارد، تمدید گواهی ساده‌تر است.',
+        parentSplit: 'رکوردهای parent و سرور متفاوت‌اند. کیف پول یا رجیسترار delegation را انجام می‌دهد. سرور DNS رکوردهای سایت و TLSA را منتشر می‌کند.',
+        idna: 'نام‌های بین‌المللی به‌عنوان ورودی پذیرفته می‌شوند، اما رکوردهای DNS از IDNA A-label مانند xn--bcher-kva.example استفاده می‌کنند.',
+        hnsGlue: (nameserver, domain) => `در حالت HNS delegated، وقتی nameserver زیر خود نام HNS است، مانند ${nameserver} برای ${domain}/، GLUE4/GLUE6 لازم است.`,
+        hnsInline: 'حالت HNS SYNTH آدرس‌های IP nameserver را در منبع HNS ذخیره می‌کند. رکوردهای A/AAAA وب‌سایت و TLSA همچنان روی سرور DNS مقتدر قرار می‌گیرند.',
+        preset: {
+          'generic-zone': 'خروجی generic zone-file با BIND، Knot، NSD و بسیاری از ابزارهای import DNS کار می‌کند.',
+          'hosted-dns': 'اگر ارائه‌دهنده شما DNSSEC، خروجی DS و TLSA را پشتیبانی می‌کند، Hosted DNS کوتاه‌ترین مسیر است.',
+          powerdns: 'PowerDNS مسیر کوتاهی است وقتی DNS مبتنی بر API یا پایگاه داده می‌خواهید.',
+          knot: 'Knot DNS یک سرور مقتدر مدرن با خودکارسازی ساده DNSSEC است.',
+          bind: 'BIND 9 مستندات فراوان و نصب ساده دارد، اما پیکربندی آن طولانی‌تر است.',
+          'windows-server': 'Windows Server DNS می‌تواند zone مقتدر را با DNS Manager یا PowerShell میزبانی و امضا کند.',
+          nsd: 'NSD کوچک و قابل اعتماد است، اما امضای DNSSEC معمولا مرحله‌ای جداگانه دارد.'
+        }
+      }
+    }
+  ),
+  he: buildCopy(
+    {
+      invalidDomain: 'פורמט הדומיין אינו תקין עבור פלט DNS.',
+      idna: 'קלט דומיין בינלאומי מומר ל-DNS ASCII A-labels כגון xn--... ברשומות שנוצרות.',
+      ttl: 'TTL צריך בדרך כלל להיות בין 60 ל-86400 שניות.',
+      inlineIcann: 'מצב SYNTH nameserver מיועד ל-HNS בלבד. פלט ICANN משתמש ב-DNS delegation בשם.',
+      synthNsMissing: 'מצב HNS SYNTH צריך לפחות כתובת IP אחת של nameserver.',
+      websiteIpv4: 'כתובת IPv4 של האתר אינה תקינה.',
+      websiteIpv6: 'כתובת IPv6 של האתר אינה תקינה.',
+      nsIpv4: 'כתובת IPv4 של ה-nameserver אינה תקינה.',
+      nsIpv6: 'כתובת IPv6 של ה-nameserver אינה תקינה.',
+      nsMissing: 'מצב delegated צריך hostname של nameserver.',
+      nsInvalid: 'hostname של ה-nameserver אינו תקין.',
+      noWebsiteIp: 'לא סופקה כתובת IPv4 או IPv6 של האתר.',
+      glueRequired: 'ה-nameserver נמצא בתוך אותו zone, לכן נדרש glue. הוסיפו לפחות כתובת IP אחת של nameserver.',
+      tlsaNoDs: 'TLSA נוצר, אבל DNSSEC אינו שלם עד שמפרסמים רשומת DS בצד ה-parent.',
+      tlsaUsage: 'TLSA usage 3 הוא ברירת המחדל לזרימה הזו. שימושים אחרים מתקדמים ותלויים ב-CA/TA.',
+      tlsaError: 'לא ניתן ליצור רשומת TLSA.',
+      dsError: 'לא ניתן ליצור רשומת DS מתוך קלט DNSKEY.',
+      dnskeyProtocol: 'פרוטוקול DNSKEY הוא בדרך כלל 3. בדקו ששורת DNSKEY הודבקה נכון.',
+      dnskeySep: 'ל-DNSKEY אין דגל SEP/KSK. רשומות DS נוצרות בדרך כלל מה-KSK.',
+      dnskeySha1: 'אלגוריתם DNSKEY זה אינו מומלץ לחתימות DNSSEC חדשות. העדיפו אלגוריתם נתמך כיום כגון 8, 13 או 15 כאשר השרת תומך בו.'
+    },
+    {
+      domainOk: 'הדומיין מנורמל עבור פלט DNS.',
+      domainMissing: 'הזינו שם HNS או דומיין ICANN.',
+      websiteOk: 'ניתן ליצור רשומות A/AAAA של האתר.',
+      websiteMissing: 'הוסיפו לפחות כתובת IPv4 או IPv6 אחת של האתר.',
+      synthNsOk: 'ניתן ליצור IP של SYNTH nameserver.',
+      synthNsMissing: 'הוסיפו לפחות כתובת IPv4 או IPv6 אחת של nameserver.',
+      nsOk: 'יעד ה-delegation קיים.',
+      nsMissing: 'הוסיפו את hostname ה-nameserver הסמכותי.',
+      glueInZone: 'ה-nameserver נמצא בתוך ה-zone, לכן glue חייב להיות ברשומות ה-parent.',
+      glueExternal: 'ה-nameserver חיצוני, לכן ה-parent שלו מנהל את ה-glue.',
+      dsOk: 'DS בצד ה-parent נוצר מתוך DNSKEY.',
+      dsMissing: 'הדביקו DNSKEY אחרי חתימת ה-zone הסמכותי.',
+      tlsaOk: 'TLSA נוצר מתוך תעודה/מפתח ציבורי.',
+      tlsaMissing: 'הדביקו תעודה או PUBLIC KEY כדי ליצור TLSA.'
+    },
+    {
+      inline4: 'הפניית nameserver סינתטית IPv4 בצד ארנק HNS.',
+      inline6: 'הפניית nameserver סינתטית IPv6 בצד ארנק HNS.',
+      glue4: 'רשומת glue בצד ארנק HNS עבור כתובת IPv4 של ה-nameserver הסמכותי בתוך השם.',
+      glue6: 'רשומת glue בצד ארנק HNS עבור כתובת IPv6 של ה-nameserver הסמכותי בתוך השם.',
+      hnsNs: 'רשומת delegation בצד ארנק HNS שמפנה את השם אל nameserver סמכותי חיצוני.',
+      hnsDs: 'רשומת DNSSEC delegation signer בצד ארנק HNS שנגזרת מ-DNSKEY של ה-child zone.',
+      dsPlaceholder: 'Placeholder: הדביקו DNSKEY של ה-zone הסמכותי כדי ליצור את רשומת ה-DS המדויקת בצד ה-parent.',
+      registrarNs: 'delegation של nameserver בצד הרשם.',
+      registrarGlue4: 'glue בצד הרשם נדרש כי ה-nameserver נמצא בתוך הדומיין המואצל.',
+      registrarGlue6: 'glue IPv6 בצד הרשם נדרש כי ה-nameserver נמצא בתוך הדומיין המואצל.',
+      registrarDs: 'רשומת DS בצד הרשם שנגזרת מ-DNSKEY של ה-child zone.',
+      registrarDsPlaceholder: 'Placeholder: הדביקו DNSKEY של ה-zone הסמכותי כדי ליצור את רשומת ה-DS המדויקת בצד הרשם.',
+      authNs: 'רשומת NS ב-zone הסמכותי שמציינת שרת שאחראי ל-zone הזה.',
+      authA: 'כתובת IPv4 ב-zone הסמכותי עבור apex האתר.',
+      authAaaa: 'כתובת IPv6 ב-zone הסמכותי עבור apex האתר.',
+      authTlsa: 'רשומת DANE/TLSA ב-zone הסמכותי עבור שירות TLS.',
+      authTlsaPlaceholder: 'Placeholder: הדביקו תעודת PEM או PUBLIC KEY כדי ליצור את נתוני TLSA המדויקים.',
+      webServe: 'אם מפתח התעודה משתנה, פרסמו את ה-TLSA החדש לפני החלפת שרת ה-web למפתח החדש.',
+      webRollover: 'TLSA 3 1 1 מקבע את המפתח הציבורי של השירות, לכן לקוחות DANE עלולים להיכשל בזמן שמטמונים עדיין מחזיקים רק את ה-association הישן.',
+      webNoPlugin: 'שרת TLS מגיש תעודה רגילה. לקוח שתומך DANE מאמת את רשומת TLSA המוגנת ב-DNSSEC.',
+      webClientSupport: 'פרסום TLSA הכרחי עבור DANE, אבל תוכנת הלקוח חייבת לבצע בפועל אימות DNSSEC ואימות DANE.',
+      serverPreset: 'קטע התחלה בצד השרת. צרו את ה-zone, פרסמו NS/A/AAAA/TLSA, הפעילו DNSSEC, ואז פרסמו DS בצד ה-parent.',
+      verifyDelegated: 'פקודות לבדיקה שהשרת הסמכותי עונה לפני ואחרי delegation בצד ה-parent.',
+      verifyInline: 'פקודות לבדיקה שהשרת הסמכותי שאליו SYNTH מפנה עונה לפני ואחרי עדכון HNS.',
+      integrator: 'פלט קריא למכונה עבור ארנקים, APIs עתידיים או בדיקות אינטגרציה. הוא לא נשלח אוטומטית לשום מקום.',
+      stepInline1: 'SYNTH מפנה resolvers אל כתובות IP של nameserver; ה-zone עדיין מגיש רשומות A/AAAA של האתר ורשומות TLSA.',
+      stepInline2: 'שרת ה-DNS צריך לנהל את מפתחות החתימה ואת ה-zone החתום.',
+      stepInline3: 'SYNTH הוא ההפניה בצד ה-parent; DS מחבר את DNSSEC אל ה-zone החתום.',
+      stepServer: 'השתמשו ב-preset השרת שנבחר או בפלט קובץ zone כללי.',
+      stepDnssec: 'שרת ה-DNS צריך לנהל את מפתחות החתימה ואת ה-zone החתום.',
+      stepDs: 'ה-DS מחבר את שכבת ה-parent אל ה-child zone החתום.',
+      stepTlsa: 'TLSA נמצא על שרת ה-DNS הסמכותי.',
+      stepParent: 'זה מפעיל את מסלול ה-delegation בצד ה-parent.'
+    },
+    {
+      quickSteps: {
+        inline: {
+          server: '1. שימו את רשומות השרת על שרת ה-DNS הסמכותי.',
+          dnssec: '2. הפעילו חתימת DNSSEC על ה-zone.',
+          dsReady: '3. שלחו רשומות SYNTH ו-DS לארנק HNS.',
+          dsMissing: '3. הדביקו כאן DNSKEY, ואז שלחו רשומות SYNTH ו-DS לארנק HNS.',
+          tlsaReady: '4. הגישו את תעודת/מפתח HTTPS התואמים.',
+          tlsaMissing: '4. הדביקו תעודת leaf או PUBLIC KEY כדי ליצור TLSA.'
+        },
+        delegated: {
+          server: '1. שימו את רשומות השרת על שרת ה-DNS הסמכותי.',
+          dnssec: '2. הפעילו חתימת DNSSEC על ה-zone.',
+          dsReady: '3. העתיקו את ה-DS לארנק או לרשם.',
+          dsMissing: '3. הדביקו כאן DNSKEY, ואז העתיקו את ה-DS שנוצר לארנק או לרשם.',
+          tlsaReady: '4. הגישו את תעודת/מפתח HTTPS התואמים.',
+          tlsaMissing: '4. הדביקו תעודת leaf או PUBLIC KEY כדי ליצור TLSA.',
+          parentHns: '5. שלחו את עדכון משאב השם של HNS.',
+          parentIcann: '5. שמרו אצל הרשם את הגדרות nameserver, glue ו-DS.'
+        }
+      },
+      webNotes: {
+        serve: 'הגישו את התעודה שהמפתח הציבורי שלה תואם ל-hash של TLSA SPKI.',
+        rollover: 'ל-rollover של מפתח, פרסמו TLSA נוכחי ובא, המתינו לפחות TTL אחד, החליפו את מפתח השרת ואז הסירו את ה-TLSA הישן אחרי TTL נוסף.',
+        noPlugin: 'Nginx/Apache/Caddy לא צריכים תוסף DANE; DANE נמצא ב-DNS.',
+        clientSupport: 'DANE נאכף רק על ידי לקוחות שמאמתים DNSSEC ובודקים TLSA; לקוחות HTTPS רגילים עשויים להתעלם ממדיניות TLSA שפורסמה.'
+      },
+      verify: {
+        hnsInline: '# לאחר אישור עדכון HNS, בדקו באמצעות resolver/דפדפן שתומך HNS.',
+        expectedAddress: '# כתובת צפויה',
+        hnsFullChain: '# לבדיקות שרשרת HNS מלאה, שאילתו דרך resolver תומך HNS לאחר אישור עדכון הארנק.'
+      },
+      fallbackNotice: 'לא ניתן לעבד את הקלט. בדקו את השדה המתאים ונסו שוב.',
+      fallbackStatusDetail: 'בדקו פריט זה לפני פרסום הרשומות.',
+      fallbackExplanation: 'שורה שנוצרה עבור שלב זה. העתיקו את הערך רק ליעד שמצוין בכותרת.',
+      helpTips: {
+        fastPath: 'המסלול האמין המהיר ביותר: צרו את ה-zone הסמכותי, הפעילו DNSSEC, הדביקו כאן DNSKEY, ואז העתיקו את ה-DS שנוצר לארנק או לרשם.',
+        tlsaPin: 'TLSA 3 1 1 מקבע את המפתח הציבורי של השירות עם SHA-256. חידוש תעודה יכול להיות פשוט אם השרת שומר על אותו זוג מפתחות.',
+        parentSplit: 'רשומות parent ורשומות שרת הן שונות. הארנק או הרשם מבצעים delegation. שרת ה-DNS מפרסם את רשומות האתר ו-TLSA.',
+        idna: 'שמות בינלאומיים מתקבלים כקלט, אך רשומות DNS משתמשות ב-IDNA A-labels כגון xn--bcher-kva.example.',
+        hnsGlue: (nameserver, domain) => `במצב HNS delegated, נדרש GLUE4/GLUE6 כאשר ה-nameserver נמצא תחת שם ה-HNS עצמו, למשל ${nameserver} עבור ${domain}/.`,
+        hnsInline: 'מצב HNS SYNTH שומר כתובות IP של nameserver במשאב HNS. רשומות A/AAAA של האתר ורשומות TLSA עדיין נמצאות בשרת ה-DNS הסמכותי.',
+        preset: {
+          'generic-zone': 'פלט קובץ zone כללי עובד עם BIND, Knot, NSD וכלי import רבים של DNS.',
+          'hosted-dns': 'Hosted DNS הוא המסלול הקצר ביותר אם הספק תומך ב-DNSSEC, ייצוא DS ורשומות TLSA.',
+          powerdns: 'PowerDNS הוא מסלול קצר כאשר רוצים DNS עם API ניהולי או מסד נתונים.',
+          knot: 'Knot DNS הוא שרת סמכותי מודרני ונקי עם אוטומציית DNSSEC פשוטה.',
+          bind: 'BIND 9 מתועד היטב ונוח להתקנה דרך מנהל חבילות, אבל הקונפיגורציה שלו מפורטת יותר.',
+          'windows-server': 'Windows Server DNS יכול לארח ולחתום את ה-zone הסמכותי דרך DNS Manager או PowerShell.',
+          nsd: 'NSD קטן ואמין, אבל חתימת DNSSEC מטופלת בדרך כלל בשלב חתימה נפרד.'
+        }
+      }
+    }
   )
 };
 

@@ -226,6 +226,13 @@ textarea {
   background: #fffdf8;
 }
 
+input,
+textarea,
+pre {
+  direction: ltr;
+  text-align: left;
+}
+
 .field-good :where(input, select, textarea) {
   border-color: #6ea26a;
   background: #f1faef;
@@ -447,6 +454,48 @@ ul { padding-left: 1.2rem; }
   color: #2f5f78;
   font-weight: 700;
 }
+
+:root[dir="rtl"] {
+  text-align: right;
+}
+
+:root[dir="rtl"] .hero-top,
+:root[dir="rtl"] .output-heading,
+:root[dir="rtl"] .entry-tab-list,
+:root[dir="rtl"] .summary-strip,
+:root[dir="rtl"] .site-footer {
+  flex-direction: row-reverse;
+}
+
+:root[dir="rtl"] .hero-steps,
+:root[dir="rtl"] ul {
+  padding-right: 1.2rem;
+  padding-left: 0;
+}
+
+:root[dir="rtl"] .output-toggle {
+  text-align: right;
+}
+
+:root[dir="rtl"] .audience-parent,
+:root[dir="rtl"] .audience-authoritative,
+:root[dir="rtl"] .audience-server,
+:root[dir="rtl"] .audience-verify,
+:root[dir="rtl"] .audience-web,
+:root[dir="rtl"] .audience-integrator,
+:root[dir="rtl"] .handoff-card {
+  border-left-color: #ddd8cd;
+  border-left-width: 1px;
+  border-right-width: 6px;
+}
+
+:root[dir="rtl"] .audience-parent { border-right-color: #212121; }
+:root[dir="rtl"] .audience-authoritative { border-right-color: #595246; }
+:root[dir="rtl"] .audience-server { border-right-color: #7a6d54; }
+:root[dir="rtl"] .audience-verify { border-right-color: #9a8d72; }
+:root[dir="rtl"] .audience-web { border-right-color: #a49578; }
+:root[dir="rtl"] .audience-integrator { border-right-color: #b6aa90; }
+:root[dir="rtl"] .handoff-card { border-right-color: #2f5f78; }
 
 @media (max-width: 1000px) {
   .grid,

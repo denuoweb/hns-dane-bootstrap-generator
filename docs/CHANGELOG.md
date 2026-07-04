@@ -16,7 +16,7 @@
 - Expanded new-admin FAQ coverage for DNSKEY timing, parent/server record split, TLSA provider support, and DANE web-server requirements.
 - Removed the DANE basic/advanced toggle, made optional fields visible by default, always shows integrator JSON, and added focused field-level "How to get this" help for certificate/PUBLIC KEY and DNSKEY inputs.
 - Audited the "How to get this" command examples so certificate and DNSKEY help updates with the current domain, website IP, nameserver, and HTTPS port.
-- Added UI localization with a persisted language selector for English, Spanish, French, German, Portuguese, and Japanese.
+- Added UI localization with a persisted language selector for English, Spanish, French, German, Portuguese, Japanese, Arabic, Persian, and Hebrew.
 - Localized generated guidance, notices, setup-status details, output explanations, web-server notes, and help tips through a result-localization pass.
 
 ## 0.3.0

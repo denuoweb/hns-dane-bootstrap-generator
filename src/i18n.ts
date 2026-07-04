@@ -726,6 +726,357 @@ export const localeText = {
       hostedSummary: 'ホスト型 DNS プロバイダーに必要な機能は?',
       hostedBody: '権威 DNS ホスティング、DNSSEC 署名、DS または DNSKEY のエクスポート、カスタム TLSA レコードが必要です。署名済みゾーンに TLSA を公開できないプロバイダーでは、この DANE 経路は完了できません。'
     }
+  },
+  ar: {
+    languageName: 'العربية',
+    languageLabel: 'اللغة',
+    hero: {
+      eyebrow: 'هل تحتاج إلى سجلات HNS والمحضر و DNSSEC و TLSA؟',
+      title: 'مولد سجلات DANE',
+      standard: 'المصادقة القائمة على DNS للكيانات المسماة',
+      steps: {
+        enter: 'أدخل الاسم، وخادم الأسماء، وعنوان IP للخادم، والشهادة هنا.',
+        send: 'أرسل السجلات المولدة إلى محفظة HNS أو المحضر.',
+        zone: 'انسخ سجلات المنطقة إلى خادم DNS السلطوي.',
+        done: 'انشر DNSSEC و TLSA حتى يعمل موقع DANE.'
+      }
+    },
+    sections: { domain: '1. النطاق', server: '2. الخادم', dane: '3. DANE' },
+    fields: {
+      domainType: 'نوع النطاق',
+      domainTypeHelp: 'HNS يعني محفظة/مورد اسم. ICANN يعني لوحة المحضر.',
+      setupMode: 'وضع الإعداد',
+      setupModeHelp: 'الوضع المفوض يشير إلى اسم مضيف خادم أسماء. SYNTH يخزن عناوين IP لخوادم الأسماء في HNS؛ وكلاهما يحتاج إلى DNS سلطوي موقع.',
+      domain: 'النطاق',
+      domainHelp: 'أمثلة: dane/ أو example.com',
+      hnsDomainHelp: 'يجب أن تنتهي أسماء HNS بـ / وأن تستخدم اسما ASCII واحدا بحروف صغيرة: a-z و 0-9 و - أو _، على أن يكون - و _ في الوسط فقط.',
+      dnsServerPreset: 'إعداد خادم DNS',
+      dnsServerPresetHelp: 'هذا يغير مثال الخادم القابل للنسخ فقط، وليس معنى DNS.',
+      nameserverHost: 'اسم مضيف خادم الأسماء',
+      nameserverHostHelp: 'استخدم خوادم أسماء المزود، أو استخدم ns1.yourname. مع glue إذا كان خادم الأسماء تحت الاسم نفسه.',
+      nameserverIpv4: 'IPv4 لخادم الأسماء',
+      nameserverIpv4Help: 'مطلوب لـ HNS SYNTH وخوادم الأسماء المفوضة داخل المنطقة؛ اختياري لخوادم الأسماء المفوضة الخارجية.',
+      nameserverIpv6: 'IPv6 لخادم الأسماء (اختياري)',
+      nameserverIpv6Help: 'عنوان/glue اختياري عبر IPv6 لخادم DNS.',
+      websiteIpv4: 'IPv4 للموقع',
+      websiteIpv4Help: 'عنوان IPv4 العام لخادم الويب عند apex النطاق.',
+      websiteIpv6: 'IPv6 للموقع (اختياري)',
+      websiteIpv6Help: 'عنوان IPv6 عام اختياري لخادم الويب عند apex النطاق.',
+      port: 'منفذ HTTPS',
+      portHelp: '443 هو الافتراضي لـ HTTPS العادي. غيّره فقط إذا كانت خدمة TLS تستخدم منفذا آخر.',
+      certificate: 'شهادة TLSA أو PUBLIC KEY',
+      certificateHelp: 'الصق شهادة leaf أو PEM PUBLIC KEY هنا لتوليد سجل TLSA. لا حاجة إلى المفاتيح الخاصة.',
+      dnskey: 'DNSKEY',
+      dnskeyHelp: 'بعد تفعيل توقيع DNSSEC على خادم DNS، الصق DNSKEY الخاص بالمنطقة هنا لتوليد DS.'
+    },
+    options: {
+      hns: 'Handshake / HNS',
+      icann: 'ICANN / DNS',
+      delegated: 'DNS سلطوي مفوض',
+      hnsInline: 'خادم أسماء HNS SYNTH',
+      genericZone: 'ملف منطقة عام',
+      hostedDns: 'لوحة مزود DNS مستضاف',
+      powerdns: 'PowerDNS Authoritative',
+      knot: 'Knot DNS',
+      bind: 'BIND 9',
+      windowsServer: 'Windows Server DNS',
+      nsd: 'NSD'
+    },
+    howTo: {
+      summary: 'كيفية الحصول على هذا',
+      certIntro: 'هذا هو حقل مصدر TLSA. الصق الشهادة العامة التي يقدمها خادم TLS لهذا الاسم والمنفذ والبروتوكول واسم SNI تحديدا، أو الصق PEM PUBLIC KEY المطابق. لا تلصق مفتاحا خاصا.',
+      certFetch: 'إذا كان لديك وصول shell، اجلب شهادة leaf من الخدمة الحية:',
+      certFile: 'إذا كان لديك ملف شهادة، الصق الكتلة من BEGIN CERTIFICATE إلى END CERTIFICATE. للصق المفتاح العام فقط من ملف شهادة، شغّل:',
+      dnskeyIntro: 'فعّل أولا توقيع DNSSEC على منطقة الطفل السلطوية الدقيقة التي سيتم تفويضها. خادم DNS أو مزود DNS المستضاف ينشئ DNSKEY العام؛ يستخدم هذا التطبيق ذلك السجل العام لتوليد سجل DS في جهة الأصل.',
+      dnskeyHosted: 'في لوحة DNS مستضاف، ابحث عن إعدادات DNSSEC أو DS أو DNSKEY. إذا أعطاك المزود سجل DS مباشرة، يمكنك نشر DS في المحفظة أو المحضر دون لصق DNSKEY هنا.',
+      dnskeyQuery: 'إذا كان الخادم السلطوي يجيب بالفعل، استعلم عن DNSKEY العام والصق سطر DNSKEY لهذه المنطقة، عادة مفتاح التوقيع flags 257:'
+    },
+    copy: { copy: 'نسخ', copied: 'تم النسخ', nothing: '# لم يتم توليد شيء بعد' },
+    status: {
+      title: 'حالة الإعداد',
+      ok: 'OK',
+      warn: 'تحقق',
+      missing: 'مطلوب',
+      labels: { Domain: 'النطاق', 'Website IP': 'IP الموقع', 'HNS inline': 'HNS SYNTH', DANE: 'DANE', Nameserver: 'خادم الأسماء', Glue: 'Glue', DS: 'DS', TLSA: 'TLSA' }
+    },
+    notices: { title: 'يحتاج إلى انتباه' },
+    summary: {
+      aria: 'ملخص الإعداد الحالي',
+      hnsInline: 'خادم أسماء HNS SYNTH',
+      delegated: 'DNSSEC + DANE مفوض',
+      glueRequired: 'Glue مطلوب',
+      externalNameserver: 'خادم أسماء خارجي',
+      dsReady: 'DS جاهز',
+      dsPlaceholder: 'DS غير مكتمل',
+      tlsaReady: 'TLSA جاهز',
+      tlsaPlaceholder: 'TLSA غير مكتمل'
+    },
+    output: {
+      parentHns: 'ضع هذا في محفظة HNS / مورد الاسم',
+      parentIcann: 'ضع هذا عند المحضر / منطقة الأصل',
+      authoritative: 'ضع هذا على خادم DNS السلطوي',
+      steps: 'نفذ هذه الخطوات',
+      verify: 'تحقق بهذه الأوامر',
+      web: 'ملاحظة خادم الويب',
+      integrator: 'JSON التكامل',
+      server: 'إعداد الخادم',
+      audiences: { parent: 'الأصل', authoritative: 'سلطوي', server: 'الخادم', web: 'web', verify: 'تحقق', integrator: 'integrator' }
+    },
+    faq: {
+      title: 'نصائح المساعدة',
+      setupModeSummary: 'أي وضع إعداد يجب أن أستخدم؟',
+      setupModeBody: 'استخدم DNS السلطوي المفوض لمسار إعداد DANE: أنشئ أو اختر منطقة DNS سلطوية، ضع اسم مضيف خادم الأسماء في المحفظة أو المحضر، أضف glue إذا كان اسم المضيف تحت الاسم نفسه، فعّل DNSSEC، انشر DS عند الأصل، وانشر A/AAAA و TLSA في المنطقة الموقعة. استخدم HNS SYNTH فقط عندما يجب أن يخزن اسم HNS عنوان IP لخادم الأسماء السلطوي مباشرة؛ SYNTH يبقى إحالة HNS لخادم الأسماء لنفس منطقة DANE الموقعة.',
+      domainSummary: 'ما تنسيق النطاق الذي أدخله؟',
+      domainBody: 'بالنسبة إلى HNS، أدخل اسما واحدا بحروف صغيرة ينتهي بـ /، مثل dane/. لا تدخل labels فرعية مثل www.dane/ ولا أي / داخلي. بالنسبة إلى ICANN، أدخل اسم نطاق DNS مثل example.com.',
+      presetSummary: 'أي إعداد أختار؟',
+      presetBody: 'استخدم DNS مستضافا إذا كان المزود يدعم DNSSEC وسجلات TLSA. استخدم ملف منطقة عام عند تكييف السجلات مع BIND أو Knot أو NSD أو خادم آخر. استخدم PowerDNS إذا أردت DNS بقاعدة بيانات أو API.',
+      splitSummary: 'ما الذي يوضع في المحفظة أو المحضر مقابل خادم DNS؟',
+      splitBody: 'المحفظة أو المحضر يحصل على NS/GLUE أو SYNTH، بالإضافة إلى DS. خادم DNS السلطوي يحصل على NS/A/AAAA/TLSA ويوقع المنطقة. TLSA سجل على خادم DNS وليس سجل محفظة.',
+      nameserverIpv4Summary: 'متى أحتاج إلى IP لخادم الأسماء؟',
+      nameserverIpv4Body: 'استخدم عنوان IPv4 العام لخادم DNS السلطوي. في وضع HNS SYNTH يصبح SYNTH4. في الوضع المفوض يكون GLUE4 في جهة الأصل فقط عندما يكون اسم مضيف خادم الأسماء داخل الاسم أو المنطقة نفسها.',
+      websiteIpv4Summary: 'هل هذا هو IP الخاص بـ SYNTH أو glue؟',
+      websiteIpv4Body: 'لا. IPv4 للموقع يصبح سجل A للموقع على خادم DNS السلطوي. SYNTH و glue مخصصان للوصول إلى خادم الأسماء؛ سجلات A/AAAA للموقع توجه المتصفحات إلى خادم الويب.',
+      dnskeySummary: 'متى ألصق DNSKEY؟',
+      dnskeyBody: 'الصق DNSKEY بعد توقيع منطقة الطفل السلطوية الدقيقة بـ DNSSEC. تستخدم هذه الصفحة ذلك لتوليد سجل DS في جهة الأصل؛ ولا توقع المنطقة ولا تخزن مفاتيح DNSSEC الخاصة. تحقق من السلسلة بعد نشر DS.',
+      idnSummary: 'هل يمكنني استخدام اسم نطاق دولي؟',
+      idnBody: 'نعم. يتم تحويل إدخال النطاق Unicode إلى IDNA ASCII A-labels مثل xn--bcher-kva.example. استخدم صيغة A-label في سجلات DNS وحقول المحفظة والمحضر وإعدادات الخادم.',
+      hostedSummary: 'ما الذي يجب أن يدعمه مزود DNS مستضاف؟',
+      hostedBody: 'يحتاج المزود إلى استضافة DNS سلطوية، وتوقيع DNSSEC، وتصدير DS أو DNSKEY، وسجلات TLSA مخصصة، وتجديد التواقيع، وسجلات نفي مصادق عليها، وتشخيصات كافية لتأكيد تحقق DNSSEC. إذا لم يستطع نشر TLSA في منطقة موقعة، فلن يكتمل مسار DANE هذا.'
+    }
+  },
+  fa: {
+    languageName: 'فارسی',
+    languageLabel: 'زبان',
+    hero: {
+      eyebrow: 'به رکوردهای HNS، رجیسترار، DNSSEC و TLSA نیاز دارید؟',
+      title: 'تولیدکننده رکورد DANE',
+      standard: 'احراز هویت موجودیت‌های نام‌گذاری‌شده بر پایه DNS',
+      steps: {
+        enter: 'نام، nameserver، IP سرور و گواهی را اینجا وارد کنید.',
+        send: 'رکوردهای تولیدشده را به کیف پول HNS یا رجیسترار بفرستید.',
+        zone: 'رکوردهای zone را روی سرور DNS مقتدر کپی کنید.',
+        done: 'DNSSEC و TLSA را منتشر کنید تا سایت DANE آماده سرویس‌دهی شود.'
+      }
+    },
+    sections: { domain: '1. دامنه', server: '2. سرور', dane: '3. DANE' },
+    fields: {
+      domainType: 'نوع دامنه',
+      domainTypeHelp: 'HNS یعنی کیف پول/منبع نام. ICANN یعنی پنل رجیسترار.',
+      setupMode: 'حالت راه‌اندازی',
+      setupModeHelp: 'حالت delegated به hostname یک nameserver اشاره می‌کند. SYNTH آدرس‌های IP nameserver را در HNS ذخیره می‌کند؛ هر دو به DNS مقتدر امضاشده نیاز دارند.',
+      domain: 'دامنه',
+      domainHelp: 'نمونه‌ها: dane/ یا example.com',
+      hnsDomainHelp: 'نام‌های HNS باید با / تمام شوند و فقط یک نام ASCII با حروف کوچک داشته باشند: a-z، 0-9، - یا _، و - و _ فقط در میانه باشند.',
+      dnsServerPreset: 'preset سرور DNS',
+      dnsServerPresetHelp: 'این فقط نمونه قابل کپی سرور را عوض می‌کند، نه معنی DNS را.',
+      nameserverHost: 'hostname nameserver',
+      nameserverHostHelp: 'از nameserverهای ارائه‌دهنده استفاده کنید، یا اگر nameserver زیر همان نام است از ns1.yourname. همراه glue استفاده کنید.',
+      nameserverIpv4: 'IPv4 nameserver',
+      nameserverIpv4Help: 'برای HNS SYNTH و nameserverهای delegated داخل zone لازم است؛ برای nameserverهای delegated خارجی اختیاری است.',
+      nameserverIpv6: 'IPv6 nameserver (اختیاری)',
+      nameserverIpv6Help: 'آدرس/glue اختیاری IPv6 برای سرور DNS.',
+      websiteIpv4: 'IPv4 وب‌سایت',
+      websiteIpv4Help: 'آدرس IPv4 عمومی سرور وب در apex دامنه.',
+      websiteIpv6: 'IPv6 وب‌سایت (اختیاری)',
+      websiteIpv6Help: 'آدرس IPv6 عمومی اختیاری سرور وب در apex دامنه.',
+      port: 'پورت HTTPS',
+      portHelp: '443 مقدار پیش‌فرض HTTPS معمولی است. فقط اگر سرویس TLS از پورت دیگری استفاده می‌کند آن را تغییر دهید.',
+      certificate: 'گواهی TLSA یا PUBLIC KEY',
+      certificateHelp: 'برای تولید رکورد TLSA، گواهی leaf یا PEM PUBLIC KEY را اینجا بچسبانید. کلید خصوصی لازم نیست.',
+      dnskey: 'DNSKEY',
+      dnskeyHelp: 'بعد از فعال کردن امضای DNSSEC روی سرور DNS، DNSKEY مربوط به zone را اینجا بچسبانید تا DS تولید شود.'
+    },
+    options: {
+      hns: 'Handshake / HNS',
+      icann: 'ICANN / DNS',
+      delegated: 'DNS مقتدر delegated',
+      hnsInline: 'HNS SYNTH nameserver',
+      genericZone: 'فایل zone عمومی',
+      hostedDns: 'پنل DNS میزبانی‌شده',
+      powerdns: 'PowerDNS Authoritative',
+      knot: 'Knot DNS',
+      bind: 'BIND 9',
+      windowsServer: 'Windows Server DNS',
+      nsd: 'NSD'
+    },
+    howTo: {
+      summary: 'چطور به دست آورم',
+      certIntro: 'این فیلد منبع TLSA است. گواهی عمومی‌ای را که سرور TLS برای همین hostname، پورت، پروتکل و نام SNI ارائه می‌کند بچسبانید، یا PEM PUBLIC KEY مطابق را بچسبانید. کلید خصوصی را وارد نکنید.',
+      certFetch: 'اگر دسترسی shell دارید، گواهی leaf را از سرویس زنده بگیرید:',
+      certFile: 'اگر فایل گواهی دارید، بلوک BEGIN CERTIFICATE تا END CERTIFICATE را بچسبانید. برای چسباندن فقط کلید عمومی از فایل گواهی، اجرا کنید:',
+      dnskeyIntro: 'ابتدا امضای DNSSEC را روی همان child zone مقتدری که delegated می‌شود فعال کنید. سرور DNS یا ارائه‌دهنده DNS میزبانی‌شده DNSKEY عمومی را می‌سازد؛ این برنامه از آن رکورد عمومی برای تولید DS در parent استفاده می‌کند.',
+      dnskeyHosted: 'در پنل DNS میزبانی‌شده دنبال تنظیمات DNSSEC، DS یا DNSKEY بگردید. اگر ارائه‌دهنده مستقیما DS می‌دهد، می‌توانید همان DS را در کیف پول یا رجیسترار منتشر کنید و لازم نیست DNSKEY را اینجا بچسبانید.',
+      dnskeyQuery: 'اگر سرور مقتدر شما همین حالا پاسخ می‌دهد، DNSKEY عمومی را query کنید و خط DNSKEY این zone را بچسبانید؛ معمولا key-signing key با flags 257:'
+    },
+    copy: { copy: 'کپی', copied: 'کپی شد', nothing: '# هنوز چیزی تولید نشده است' },
+    status: {
+      title: 'وضعیت راه‌اندازی',
+      ok: 'OK',
+      warn: 'بررسی',
+      missing: 'لازم',
+      labels: { Domain: 'دامنه', 'Website IP': 'IP وب‌سایت', 'HNS inline': 'HNS SYNTH', DANE: 'DANE', Nameserver: 'Nameserver', Glue: 'Glue', DS: 'DS', TLSA: 'TLSA' }
+    },
+    notices: { title: 'نیازمند توجه' },
+    summary: {
+      aria: 'خلاصه تنظیمات فعلی',
+      hnsInline: 'HNS SYNTH nameserver',
+      delegated: 'DNSSEC + DANE delegated',
+      glueRequired: 'Glue لازم است',
+      externalNameserver: 'Nameserver خارجی',
+      dsReady: 'DS آماده است',
+      dsPlaceholder: 'DS ناقص است',
+      tlsaReady: 'TLSA آماده است',
+      tlsaPlaceholder: 'TLSA ناقص است'
+    },
+    output: {
+      parentHns: 'این را در کیف پول HNS / منبع نام بگذارید',
+      parentIcann: 'این را در رجیسترار / parent zone بگذارید',
+      authoritative: 'این را روی سرور DNS مقتدر بگذارید',
+      steps: 'این مراحل را انجام دهید',
+      verify: 'با این دستورها بررسی کنید',
+      web: 'یادداشت سرور وب',
+      integrator: 'Integrator JSON',
+      server: 'Preset سرور',
+      audiences: { parent: 'parent', authoritative: 'مقتدر', server: 'سرور', web: 'web', verify: 'بررسی', integrator: 'integrator' }
+    },
+    faq: {
+      title: 'راهنما',
+      setupModeSummary: 'کدام حالت راه‌اندازی را استفاده کنم؟',
+      setupModeBody: 'برای مسیر راه‌اندازی DANE از DNS مقتدر delegated استفاده کنید: یک zone مقتدر بسازید یا انتخاب کنید، hostname nameserver آن را در کیف پول یا رجیسترار قرار دهید، اگر آن hostname زیر همان نام است glue اضافه کنید، DNSSEC را فعال کنید، DS را در parent منتشر کنید، و A/AAAA به‌همراه TLSA را در zone امضاشده منتشر کنید. HNS SYNTH را فقط وقتی استفاده کنید که یک نام HNS باید IP nameserver مقتدر را مستقیم ذخیره کند؛ SYNTH همچنان فقط ارجاع HNS به nameserver برای همان zone امضاشده DANE است.',
+      domainSummary: 'چه قالب دامنه‌ای وارد کنم؟',
+      domainBody: 'برای HNS، یک نام کوچک که با / تمام می‌شود وارد کنید، مثلا dane/. label فرزند مثل www.dane/ یا / داخلی وارد نکنید. برای ICANN، نام دامنه DNS را وارد کنید، مثلا example.com.',
+      presetSummary: 'کدام preset را انتخاب کنم؟',
+      presetBody: 'اگر ارائه‌دهنده شما DNSSEC و رکوردهای TLSA را پشتیبانی می‌کند از Hosted DNS استفاده کنید. اگر رکوردها را برای BIND، Knot، NSD یا سرور دیگر تطبیق می‌دهید از Generic zone file استفاده کنید. اگر DNS مبتنی بر پایگاه داده یا API می‌خواهید از PowerDNS استفاده کنید.',
+      splitSummary: 'چه چیزی در کیف پول/رجیسترار و چه چیزی روی سرور DNS قرار می‌گیرد؟',
+      splitBody: 'کیف پول یا رجیسترار NS/GLUE یا SYNTH به‌همراه DS را می‌گیرد. سرور DNS مقتدر NS/A/AAAA/TLSA را می‌گیرد و zone را امضا می‌کند. TLSA رکورد سرور DNS است، نه رکورد کیف پول.',
+      nameserverIpv4Summary: 'چه زمانی به IP nameserver نیاز دارم؟',
+      nameserverIpv4Body: 'از آدرس IPv4 عمومی سرور DNS مقتدر استفاده کنید. در حالت HNS SYNTH این آدرس به SYNTH4 تبدیل می‌شود. در حالت delegated فقط وقتی hostname nameserver داخل همان نام یا zone است، GLUE4 در parent می‌شود.',
+      websiteIpv4Summary: 'آیا این IP مربوط به SYNTH یا glue است؟',
+      websiteIpv4Body: 'نه. IPv4 وب‌سایت به رکورد A سایت روی سرور DNS مقتدر تبدیل می‌شود. SYNTH و glue برای رسیدن به nameserver هستند؛ رکوردهای A/AAAA وب‌سایت مرورگرها را به سرور وب هدایت می‌کنند.',
+      dnskeySummary: 'چه زمانی DNSKEY را بچسبانم؟',
+      dnskeyBody: 'بعد از اینکه child zone مقتدر با DNSSEC امضا شد DNSKEY را بچسبانید. این صفحه از آن برای تولید DS در parent استفاده می‌کند؛ zone را امضا نمی‌کند و کلیدهای خصوصی DNSSEC را ذخیره نمی‌کند. بعد از انتشار DS زنجیره را اعتبارسنجی کنید.',
+      idnSummary: 'آیا می‌توانم از نام دامنه بین‌المللی استفاده کنم؟',
+      idnBody: 'بله. ورودی دامنه Unicode به IDNA ASCII A-label مانند xn--bcher-kva.example تبدیل می‌شود. از شکل A-label در رکوردهای DNS، فیلدهای کیف پول، فیلدهای رجیسترار و تنظیمات سرور استفاده کنید.',
+      hostedSummary: 'ارائه‌دهنده DNS میزبانی‌شده باید چه چیزهایی پشتیبانی کند؟',
+      hostedBody: 'ارائه‌دهنده باید میزبانی DNS مقتدر، امضای DNSSEC، خروجی DS یا DNSKEY، رکوردهای TLSA سفارشی، تازه‌سازی امضاها، رکوردهای denial احرازشده و ابزار کافی برای تایید اعتبارسنجی DNSSEC داشته باشد. اگر نتواند TLSA را در zone امضاشده منتشر کند، این مسیر DANE کامل نمی‌شود.'
+    }
+  },
+  he: {
+    languageName: 'עברית',
+    languageLabel: 'שפה',
+    hero: {
+      eyebrow: 'צריכים רשומות HNS, רשם, DNSSEC ו-TLSA?',
+      title: 'מחולל רשומות DANE',
+      standard: 'אימות ישויות שמיות מבוסס DNS',
+      steps: {
+        enter: 'הזינו כאן את השם, ה-nameserver, כתובת ה-IP של השרת והתעודה.',
+        send: 'שלחו את הרשומות שנוצרו לארנק HNS או לרשם.',
+        zone: 'העתיקו את רשומות ה-zone לשרת ה-DNS הסמכותי.',
+        done: 'פרסמו DNSSEC ו-TLSA כדי שאתר DANE יוכל לפעול.'
+      }
+    },
+    sections: { domain: '1. דומיין', server: '2. שרת', dane: '3. DANE' },
+    fields: {
+      domainType: 'סוג דומיין',
+      domainTypeHelp: 'HNS פירושו ארנק/משאב שם. ICANN פירושו לוח הרשם.',
+      setupMode: 'מצב הגדרה',
+      setupModeHelp: 'מצב delegated מצביע אל hostname של nameserver. SYNTH שומר כתובות IP של nameserver ב-HNS; שניהם עדיין צריכים DNS סמכותי חתום.',
+      domain: 'דומיין',
+      domainHelp: 'דוגמאות: dane/ או example.com',
+      hnsDomainHelp: 'שמות HNS חייבים להסתיים ב-/ ולהשתמש בשם ASCII יחיד באותיות קטנות: a-z, 0-9, - או _, כאשר - ו-_ רק באמצע.',
+      dnsServerPreset: 'preset של שרת DNS',
+      dnsServerPresetHelp: 'זה משנה את דוגמת השרת להעתקה בלבד, לא את משמעות ה-DNS.',
+      nameserverHost: 'hostname של nameserver',
+      nameserverHostHelp: 'השתמשו ב-nameservers של הספק, או ב-ns1.yourname. עם glue אם ה-nameserver נמצא תחת אותו שם.',
+      nameserverIpv4: 'IPv4 של nameserver',
+      nameserverIpv4Help: 'נדרש עבור HNS SYNTH ועבור nameservers delegated בתוך ה-zone; אופציונלי עבור nameservers delegated חיצוניים.',
+      nameserverIpv6: 'IPv6 של nameserver (אופציונלי)',
+      nameserverIpv6Help: 'כתובת/glue אופציונלית ב-IPv6 עבור שרת ה-DNS.',
+      websiteIpv4: 'IPv4 של האתר',
+      websiteIpv4Help: 'כתובת IPv4 ציבורית של שרת ה-web ב-apex של הדומיין.',
+      websiteIpv6: 'IPv6 של האתר (אופציונלי)',
+      websiteIpv6Help: 'כתובת IPv6 ציבורית אופציונלית של שרת ה-web ב-apex של הדומיין.',
+      port: 'פורט HTTPS',
+      portHelp: '443 הוא ברירת המחדל עבור HTTPS רגיל. שנו רק אם שירות TLS משתמש בפורט אחר.',
+      certificate: 'תעודת TLSA או PUBLIC KEY',
+      certificateHelp: 'הדביקו כאן תעודת leaf או PEM PUBLIC KEY כדי ליצור רשומת TLSA. אין צורך במפתחות פרטיים.',
+      dnskey: 'DNSKEY',
+      dnskeyHelp: 'לאחר הפעלת חתימת DNSSEC בשרת ה-DNS, הדביקו כאן את DNSKEY של ה-zone כדי ליצור DS.'
+    },
+    options: {
+      hns: 'Handshake / HNS',
+      icann: 'ICANN / DNS',
+      delegated: 'DNS סמכותי delegated',
+      hnsInline: 'HNS SYNTH nameserver',
+      genericZone: 'קובץ zone כללי',
+      hostedDns: 'לוח ספק DNS מנוהל',
+      powerdns: 'PowerDNS Authoritative',
+      knot: 'Knot DNS',
+      bind: 'BIND 9',
+      windowsServer: 'Windows Server DNS',
+      nsd: 'NSD'
+    },
+    howTo: {
+      summary: 'איך להשיג את זה',
+      certIntro: 'זהו שדה המקור של TLSA. הדביקו את התעודה הציבורית ששרת ה-TLS מגיש עבור ה-hostname, הפורט, הפרוטוקול ושם SNI המדויקים, או הדביקו PEM PUBLIC KEY תואם. אל תדביקו מפתח פרטי.',
+      certFetch: 'אם יש לכם גישת shell, שלפו את תעודת ה-leaf מהשירות החי:',
+      certFile: 'אם כבר יש לכם קובץ תעודה, הדביקו את הבלוק מ-BEGIN CERTIFICATE עד END CERTIFICATE. כדי להדביק רק את המפתח הציבורי מקובץ תעודה, הריצו:',
+      dnskeyIntro: 'תחילה הפעילו חתימת DNSSEC על ה-child zone הסמכותי המדויק שמאצילים. שרת ה-DNS או ספק DNS מנוהל יוצר את ה-DNSKEY הציבורי; האפליקציה משתמשת ברשומה הציבורית הזו כדי ליצור רשומת DS בצד ה-parent.',
+      dnskeyHosted: 'בלוח DNS מנוהל, חפשו הגדרות DNSSEC, DS או DNSKEY. אם הספק נותן רשומת DS ישירות, אפשר לפרסם אותה בארנק או אצל הרשם בלי להדביק כאן DNSKEY.',
+      dnskeyQuery: 'אם השרת הסמכותי כבר עונה, שאילתו את ה-DNSKEY הציבורי והדביקו את שורת DNSKEY של ה-zone, בדרך כלל מפתח חתימה עם flags 257:'
+    },
+    copy: { copy: 'העתק', copied: 'הועתק', nothing: '# עדיין לא נוצר דבר' },
+    status: {
+      title: 'מצב ההגדרה',
+      ok: 'OK',
+      warn: 'בדיקה',
+      missing: 'נדרש',
+      labels: { Domain: 'דומיין', 'Website IP': 'IP אתר', 'HNS inline': 'HNS SYNTH', DANE: 'DANE', Nameserver: 'Nameserver', Glue: 'Glue', DS: 'DS', TLSA: 'TLSA' }
+    },
+    notices: { title: 'דורש תשומת לב' },
+    summary: {
+      aria: 'סיכום ההגדרה הנוכחית',
+      hnsInline: 'HNS SYNTH nameserver',
+      delegated: 'DNSSEC + DANE delegated',
+      glueRequired: 'נדרש glue',
+      externalNameserver: 'Nameserver חיצוני',
+      dsReady: 'DS מוכן',
+      dsPlaceholder: 'DS חסר',
+      tlsaReady: 'TLSA מוכן',
+      tlsaPlaceholder: 'TLSA חסר'
+    },
+    output: {
+      parentHns: 'שימו זאת בארנק HNS / משאב השם',
+      parentIcann: 'שימו זאת אצל הרשם / zone האב',
+      authoritative: 'שימו זאת על שרת ה-DNS הסמכותי',
+      steps: 'בצעו את השלבים האלה',
+      verify: 'אמתו עם הפקודות האלה',
+      web: 'הערת שרת web',
+      integrator: 'Integrator JSON',
+      server: 'Preset שרת',
+      audiences: { parent: 'parent', authoritative: 'סמכותי', server: 'שרת', web: 'web', verify: 'אימות', integrator: 'integrator' }
+    },
+    faq: {
+      title: 'עזרה',
+      setupModeSummary: 'באיזה מצב הגדרה להשתמש?',
+      setupModeBody: 'השתמשו ב-DNS סמכותי delegated עבור מסלול הגדרת DANE: צרו או בחרו zone DNS סמכותי, שימו את hostname ה-nameserver שלו בארנק או אצל הרשם, הוסיפו glue אם ה-hostname נמצא תחת אותו שם, הפעילו DNSSEC, פרסמו DS בצד ה-parent, ופרסמו A/AAAA יחד עם TLSA ב-zone החתום. השתמשו ב-HNS SYNTH רק כאשר שם HNS צריך לשמור ישירות את IP ה-nameserver הסמכותי; SYNTH הוא עדיין רק הפניית nameserver של HNS לאותו zone DANE חתום.',
+      domainSummary: 'איזה פורמט דומיין להזין?',
+      domainBody: 'עבור HNS, הזינו שם יחיד באותיות קטנות שמסתיים ב-/, למשל dane/. אל תכללו labels ילדים כמו www.dane/ או / פנימי. עבור ICANN, הזינו שם דומיין DNS, למשל example.com.',
+      presetSummary: 'איזה preset לבחור?',
+      presetBody: 'השתמשו ב-Hosted DNS אם הספק תומך ב-DNSSEC וברשומות TLSA. השתמשו בקובץ zone כללי כאשר אתם מתאימים רשומות ל-BIND, Knot, NSD או שרת אחר. השתמשו ב-PowerDNS אם אתם רוצים DNS מבוסס מסד נתונים או API.',
+      splitSummary: 'מה נכנס לארנק או לרשם לעומת שרת ה-DNS?',
+      splitBody: 'הארנק או הרשם מקבלים NS/GLUE או SYNTH, וגם DS. שרת ה-DNS הסמכותי מקבל NS/A/AAAA/TLSA וחותם את ה-zone. TLSA היא רשומת שרת DNS, לא רשומת ארנק.',
+      nameserverIpv4Summary: 'מתי צריך IP של nameserver?',
+      nameserverIpv4Body: 'השתמשו בכתובת IPv4 הציבורית של שרת ה-DNS הסמכותי. במצב HNS SYNTH היא הופכת ל-SYNTH4. במצב delegated היא GLUE4 בצד ה-parent רק כאשר hostname ה-nameserver נמצא בתוך אותו שם או zone.',
+      websiteIpv4Summary: 'האם זה IP של SYNTH או glue?',
+      websiteIpv4Body: 'לא. IPv4 של האתר הופך לרשומת A של האתר על שרת ה-DNS הסמכותי. SYNTH ו-glue משמשים להגעה אל ה-nameserver; רשומות A/AAAA של האתר מכוונות דפדפנים אל שרת ה-web.',
+      dnskeySummary: 'מתי להדביק DNSKEY?',
+      dnskeyBody: 'הדביקו DNSKEY אחרי שה-child zone הסמכותי המדויק נחתם עם DNSSEC. הדף הזה משתמש בו כדי ליצור רשומת DS בצד ה-parent; הוא לא חותם את ה-zone ולא שומר מפתחות DNSSEC פרטיים. אמתו את השרשרת אחרי פרסום ה-DS.',
+      idnSummary: 'אפשר להשתמש בשם דומיין בינלאומי?',
+      idnBody: 'כן. קלט דומיין Unicode מומר ל-IDNA ASCII A-labels כגון xn--bcher-kva.example. השתמשו בצורת A-label ברשומות DNS, שדות ארנק, שדות רשם והגדרות שרת.',
+      hostedSummary: 'מה ספק DNS מנוהל חייב לתמוך בו?',
+      hostedBody: 'הספק צריך אירוח DNS סמכותי, חתימת DNSSEC, ייצוא DS או DNSKEY, רשומות TLSA מותאמות, רענון חתימות, רשומות denial מאומתות ומספיק אבחון כדי לאשר אימות DNSSEC. אם ספק לא יכול לפרסם TLSA ב-zone חתום, הוא לא יכול להשלים את מסלול DANE הזה.'
+    }
   }
 } as const;
 
@@ -746,4 +1097,8 @@ export const languageOptions = (Object.keys(localeText) as LanguageCode[]).map((
 
 export function isLanguageCode(value: unknown): value is LanguageCode {
   return typeof value === 'string' && value in localeText;
+}
+
+export function isRtlLanguage(value: LanguageCode): boolean {
+  return value === 'ar' || value === 'fa' || value === 'he';
 }

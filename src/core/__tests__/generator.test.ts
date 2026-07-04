@@ -4,6 +4,7 @@ import { normalizeDomain, normalizeHostname, isInBailiwick, synthNameserverName,
 import { parseDnskey, dnskeyKeyTag, canonicalNameWire } from '../dnssec';
 import { extractSpkiFromPem, generateTlsaRecord } from '../tlsa';
 import { guidanceForIntent } from '../../handoffGuidance';
+import { isRtlLanguage, languageOptions } from '../../i18n';
 import { readUrlPrefillFromSearch } from '../../urlPrefill';
 
 const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
@@ -137,6 +138,18 @@ describe('URL prefill', () => {
   it('returns generic handoff guidance for unknown non-empty intents', () => {
     expect(guidanceForIntent('future_intent')?.title).toBe('Continue setup');
     expect(guidanceForIntent('')).toBeNull();
+  });
+});
+
+describe('localization options', () => {
+  it('includes Arabic, Persian, and Hebrew as RTL language options', () => {
+    expect(languageOptions.some((option) => option.code === 'ar' && option.label === 'العربية')).toBe(true);
+    expect(languageOptions.some((option) => option.code === 'fa' && option.label === 'فارسی')).toBe(true);
+    expect(languageOptions.some((option) => option.code === 'he' && option.label === 'עברית')).toBe(true);
+    expect(isRtlLanguage('ar')).toBe(true);
+    expect(isRtlLanguage('fa')).toBe(true);
+    expect(isRtlLanguage('he')).toBe(true);
+    expect(isRtlLanguage('en')).toBe(false);
   });
 });
 
