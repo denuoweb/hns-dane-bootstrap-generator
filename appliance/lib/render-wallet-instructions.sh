@@ -55,11 +55,18 @@ render_wallet_instructions() {
 
   {
     printf '# hsd-cli / hsw-rpc instructions for %s/\n\n' "$label"
-    printf 'Review this command before use. It spends from your own wallet and should be run only on your wallet machine.\n\n'
+    printf 'Run this only on the wallet machine that owns the registered name. The appliance does not submit or sign the wallet transaction for you.\n\n'
+    printf 'First confirm this wallet tracks and owns the name:\n\n'
     printf '```bash\n'
-    printf "hsw-rpc sendupdate %q %q\n" "$label" "$resource_json"
+    printf 'hsw-rpc getnameinfo %s\n' "$label"
+    printf 'hsw-rpc getnames true\n'
     printf '```\n\n'
-    printf 'This appliance never receives your wallet seed, wallet password, or private key.\n'
+    printf 'If those commands say `Auction not found`, this wallet does not have the name state for `%s`. Use the wallet that owns `%s/`, let it sync, or import/rescan the wallet before sending an update.\n\n' "$label" "$label"
+    printf 'When the wallet shows the name as owned/registered, submit this resource update:\n\n'
+    printf '```bash\n'
+    printf "hsw-rpc sendupdate %s '%s'\n" "$label" "$resource_json"
+    printf '```\n\n'
+    printf 'This command spends from your own wallet. Never paste your wallet seed, wallet password, or private key into this appliance.\n'
   } > "$HNS_DANE_OUTPUT_DIR/wallet-hsd-cli.md"
 
   chmod 0644 "$HNS_DANE_OUTPUT_DIR"/wallet-*.md
