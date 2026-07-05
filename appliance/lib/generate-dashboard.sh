@@ -33,7 +33,7 @@ def shell_quote(value):
 
 label = cfg["hns"]["label"]
 zone = cfg["hns"]["zone"]
-title = cfg.get("site", {}).get("title") or "HNS DANE Site"
+title = cfg.get("site", {}).get("title") or "HNS DANE Appliance"
 ipv4 = cfg["network"]["publicIPv4"]
 ipv6 = cfg["network"].get("publicIPv6")
 ns = cfg["nameservers"][0]["name"]
@@ -41,7 +41,7 @@ ds = cfg.get("dnssec", {}).get("ds") or {}
 tlsa = cfg.get("tlsa", {})
 records = resource.get("records", [])
 hsd_wallet_id = cfg.get("hns", {}).get("hsdWalletId") or "primary"
-hsd_account_name = cfg.get("hns", {}).get("hsdAccountName") or ""
+hsd_account_name = cfg.get("hns", {}).get("hsdAccountName") or "default"
 
 def record_rows():
     rows = []
@@ -121,7 +121,7 @@ print(f"""<!doctype html>
   <section>
     <h2>Server Ready</h2>
     <div class="grid">
-      <section class="card ok"><h3>Handshake name</h3><p><code>{e(label)}/</code></p></section>
+      <section class="card ok"><h3>Handshake domain</h3><p><code>{e(label)}/</code></p></section>
       <section class="card ok"><h3>Nameserver</h3><p><code>{e(ns)}</code></p></section>
       <section class="card ok"><h3>IPv4</h3><p><code>{e(ipv4)}</code></p></section>
       <section class="card {'ok' if ipv6 else 'warn'}"><h3>IPv6</h3><p><code>{e(ipv6 or 'Not enabled or not detected')}</code></p></section>

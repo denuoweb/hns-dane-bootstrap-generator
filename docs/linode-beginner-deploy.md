@@ -4,7 +4,7 @@ This path is for a user who wants Linode/Akamai to bill them directly and wants 
 
 ## Flow
 
-1. Open the project UI and enter one Handshake name, such as `denuoweb` or `denuoweb/`.
+1. Open the project UI and enter one Handshake domain, such as `denuoweb` or `denuoweb/`.
 2. Choose the Linode/Akamai deployment path.
 3. Create a Debian 13 Linode with the pinned HNS DANE StackScript. If the project maintainer has published the StackScript, use the app's `Open Linode` button.
 4. Wait for the StackScript to finish.
@@ -15,9 +15,9 @@ This path is for a user who wants Linode/Akamai to bill them directly and wants 
 
 ## StackScript wallet fields
 
-The StackScript asks for public, non-secret hsd wallet routing fields so the generated `hsw-rpc` command points at the right local wallet.
+The StackScript asks for public, non-secret hsd wallet routing fields so the generated `hsw-rpc` command points at the right local wallet and account.
 
-Use `hsd_wallet_id=primary` unless your owner wallet appears in `hsw-cli wallets` under a different id. If `recovered2` is an account inside a wallet, put the wallet id in `hsd_wallet_id` and put `recovered2` in `hsd_account_name`.
+Use `hsd_wallet_id=primary` and `hsd_account_name=default` for a normal hsd wallet. Change them only when the owning name is stored in a different local hsd wallet or account.
 
 Do not put a wallet seed, private key, or wallet password in either field.
 

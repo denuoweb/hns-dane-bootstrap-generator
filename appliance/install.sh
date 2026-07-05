@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-APPLIANCE_VERSION="${APPLIANCE_VERSION:-v0.1.5}"
+APPLIANCE_VERSION="${APPLIANCE_VERSION:-v0.1.6}"
 APPLIANCE_REPO="${APPLIANCE_REPO:-denuoweb/dane-record-generator}"
 INSTALL_LIB_DIR="${INSTALL_LIB_DIR:-/usr/local/lib/hns-dane-appliance}"
 
 usage() {
   cat >&2 <<'EOF'
-Usage: install.sh --hns-name NAME --site-title TITLE --deployment-mode MODE --wallet-style STYLE --hsd-wallet-id ID --hsd-account-name NAME --enable-ipv6 yes|no
+Usage: install.sh --hns-name DOMAIN --wallet-style STYLE --hsd-wallet-id ID --hsd-account-name NAME --enable-ipv6 yes|no
 EOF
 }
 
@@ -34,11 +34,11 @@ fi
 source "$APPLIANCE_SRC_DIR/lib/common.sh"
 
 hns_name=""
-site_title="HNS DANE Site"
+site_title="HNS DANE Appliance"
 deployment_mode="single-node"
 wallet_style="generic"
 hsd_wallet_id="primary"
-hsd_account_name=""
+hsd_account_name="default"
 enable_ipv6="no"
 skip_packages=0
 

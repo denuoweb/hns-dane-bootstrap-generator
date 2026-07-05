@@ -22,15 +22,13 @@ Beginner mode is single-node:
 ```bash
 sudo appliance/install.sh \
   --hns-name denuoweb/ \
-  --site-title "HNS DANE Site" \
-  --deployment-mode single-node \
-  --wallet-style generic \
+  --wallet-style hsd-cli \
   --hsd-wallet-id primary \
-  --hsd-account-name "" \
+  --hsd-account-name default \
   --enable-ipv6 no
 ```
 
-`--hsd-wallet-id` and `--hsd-account-name` are non-secret hints used only when rendering local hsd wallet commands. Leave the account empty unless the name is owned by a non-default hsd account.
+`--hsd-wallet-id` and `--hsd-account-name` are non-secret hints used only when rendering local hsd wallet commands. The normal hsd defaults are wallet id `primary` and account name `default`.
 
 The generated canonical config is:
 

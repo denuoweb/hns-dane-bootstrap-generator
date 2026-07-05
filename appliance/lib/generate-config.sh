@@ -11,7 +11,7 @@ source "$SCRIPT_DIR/detect-ip.sh"
 
 usage() {
   cat >&2 <<'EOF'
-Usage: generate-config.sh --hns-name NAME --site-title TITLE --deployment-mode MODE --wallet-style STYLE --hsd-wallet-id ID --hsd-account-name NAME --enable-ipv6 yes|no
+Usage: generate-config.sh --hns-name DOMAIN --wallet-style STYLE --hsd-wallet-id ID --hsd-account-name NAME --enable-ipv6 yes|no
 EOF
 }
 
@@ -24,11 +24,11 @@ validate_hsd_selector() {
 
 generate_config() {
   local hns_name=""
-  local site_title="HNS DANE Site"
+  local site_title="HNS DANE Appliance"
   local deployment_mode="single-node"
   local wallet_style="generic"
   local hsd_wallet_id="primary"
-  local hsd_account_name=""
+  local hsd_account_name="default"
   local enable_ipv6="no"
 
   while [[ $# -gt 0 ]]; do
@@ -61,6 +61,7 @@ generate_config() {
     *) fail "Unsupported wallet style: $wallet_style" ;;
   esac
   hsd_wallet_id="${hsd_wallet_id:-primary}"
+  hsd_account_name="${hsd_account_name:-default}"
   validate_hsd_selector "--hsd-wallet-id" "$hsd_wallet_id"
   validate_hsd_selector "--hsd-account-name" "$hsd_account_name"
   case "$enable_ipv6" in

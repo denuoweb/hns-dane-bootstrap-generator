@@ -342,22 +342,20 @@ function LinodeDeployCard(props: {
   walletStyle: DeploymentWalletStyle;
 }) {
   const label = deploymentHnsLabel(props.domainInput);
-  const hnsName = label ? `${label}/` : '<your-hns-name/>';
+  const hnsName = label ? `${label}/` : '<handshake-domain/>';
   const hsdWalletId = props.hsdWalletId.trim() || 'primary';
-  const hsdAccountName = props.hsdAccountName.trim();
+  const hsdAccountName = props.hsdAccountName.trim() || 'default';
   const udfValues = [
     `hns_name=${hnsName}`,
-    'site_title=HNS DANE Site',
-    'deployment_mode=single-node',
     `wallet_style=${props.walletStyle}`,
     `hsd_wallet_id=${hsdWalletId}`,
     `hsd_account_name=${hsdAccountName}`,
     `enable_ipv6=${props.enableIpv6 ? 'yes' : 'no'}`
   ].join('\n');
   const disabledReason = props.domainType !== 'hns'
-    ? 'The appliance path is for one Handshake name. Switch Domain type to Handshake / HNS.'
+    ? 'The appliance path is for one Handshake domain. Switch Domain type to Handshake / HNS.'
     : !label
-      ? 'Enter one HNS label such as denuoweb or denuoweb/.'
+      ? 'Enter one Handshake domain such as denuoweb or denuoweb/.'
       : null;
   const publicationReason = PUBLISHED_LINODE_STACKSCRIPT_URL
     ? null
@@ -381,27 +379,29 @@ function LinodeDeployCard(props: {
 
       <div className="deploy-controls" aria-label="StackScript values">
         <label>
-          <span>Wallet instructions</span>
+          <span>Wallet instruction format</span>
           <select value={props.walletStyle} onChange={(event) => props.onWalletStyleChange(event.target.value as DeploymentWalletStyle)}>
+            <option value="hsd-cli">hsd-cli / hsw-rpc</option>
             <option value="generic">Generic wallet</option>
             <option value="bob">Bob Wallet</option>
-            <option value="hsd-cli">hsd-cli / hsw-rpc</option>
           </select>
         </label>
         <label>
-          <span>hsd wallet id</span>
+          <span>hsd wallet ID</span>
           <input
             value={props.hsdWalletId}
             onChange={(event) => props.onHsdWalletIdChange(event.target.value)}
             placeholder="primary"
+            required
           />
         </label>
         <label>
-          <span>hsd account</span>
+          <span>hsd account name</span>
           <input
             value={props.hsdAccountName}
             onChange={(event) => props.onHsdAccountNameChange(event.target.value)}
-            placeholder="optional, e.g. recovered2"
+            placeholder="default"
+            required
           />
         </label>
         <label className="checkbox-row">
@@ -446,9 +446,9 @@ function App() {
   const [pemInput, setPemInput] = useState(urlPrefill.pemInput);
   const [dnskeyInput, setDnskeyInput] = useState(urlPrefill.dnskeyInput);
   const [dnsServerPreset, setDnsServerPreset] = useState<DnsServerPreset>(urlPrefill.dnsServerPreset);
-  const [deploymentWalletStyle, setDeploymentWalletStyle] = useState<DeploymentWalletStyle>('generic');
+  const [deploymentWalletStyle, setDeploymentWalletStyle] = useState<DeploymentWalletStyle>('hsd-cli');
   const [deploymentHsdWalletId, setDeploymentHsdWalletId] = useState('primary');
-  const [deploymentHsdAccountName, setDeploymentHsdAccountName] = useState('');
+  const [deploymentHsdAccountName, setDeploymentHsdAccountName] = useState('default');
   const [deploymentEnableIpv6, setDeploymentEnableIpv6] = useState(false);
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const [result, setResult] = useState<BootstrapResult | null>(null);

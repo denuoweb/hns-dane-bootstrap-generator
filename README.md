@@ -36,7 +36,7 @@ Start with [Linode Beginner Deploy](docs/linode-beginner-deploy.md), [Publish Th
 
 ### HNS delegated DNS mode
 
-Full DNSSEC + DANE path for a Handshake name:
+Full DNSSEC + DANE path for a Handshake domain:
 
 ```zone
 # HNS wallet / name resource

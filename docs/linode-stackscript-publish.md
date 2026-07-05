@@ -9,14 +9,14 @@ This is a maintainer/release step, not something beginners should do.
 Create the git tag that matches `appliance/VERSION`, then push it.
 
 ```bash
-git tag v0.1.5
-git push origin v0.1.5
+git tag v0.1.6
+git push origin v0.1.6
 ```
 
 ## 2. Compute the GitHub release archive hash
 
 ```bash
-scripts/sha256-release.sh https://github.com/denuoweb/dane-record-generator/archive/refs/tags/v0.1.5.tar.gz
+scripts/sha256-release.sh https://github.com/denuoweb/dane-record-generator/archive/refs/tags/v0.1.6.tar.gz
 ```
 
 The StackScript must be pinned to this hash before publication.
@@ -41,7 +41,7 @@ StackScript Label:
 hns-dane-appliance
 
 Description:
-Beginner HNS DANE appliance for one Handshake name. Installs Knot DNS authoritative DNSSEC, TLSA, nginx dashboard, wallet record exports, and local verification. Does not request wallet seeds, Linode API tokens, registrar credentials, or payment data.
+Beginner HNS DANE appliance for one Handshake domain. Installs Knot DNS authoritative DNSSEC, TLSA, nginx dashboard, wallet record exports, and local verification. Does not request wallet seeds, Linode API tokens, registrar credentials, or payment data.
 
 Target Images:
 Debian 13
@@ -50,12 +50,12 @@ Optional additional target:
 Debian 12
 
 Revision Note:
-v0.1.5
+v0.1.6
 ```
 
-Do not use the HNS name, such as `denuoweb/`, as the StackScript label. The HNS name is entered later when creating a Linode from the StackScript, in the generated `hns_name` UDF field.
+Do not use the Handshake domain, such as `denuoweb/`, as the StackScript label. The domain is entered later when creating a Linode from the StackScript, in the generated `hns_name` UDF field.
 
-The generated StackScript also asks for `hsd_wallet_id` and `hsd_account_name`. These are non-secret routing hints used only to render local `hsw-rpc` instructions. `hsd_wallet_id` should match an id from `hsw-cli wallets`; `hsd_account_name` should match an account under that wallet when the owner name is not in the default account.
+The generated StackScript asks for the Handshake domain, wallet instruction format, hsd wallet ID, hsd account name, and IPv6 preference. The normal hsd defaults are wallet ID `primary` and account name `default`. These are non-secret routing hints used only to render local `hsw-rpc` instructions.
 
 For the `Script` field, paste the rendered hash-pinned script:
 

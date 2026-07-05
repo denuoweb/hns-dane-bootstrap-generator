@@ -1,11 +1,9 @@
 #!/bin/bash
-# <UDF name="hns_name" label="Handshake name" example="denuoweb or denuoweb/" />
-# <UDF name="site_title" label="Site title" default="HNS DANE Site" />
-# <UDF name="deployment_mode" label="Deployment mode" oneOf="single-node,primary-node,secondary-node" default="single-node" />
-# <UDF name="wallet_style" label="Wallet instruction style" oneOf="generic,bob,hsd-cli" default="generic" />
-# <UDF name="hsd_wallet_id" label="hsd wallet id for CLI instructions" default="primary" example="primary or recovered2" />
-# <UDF name="hsd_account_name" label="hsd account name for CLI instructions (optional)" default="" example="default or recovered2" />
-# <UDF name="enable_ipv6" label="Enable IPv6 if available" oneOf="no,yes" default="no" />
+# <UDF name="hns_name" label="Handshake domain" example="denuoweb or denuoweb/" />
+# <UDF name="wallet_style" label="Wallet instruction format" oneOf="hsd-cli,generic,bob" default="hsd-cli" />
+# <UDF name="hsd_wallet_id" label="hsd wallet ID" default="primary" example="primary" />
+# <UDF name="hsd_account_name" label="hsd account name" default="default" example="default" />
+# <UDF name="enable_ipv6" label="Enable IPv6" oneOf="no,yes" default="no" />
 
 set -Eeuo pipefail
 
@@ -14,7 +12,7 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 
 export DEBIAN_FRONTEND=noninteractive
 
-APPLIANCE_VERSION="v0.1.5"
+APPLIANCE_VERSION="v0.1.6"
 APPLIANCE_ARCHIVE_URL="https://github.com/denuoweb/dane-record-generator/archive/refs/tags/${APPLIANCE_VERSION}.tar.gz"
 APPLIANCE_ARCHIVE_SHA256="REPLACE_WITH_RELEASE_TARBALL_SHA256"
 
@@ -41,9 +39,7 @@ fi
 
 bash "$INSTALLER" \
   --hns-name "${HNS_NAME}" \
-  --site-title "${SITE_TITLE}" \
-  --deployment-mode "${DEPLOYMENT_MODE}" \
   --wallet-style "${WALLET_STYLE}" \
   --hsd-wallet-id "${HSD_WALLET_ID:-primary}" \
-  --hsd-account-name "${HSD_ACCOUNT_NAME:-}" \
+  --hsd-account-name "${HSD_ACCOUNT_NAME:-default}" \
   --enable-ipv6 "${ENABLE_IPV6}"

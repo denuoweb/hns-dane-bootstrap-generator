@@ -22,6 +22,7 @@ render_wallet_instructions() {
   hsd_wallet_id="$(json_get '.hns.hsdWalletId')"
   hsd_wallet_id="${hsd_wallet_id:-primary}"
   hsd_account_name="$(json_get '.hns.hsdAccountName')"
+  hsd_account_name="${hsd_account_name:-default}"
   account_arg=""
   if [[ -n "$hsd_account_name" ]]; then
     account_arg=" ${hsd_account_name}"
@@ -70,7 +71,7 @@ render_wallet_instructions() {
     if [[ -n "$hsd_account_name" ]]; then
       printf ' and hsd account `%s`' "$hsd_account_name"
     fi
-    printf '. If a name like `recovered2` is listed by `hsw-cli wallets`, use it as the wallet id and leave the account blank. If it is listed by `hsw-cli --id primary account list`, use `primary` as the wallet id and that name as the account.\n\n'
+    printf '. Use `primary` and `default` for a normal hsd wallet. Change these only when the owning name is stored in a different local hsd wallet or account.\n\n'
     printf '`hsd-rpc` can check public chain name state, but `sendupdate` is a wallet RPC method and must be run with `hsw-rpc`. For raw wallet RPC methods, select the wallet first; `--id` is used by `hsw-cli` REST helpers but does not select the JSON-RPC wallet context for `sendupdate`.\n\n'
     printf 'First confirm the node sees the registered name:\n\n'
     printf '```bash\n'
@@ -84,7 +85,7 @@ render_wallet_instructions() {
     printf 'hsw-rpc getnameinfo %s\n' "$label"
     printf 'hsw-rpc getnames true\n'
     printf '```\n\n'
-    printf 'If the wallet RPC commands say `Auction not found`, this wallet id does not have the name state for `%s`. Use the wallet that owns `%s/`, let it sync, or import/rescan the wallet before sending an update.\n\n' "$label" "$label"
+    printf 'If the wallet RPC commands say `Auction not found`, this wallet id and account do not have the name state for `%s`. Use the wallet and account that own `%s/`, let hsd sync, or import/rescan the wallet before sending an update.\n\n' "$label" "$label"
     printf 'When the wallet shows the name as owned/registered, submit this resource update:\n\n'
     printf '```bash\n'
     printf 'hsw-rpc selectwallet %s\n' "$hsd_wallet_id"
