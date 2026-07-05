@@ -2,7 +2,7 @@
 
 This directory contains the server-side appliance for a beginner HNS DANE deployment path.
 
-The appliance turns one Debian 12 Linode into:
+The appliance turns one Debian 13 or Debian 12 Linode into:
 
 - an authoritative Knot DNS server for one Handshake label
 - a DNSSEC-signed zone with parent-facing DS export
@@ -15,7 +15,7 @@ The installer does not ask for wallet seeds, wallet private keys, Linode API tok
 
 ## Supported v0.1 path
 
-Debian 12 is the primary target. Ubuntu 24.04 is accepted if the same packages and service names are available.
+Debian 13 is the primary Linode target. Debian 12 and Ubuntu 24.04 are accepted if the same packages and service names are available.
 
 Beginner mode is single-node:
 

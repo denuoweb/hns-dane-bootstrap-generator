@@ -60,11 +60,11 @@ if [[ -r /etc/os-release ]]; then
   # shellcheck source=/dev/null
   source /etc/os-release
   case "${ID:-}:${VERSION_ID:-}" in
-    debian:12|ubuntu:24.04) ;;
-    *) fail "Unsupported OS for v0.1: ${PRETTY_NAME:-unknown}. Use Debian 12 or Ubuntu 24.04." ;;
+    debian:12|debian:13|ubuntu:24.04) ;;
+    *) fail "Unsupported OS for v0.1: ${PRETTY_NAME:-unknown}. Use Debian 13, Debian 12, or Ubuntu 24.04." ;;
   esac
 else
-  fail "Cannot detect OS. Debian 12 is supported for v0.1."
+  fail "Cannot detect OS. Debian 13 and Debian 12 are supported for v0.1."
 fi
 
 ensure_dir 0755 "$INSTALL_LIB_DIR"

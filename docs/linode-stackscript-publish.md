@@ -44,6 +44,9 @@ Description:
 Beginner HNS DANE appliance for one Handshake name. Installs Knot DNS authoritative DNSSEC, TLSA, nginx dashboard, wallet record exports, and local verification. Does not request wallet seeds, Linode API tokens, registrar credentials, or payment data.
 
 Target Images:
+Debian 13
+
+Optional additional target:
 Debian 12
 
 Revision Note:
