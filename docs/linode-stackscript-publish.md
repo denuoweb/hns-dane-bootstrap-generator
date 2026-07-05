@@ -32,6 +32,34 @@ scripts/publish-linode-stackscript.sh --sha256 <release-tarball-sha256>
 
 To make the StackScript public, add `--public`. Linode treats public publication as irreversible, so do that only after testing in private mode.
 
+### Cloud Manager form values
+
+If publishing manually from `https://cloud.linode.com/stackscripts/create`, use these values:
+
+```text
+StackScript Label:
+hns-dane-appliance
+
+Description:
+Beginner HNS DANE appliance for one Handshake name. Installs Knot DNS authoritative DNSSEC, TLSA, nginx dashboard, wallet record exports, and local verification. Does not request wallet seeds, Linode API tokens, registrar credentials, or payment data.
+
+Target Images:
+Debian 12
+
+Revision Note:
+v0.1.0
+```
+
+Do not use the HNS name, such as `denuoweb/`, as the StackScript label. The HNS name is entered later when creating a Linode from the StackScript, in the generated `hns_name` UDF field.
+
+For the `Script` field, paste the rendered hash-pinned script:
+
+```bash
+scripts/render-linode-stackscript.sh --sha256 <release-tarball-sha256> > /tmp/hns-dane-appliance-stackscript.sh
+```
+
+Open `/tmp/hns-dane-appliance-stackscript.sh` and paste its contents into the Cloud Manager `Script` field. Do not paste `stackscripts/linode/hns-dane-appliance-bootstrap.sh` directly unless the placeholder hash has already been replaced; the committed source intentionally fails closed.
+
 The command prints:
 
 ```json
