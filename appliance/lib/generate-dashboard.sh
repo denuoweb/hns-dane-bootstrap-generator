@@ -79,8 +79,9 @@ wallet_cli_commands = "\n".join([
     f"hsd-rpc getnameinfo {label} true",
     "hsw-cli wallets",
     f"hsw-cli --id {hsd_wallet_id} account list",
-    f"hsw-rpc --id {hsd_wallet_id} getnameinfo {label}",
-    f"hsw-rpc --id {hsd_wallet_id} sendupdate {label} {shell_quote(wallet_json_compact)}{account_arg}",
+    f"hsw-rpc selectwallet {hsd_wallet_id}",
+    f"hsw-rpc getnameinfo {label}",
+    f"hsw-rpc sendupdate {label} {shell_quote(wallet_json_compact)}{account_arg}",
 ])
 
 print(f"""<!doctype html>
@@ -141,7 +142,7 @@ print(f"""<!doctype html>
 
   <section>
     <h2>Wallet CLI Submit Commands</h2>
-    <p>Run these on the wallet machine that owns <code>{e(label)}/</code>. The appliance does not receive wallet seeds, passwords, or private keys.</p>
+    <p>Run these on the wallet machine that owns <code>{e(label)}/</code>. Select the wallet before running raw wallet RPC methods such as <code>sendupdate</code>. The appliance does not receive wallet seeds, passwords, or private keys.</p>
     <pre>{e(wallet_cli_commands)}</pre>
   </section>
 

@@ -27,11 +27,13 @@ mv "$tmp/config.json" "$HNS_DANE_CONFIG"
 
 assert_file_contains 'hsd-rpc getnameinfo denuoweb true' "$HNS_DANE_OUTPUT_DIR/wallet-hsd-cli.md" "node RPC name check"
 assert_file_contains 'hsw-cli --id primary account list' "$HNS_DANE_OUTPUT_DIR/wallet-hsd-cli.md" "wallet account list"
-assert_file_contains "hsw-rpc --id primary sendupdate denuoweb '{\"records\":[{\"type\":\"GLUE4\",\"ns\":\"ns1.denuoweb.\",\"address\":\"203.0.113.10\"},{\"type\":\"DS\",\"keyTag\":12345,\"algorithm\":13,\"digestType\":2,\"digest\":\"ABCDEF\"}]}' recovered2" "$HNS_DANE_OUTPUT_DIR/wallet-hsd-cli.md" "account-aware hsw update"
+assert_file_contains 'hsw-rpc selectwallet primary' "$HNS_DANE_OUTPUT_DIR/wallet-hsd-cli.md" "raw wallet RPC wallet selection"
+assert_file_contains "hsw-rpc sendupdate denuoweb '{\"records\":[{\"type\":\"GLUE4\",\"ns\":\"ns1.denuoweb.\",\"address\":\"203.0.113.10\"},{\"type\":\"DS\",\"keyTag\":12345,\"algorithm\":13,\"digestType\":2,\"digest\":\"ABCDEF\"}]}' recovered2" "$HNS_DANE_OUTPUT_DIR/wallet-hsd-cli.md" "account-aware hsw update"
 assert_file_contains 'Wallet CLI Submit Commands' "$HNS_DANE_WEB/index.html" "dashboard shows wallet CLI section"
 assert_file_contains 'hsd-rpc getnameinfo denuoweb true' "$HNS_DANE_WEB/index.html" "dashboard shows chain check command"
 assert_file_contains 'hsw-cli --id primary account list' "$HNS_DANE_WEB/index.html" "dashboard shows account list command"
-assert_file_contains 'hsw-rpc --id primary sendupdate denuoweb' "$HNS_DANE_WEB/index.html" "dashboard shows wallet update command"
+assert_file_contains 'hsw-rpc selectwallet primary' "$HNS_DANE_WEB/index.html" "dashboard shows raw wallet RPC selection"
+assert_file_contains 'hsw-rpc sendupdate denuoweb' "$HNS_DANE_WEB/index.html" "dashboard shows wallet update command"
 assert_file_contains 'recovered2' "$HNS_DANE_WEB/index.html" "dashboard includes configured account"
 
 printf 'ok - wallet-instructions\n'

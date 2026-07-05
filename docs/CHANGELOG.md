@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Corrected appliance wallet CLI commands to call `hsw-rpc selectwallet` before raw wallet RPC methods such as `sendupdate`.
 - Added inline HNS wallet CLI submit commands to the appliance dashboard.
 - Fixed generated appliance dashboard contrast in dark-mode browsers by using explicit light-theme colors.
 - Added HNS DANE appliance StackScript fields for hsd wallet id and hsd account name, with account-aware `hsw-rpc sendupdate` instructions.
