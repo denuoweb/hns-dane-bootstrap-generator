@@ -31,7 +31,9 @@ render_wallet_instructions() {
 
   {
     printf '# HNS records for %s/\n\n' "$label"
-    printf 'Copy these HNS records into your wallet or name resource editor. Do not paste wallet seeds or private keys into this appliance.\n\n'
+    printf 'Copy these HNS records into your wallet or name resource editor. Submitting this update replaces the current HNS resource; records not listed here are removed. Do not paste wallet seeds or private keys into this appliance.\n\n'
+    printf 'NS\n'
+    printf '  Nameserver: %s\n\n' "$ns"
     printf 'GLUE4\n'
     printf '  Nameserver: %s\n' "$ns"
     printf '  IPv4: %s\n\n' "$ipv4"
@@ -53,10 +55,11 @@ render_wallet_instructions() {
     printf '1. Open Bob Wallet and let it finish syncing.\n'
     printf '2. Open your name: %s/\n' "$label"
     printf '3. Open the DNS or resource records editor.\n'
-    printf '4. Add the GLUE record exactly as shown in wallet-generic.md.\n'
+    printf '4. Add the NS and GLUE records exactly as shown in wallet-generic.md.\n'
     printf '5. Add the DS record exactly as shown in wallet-generic.md.\n'
-    printf '6. Submit the update from your wallet.\n'
-    printf '7. Return to the appliance dashboard after confirmation and refresh the verification section.\n\n'
+    printf '6. Remove any old records that are not in wallet-generic.md.\n'
+    printf '7. Submit the update from your wallet.\n'
+    printf '8. Return to the appliance dashboard after confirmation and refresh the verification section.\n\n'
     printf 'The appliance does not submit or sign the wallet transaction for you.\n'
   } > "$HNS_DANE_OUTPUT_DIR/wallet-bob.md"
 

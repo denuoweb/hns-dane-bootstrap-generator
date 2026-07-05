@@ -19,7 +19,7 @@ verify_hns() {
   if command -v hsd-cli >/dev/null 2>&1; then
     if hsd-cli rpc getnameresource "$label" >/tmp/hns-dane-resource.json 2>/dev/null; then
       detected=true
-      message="An hsd resource lookup returned data. Compare the DS and GLUE records with this dashboard before relying on it."
+      message="An hsd resource lookup returned data. Compare the NS, GLUE, and DS records with this dashboard before relying on it."
     fi
   fi
 

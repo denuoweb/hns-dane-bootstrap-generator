@@ -136,6 +136,7 @@ print(f"""<!doctype html>
 
   <section>
     <h2>HNS Wallet Records To Submit</h2>
+    <p>Submitting this wallet update replaces the current HNS resource. Records not listed here, including old nameserver glue, are removed.</p>
     <table><tbody>{record_rows()}</tbody></table>
     <pre>{e(wallet_json)}</pre>
   </section>

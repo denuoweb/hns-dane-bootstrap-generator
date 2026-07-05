@@ -9,7 +9,7 @@ ns1.<zone> primary authoritative DNS
 ns2.<zone> secondary authoritative DNS
 TSIG-protected AXFR/IXFR
 same signed zone
-HNS resource includes GLUE4/GLUE6 for both nameservers plus one DS
+HNS resource includes NS plus GLUE4/GLUE6 for both nameservers, plus one DS
 ```
 
 ## Assisted flow
@@ -23,7 +23,7 @@ The intended future flow is:
 3. User deploys a secondary node with `mode=secondary-node`.
 4. User opens the secondary setup page and pastes the join token.
 5. Secondary configures itself as a Knot secondary.
-6. Primary updates the generated HNS resource JSON to include both `ns1` and `ns2` GLUE records plus the DS.
+6. Primary updates the generated HNS resource JSON to include both `ns1` and `ns2` NS and GLUE records plus the DS.
 
 ## v0.1 status
 

@@ -35,6 +35,7 @@ generate_hns_resource() {
     '{
       records: (
         [
+          {type: "NS", ns: $ns},
           {type: "GLUE4", ns: $ns, address: $ipv4}
         ]
         + (if $ipv6 == "" or $ipv6 == "null" then [] else [{type: "GLUE6", ns: $ns, address: $ipv6}] end)

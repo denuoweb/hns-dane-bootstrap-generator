@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added explicit `NS` records to appliance HNS resources so new wallet updates replace old delegated resources cleanly.
 - Corrected appliance wallet CLI commands to call `hsw-rpc selectwallet` before raw wallet RPC methods such as `sendupdate`.
 - Added inline HNS wallet CLI submit commands to the appliance dashboard.
 - Fixed generated appliance dashboard contrast in dark-mode browsers by using explicit light-theme colors.

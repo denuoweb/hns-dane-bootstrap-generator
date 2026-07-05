@@ -9,7 +9,7 @@ This path is for a user who wants Linode/Akamai to bill them directly and wants 
 3. Create a Debian 13 Linode with the pinned HNS DANE StackScript. If the project maintainer has published the StackScript, use the app's `Open Linode` button.
 4. Wait for the StackScript to finish.
 5. Open the dashboard at the server IPv4 address.
-6. Copy the GLUE and DS records into the wallet that owns the HNS name.
+6. Copy the NS, GLUE, and DS records into the wallet that owns the HNS name.
 7. Submit the HNS update yourself.
 8. Return to the dashboard after confirmation and check verification status.
 
@@ -44,7 +44,7 @@ Use `single-node` for v0.1. It creates:
 
 ```text
 ns1.<name>. -> server IPv4
-GLUE4 + DS for the HNS wallet
+NS + GLUE4 + DS for the HNS wallet
 TLSA _443._tcp.<name>. from the local HTTPS key
 ```
 

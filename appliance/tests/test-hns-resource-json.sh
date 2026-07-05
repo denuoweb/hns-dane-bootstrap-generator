@@ -15,10 +15,12 @@ mv "$tmp/config.json" "$HNS_DANE_CONFIG"
 
 "$TEST_ROOT/lib/generate-hns-resource.sh"
 
-assert_eq "GLUE4" "$(jq -r '.records[0].type' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "first record type"
-assert_eq "ns1.denuoweb." "$(jq -r '.records[0].ns' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "GLUE4 nameserver"
-assert_eq "GLUE6" "$(jq -r '.records[1].type' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "IPv6 record type"
-assert_eq "DS" "$(jq -r '.records[2].type' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "DS record type"
-assert_eq "12345" "$(jq -r '.records[2].keyTag' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "DS key tag"
+assert_eq "NS" "$(jq -r '.records[0].type' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "first record type"
+assert_eq "ns1.denuoweb." "$(jq -r '.records[0].ns' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "NS nameserver"
+assert_eq "GLUE4" "$(jq -r '.records[1].type' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "IPv4 record type"
+assert_eq "ns1.denuoweb." "$(jq -r '.records[1].ns' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "GLUE4 nameserver"
+assert_eq "GLUE6" "$(jq -r '.records[2].type' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "IPv6 record type"
+assert_eq "DS" "$(jq -r '.records[3].type' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "DS record type"
+assert_eq "12345" "$(jq -r '.records[3].keyTag' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "DS key tag"
 
 printf 'ok - hns-resource-json\n'
