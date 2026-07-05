@@ -20,6 +20,9 @@ const DONATION_URI = `handshake:${DONATION_ADDRESS}`;
 const GITHUB_REPOSITORY_URL = 'https://github.com/denuoweb/dane-record-generator';
 const WEB_ADMIN_GUIDE_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/WEB_ADMIN_GUIDE.md`;
 const OS_QUICK_STARTS_URL = `${WEB_ADMIN_GUIDE_URL}#self-hosted-os-quick-starts`;
+const LINODE_BEGINNER_DEPLOY_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/linode-beginner-deploy.md`;
+const LINODE_PREFLIGHT_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/linode-firewall-preflight.md`;
+const LINODE_STACKSCRIPT_URL = `${GITHUB_REPOSITORY_URL}/blob/main/stackscripts/linode/hns-dane-appliance-bootstrap.sh`;
 const CERTIFICATE_PLACEHOLDER = `-----BEGIN CERTIFICATE-----
 ...
 -----END CERTIFICATE-----
@@ -40,6 +43,7 @@ interface HowToContext {
 type FieldStatus = 'neutral' | 'needed' | 'error' | 'good';
 type FieldKey = 'domain' | 'nameserverHost' | 'nameserverIpv4' | 'nameserverIpv6' | 'websiteIpv4' | 'websiteIpv6' | 'port' | 'pemInput' | 'dnskeyInput';
 type TouchedFields = Partial<Record<FieldKey, boolean>>;
+type DeploymentWalletStyle = 'generic' | 'bob' | 'hsd-cli';
 
 function withoutRootDot(value: string): string { return value.endsWith('.') ? value.slice(0, -1) : value; }
 
@@ -93,6 +97,14 @@ function asciiHost(value: string): string {
 
 function hostPort(host: string, port: number): string {
   return host.includes(':') && !host.startsWith('[') ? `[${host}]:${port}` : `${host}:${port}`;
+}
+
+function deploymentHnsLabel(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.includes('://')) return null;
+  const label = trimmed.replace(/\/$/, '').replace(/\.$/, '').toLowerCase();
+  if (label.includes('/') || label.includes('.') || label.length > 63) return null;
+  return /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/.test(label) ? label : null;
 }
 
 function Field(props: { children: ReactNode; help?: string; label: string; status?: FieldStatus }) {
@@ -313,6 +325,74 @@ function HandoffCard(props: { guidance: HandoffGuidance | null }) {
   );
 }
 
+function LinodeDeployCard(props: {
+  domainInput: string;
+  domainType: DomainType;
+  enableIpv6: boolean;
+  onEnableIpv6Change: (value: boolean) => void;
+  onWalletStyleChange: (value: DeploymentWalletStyle) => void;
+  t: LocaleText;
+  walletStyle: DeploymentWalletStyle;
+}) {
+  const label = deploymentHnsLabel(props.domainInput);
+  const hnsName = label ? `${label}/` : '<your-hns-name/>';
+  const udfValues = [
+    `hns_name=${hnsName}`,
+    'site_title=HNS DANE Site',
+    'deployment_mode=single-node',
+    `wallet_style=${props.walletStyle}`,
+    `enable_ipv6=${props.enableIpv6 ? 'yes' : 'no'}`
+  ].join('\n');
+  const disabledReason = props.domainType !== 'hns'
+    ? 'The appliance path is for one Handshake name. Switch Domain type to Handshake / HNS.'
+    : !label
+      ? 'Enter one HNS label such as denuoweb or denuoweb/.'
+      : null;
+
+  return (
+    <section className={`deploy-card${disabledReason ? ' deploy-card-warn' : ''}`} aria-label="Linode Akamai deployment">
+      <div className="deploy-copy">
+        <p className="section-tag">Beginner deployment</p>
+        <h2>Deploy on Linode/Akamai</h2>
+        <p>
+          Use the thin StackScript to create a VPS in your own Linode account. The server configures Knot DNS, DNSSEC,
+          TLSA, nginx, public wallet records, and the verification dashboard.
+        </p>
+        <p className="deploy-safety">
+          No wallet seed, private key, Linode API token, registrar login, or payment data belongs in this project.
+        </p>
+        {disabledReason && <p className="deploy-warning">{disabledReason}</p>}
+      </div>
+
+      <div className="deploy-controls" aria-label="StackScript values">
+        <label>
+          <span>Wallet instructions</span>
+          <select value={props.walletStyle} onChange={(event) => props.onWalletStyleChange(event.target.value as DeploymentWalletStyle)}>
+            <option value="generic">Generic wallet</option>
+            <option value="bob">Bob Wallet</option>
+            <option value="hsd-cli">hsd-cli / hsw-rpc</option>
+          </select>
+        </label>
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={props.enableIpv6}
+            onChange={(event) => props.onEnableIpv6Change(event.target.checked)}
+          />
+          <span>Enable IPv6 if Linode assigns one</span>
+        </label>
+        <pre className="deploy-udf">{udfValues}</pre>
+        <div className="deploy-actions">
+          <CopyButton text={udfValues} t={props.t} />
+          <a className="button-link" href={LINODE_BEGINNER_DEPLOY_URL} target="_blank" rel="noreferrer">Guide</a>
+          <a className="button-link secondary" href={LINODE_STACKSCRIPT_URL} target="_blank" rel="noreferrer">StackScript</a>
+          <a className="button-link secondary" href={LINODE_PREFLIGHT_URL} target="_blank" rel="noreferrer">Firewall</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function App() {
   const urlPrefill = useMemo(() => readUrlPrefill(), []);
   const [language, setLanguage] = useState<LanguageCode>(() => {
@@ -332,6 +412,8 @@ function App() {
   const [pemInput, setPemInput] = useState(urlPrefill.pemInput);
   const [dnskeyInput, setDnskeyInput] = useState(urlPrefill.dnskeyInput);
   const [dnsServerPreset, setDnsServerPreset] = useState<DnsServerPreset>(urlPrefill.dnsServerPreset);
+  const [deploymentWalletStyle, setDeploymentWalletStyle] = useState<DeploymentWalletStyle>('generic');
+  const [deploymentEnableIpv6, setDeploymentEnableIpv6] = useState(false);
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const [result, setResult] = useState<BootstrapResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -486,6 +568,16 @@ function App() {
       </header>
 
       <HandoffCard guidance={handoffGuidance} />
+
+      <LinodeDeployCard
+        domainInput={domainInput}
+        domainType={domainType}
+        enableIpv6={deploymentEnableIpv6}
+        onEnableIpv6Change={setDeploymentEnableIpv6}
+        onWalletStyleChange={setDeploymentWalletStyle}
+        t={t}
+        walletStyle={deploymentWalletStyle}
+      />
 
       <section className="panel grid">
         <div className="form-card">

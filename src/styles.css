@@ -21,6 +21,7 @@ main {
 .error-card,
 .status-card,
 .handoff-card,
+.deploy-card,
 .summary-strip {
   border: 1px solid #ddd8cd;
   background: white;
@@ -51,6 +52,88 @@ main {
   margin-bottom: 0;
   color: #3f4f58;
   line-height: 1.55;
+}
+
+.deploy-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: 18px;
+  align-items: start;
+  border-left: 6px solid #2f5f78;
+  background: #fafffd;
+  margin-bottom: 20px;
+}
+
+.deploy-card h2 { margin-bottom: 10px; }
+
+.deploy-copy p,
+.deploy-controls span {
+  color: #3f4f58;
+  line-height: 1.55;
+}
+
+.deploy-safety { font-weight: 750; }
+
+.deploy-warning {
+  border: 1px solid #d8bd70;
+  border-radius: 12px;
+  background: #fff8e3;
+  color: #5f4300;
+  padding: 10px 12px;
+}
+
+.deploy-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.deploy-controls label {
+  display: grid;
+  gap: 6px;
+  font-weight: 800;
+}
+
+.checkbox-row {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  font-weight: 700;
+}
+
+.checkbox-row input {
+  width: auto;
+  margin-top: 4px;
+}
+
+.deploy-udf {
+  margin: 0;
+  border-radius: 12px;
+  font-size: 0.82rem;
+}
+
+.deploy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  border: 1px solid #181816;
+  background: #181816;
+  color: white;
+  padding: 8px 13px;
+  border-radius: 999px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.button-link.secondary {
+  background: #fffdf8;
+  color: #181816;
+  border-color: #cfc7b8;
 }
 
 .hero-top {
@@ -463,6 +546,7 @@ ul { padding-left: 1.2rem; }
 :root[dir="rtl"] .output-heading,
 :root[dir="rtl"] .entry-tab-list,
 :root[dir="rtl"] .summary-strip,
+:root[dir="rtl"] .deploy-actions,
 :root[dir="rtl"] .site-footer {
   flex-direction: row-reverse;
 }
@@ -483,7 +567,8 @@ ul { padding-left: 1.2rem; }
 :root[dir="rtl"] .audience-verify,
 :root[dir="rtl"] .audience-web,
 :root[dir="rtl"] .audience-integrator,
-:root[dir="rtl"] .handoff-card {
+:root[dir="rtl"] .handoff-card,
+:root[dir="rtl"] .deploy-card {
   border-left-color: #ddd8cd;
   border-left-width: 1px;
   border-right-width: 6px;
@@ -496,10 +581,12 @@ ul { padding-left: 1.2rem; }
 :root[dir="rtl"] .audience-web { border-right-color: #a49578; }
 :root[dir="rtl"] .audience-integrator { border-right-color: #b6aa90; }
 :root[dir="rtl"] .handoff-card { border-right-color: #2f5f78; }
+:root[dir="rtl"] .deploy-card { border-right-color: #2f5f78; }
 
 @media (max-width: 1000px) {
   .grid,
-  .status-list { grid-template-columns: 1fr; }
+  .status-list,
+  .deploy-card { grid-template-columns: 1fr; }
   .output-heading { align-items: flex-start; }
   .hero-top { display: grid; }
   .language-select { min-width: 0; }
