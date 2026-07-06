@@ -68,9 +68,17 @@ export const localeText = {
       dnskeyQuery: 'If your authoritative server is already answering, query the public DNSKEY and paste the DNSKEY line for this zone, usually the key-signing key with flags 257:'
     },
     copy: {
-      copy: 'Copy',
-      copied: 'Copied',
       nothing: '# Nothing generated yet'
+    },
+    linode: {
+      provisioningTag: 'One-click provisioning',
+      cardLink: 'HNS DANE server on Linode/Akamai',
+      cardBody: 'One-click HNS DANE server for a single Handshake name. Installs Knot DNS authoritative DNSSEC, TLSA, nginx dashboard, local verification, and copy-paste HNS resource commands. Never asks for wallet seeds, Linode API tokens, registrar credentials, or payment data.',
+      deployTitle: 'Deploy on Linode/Akamai',
+      beginHosting: 'Begin hosting',
+      publishSetup: 'Publish setup',
+      guide: 'Guide',
+      stackScript: 'StackScript'
     },
     status: {
       title: 'Setup status',
@@ -206,7 +214,17 @@ export const localeText = {
       dnskeyHosted: 'En un panel DNS alojado, busca opciones DNSSEC, DS o DNSKEY. Si el proveedor te da directamente un registro DS, puedes publicarlo en la cartera o registrador sin pegar DNSKEY aquí.',
       dnskeyQuery: 'Si tu servidor autoritativo ya responde, consulta la DNSKEY pública y pega la línea DNSKEY de la zona, normalmente la clave de firma con flags 257:'
     },
-    copy: { copy: 'Copiar', copied: 'Copiado', nothing: '# Aún no se generó nada' },
+    copy: { nothing: '# Aún no se generó nada' },
+    linode: {
+      provisioningTag: 'Aprovisionamiento con un clic',
+      cardLink: 'Servidor HNS DANE en Linode/Akamai',
+      cardBody: 'Servidor HNS DANE con un clic para un solo nombre Handshake. Instala Knot DNS autoritativo con DNSSEC, TLSA, panel nginx, verificación local y comandos de recurso HNS para copiar y pegar. Nunca pide semillas de cartera, tokens API de Linode, credenciales de registrador ni datos de pago.',
+      deployTitle: 'Desplegar en Linode/Akamai',
+      beginHosting: 'Comenzar hosting',
+      publishSetup: 'Publicar configuración',
+      guide: 'Guía',
+      stackScript: 'StackScript'
+    },
     status: {
       title: 'Estado de configuración',
       ok: 'OK',
@@ -323,7 +341,17 @@ export const localeText = {
       dnskeyHosted: 'Dans un panneau DNS hébergé, cherchez les réglages DNSSEC, DS ou DNSKEY. Si le fournisseur donne directement un DS, publiez ce DS dans le wallet ou le bureau d’enregistrement sans coller DNSKEY ici.',
       dnskeyQuery: 'Si votre serveur faisant autorité répond déjà, interrogez la DNSKEY publique et collez la ligne DNSKEY de la zone, généralement la clé de signature avec flags 257 :'
     },
-    copy: { copy: 'Copier', copied: 'Copié', nothing: '# Rien généré pour le moment' },
+    copy: { nothing: '# Rien généré pour le moment' },
+    linode: {
+      provisioningTag: 'Provisionnement en un clic',
+      cardLink: 'Serveur HNS DANE sur Linode/Akamai',
+      cardBody: 'Serveur HNS DANE en un clic pour un seul nom Handshake. Installe Knot DNS faisant autorité avec DNSSEC, TLSA, tableau de bord nginx, vérification locale et commandes de ressource HNS à copier-coller. Ne demande jamais de seed de wallet, de token API Linode, d’identifiants de bureau d’enregistrement ni de données de paiement.',
+      deployTitle: 'Déployer sur Linode/Akamai',
+      beginHosting: 'Démarrer l’hébergement',
+      publishSetup: 'Publier la configuration',
+      guide: 'Guide',
+      stackScript: 'StackScript'
+    },
     status: {
       title: 'État de configuration',
       ok: 'OK',
@@ -440,7 +468,17 @@ export const localeText = {
       dnskeyHosted: 'Suchen Sie im Hosted-DNS-Panel nach DNSSEC-, DS- oder DNSKEY-Einstellungen. Wenn der Provider direkt einen DS liefert, können Sie diesen ohne DNSKEY hier bei Wallet oder Registrar veröffentlichen.',
       dnskeyQuery: 'Wenn Ihr autoritativer Server bereits antwortet, fragen Sie die öffentliche DNSKEY ab und fügen Sie die DNSKEY-Zeile der Zone ein, meist den Key-Signing-Key mit Flags 257:'
     },
-    copy: { copy: 'Kopieren', copied: 'Kopiert', nothing: '# Noch nichts erzeugt' },
+    copy: { nothing: '# Noch nichts erzeugt' },
+    linode: {
+      provisioningTag: 'One-Click-Bereitstellung',
+      cardLink: 'HNS-DANE-Server auf Linode/Akamai',
+      cardBody: 'One-Click-HNS-DANE-Server für einen einzelnen Handshake-Namen. Installiert autoritatives Knot DNS mit DNSSEC, TLSA, nginx-Dashboard, lokaler Prüfung und Copy-Paste-HNS-Ressourcenbefehlen. Fragt nie nach Wallet-Seeds, Linode-API-Tokens, Registrar-Zugangsdaten oder Zahlungsdaten.',
+      deployTitle: 'Auf Linode/Akamai bereitstellen',
+      beginHosting: 'Hosting starten',
+      publishSetup: 'Einrichtung veröffentlichen',
+      guide: 'Anleitung',
+      stackScript: 'StackScript'
+    },
     status: {
       title: 'Einrichtungsstatus',
       ok: 'OK',
@@ -557,7 +595,17 @@ export const localeText = {
       dnskeyHosted: 'Em um painel DNS hospedado, procure configurações DNSSEC, DS ou DNSKEY. Se o provedor fornecer um registro DS diretamente, publique esse DS na carteira ou registrador sem colar DNSKEY aqui.',
       dnskeyQuery: 'Se seu servidor autoritativo já responde, consulte a DNSKEY pública e cole a linha DNSKEY da zona, normalmente a chave de assinatura com flags 257:'
     },
-    copy: { copy: 'Copiar', copied: 'Copiado', nothing: '# Nada gerado ainda' },
+    copy: { nothing: '# Nada gerado ainda' },
+    linode: {
+      provisioningTag: 'Provisionamento com um clique',
+      cardLink: 'Servidor HNS DANE na Linode/Akamai',
+      cardBody: 'Servidor HNS DANE com um clique para um único nome Handshake. Instala Knot DNS autoritativo com DNSSEC, TLSA, painel nginx, verificação local e comandos de recurso HNS para copiar e colar. Nunca pede seed de carteira, tokens de API da Linode, credenciais de registrador nem dados de pagamento.',
+      deployTitle: 'Implantar na Linode/Akamai',
+      beginHosting: 'Começar hosting',
+      publishSetup: 'Publicar configuração',
+      guide: 'Guia',
+      stackScript: 'StackScript'
+    },
     status: {
       title: 'Status da configuração',
       ok: 'OK',
@@ -674,7 +722,17 @@ export const localeText = {
       dnskeyHosted: 'ホスト型 DNS 画面では DNSSEC、DS、DNSKEY の設定を探します。プロバイダーが DS を直接表示する場合は、ここに DNSKEY を貼らずにその DS をウォレットまたはレジストラに公開できます。',
       dnskeyQuery: '権威サーバーがすでに応答している場合は、公開 DNSKEY を問い合わせ、通常 flags 257 のキー署名鍵の DNSKEY 行を貼り付けます:'
     },
-    copy: { copy: 'コピー', copied: 'コピー済み', nothing: '# まだ生成されていません' },
+    copy: { nothing: '# まだ生成されていません' },
+    linode: {
+      provisioningTag: 'ワンクリックプロビジョニング',
+      cardLink: 'Linode/Akamai 上の HNS DANE サーバー',
+      cardBody: '単一の Handshake 名向けのワンクリック HNS DANE サーバーです。Knot DNS の権威 DNSSEC、TLSA、nginx ダッシュボード、ローカル検証、コピーして使える HNS リソースコマンドをインストールします。ウォレット seed、Linode API トークン、レジストラ認証情報、支払い情報は要求しません。',
+      deployTitle: 'Linode/Akamai にデプロイ',
+      beginHosting: 'ホスティングを開始',
+      publishSetup: '設定を公開',
+      guide: 'ガイド',
+      stackScript: 'StackScript'
+    },
     status: {
       title: '設定状態',
       ok: 'OK',
@@ -791,7 +849,17 @@ export const localeText = {
       dnskeyHosted: 'في لوحة DNS مستضاف، ابحث عن إعدادات DNSSEC أو DS أو DNSKEY. إذا أعطاك المزود سجل DS مباشرة، يمكنك نشر DS في المحفظة أو المحضر دون لصق DNSKEY هنا.',
       dnskeyQuery: 'إذا كان الخادم السلطوي يجيب بالفعل، استعلم عن DNSKEY العام والصق سطر DNSKEY لهذه المنطقة، عادة مفتاح التوقيع flags 257:'
     },
-    copy: { copy: 'نسخ', copied: 'تم النسخ', nothing: '# لم يتم توليد شيء بعد' },
+    copy: { nothing: '# لم يتم توليد شيء بعد' },
+    linode: {
+      provisioningTag: 'توفير بنقرة واحدة',
+      cardLink: 'خادم HNS DANE على Linode/Akamai',
+      cardBody: 'خادم HNS DANE بنقرة واحدة لاسم Handshake واحد. يثبت Knot DNS سلطويا مع DNSSEC و TLSA ولوحة nginx والتحقق المحلي وأوامر موارد HNS قابلة للنسخ واللصق. لا يطلب أبدا عبارات seed للمحفظة أو رموز Linode API أو بيانات اعتماد المحضر أو بيانات الدفع.',
+      deployTitle: 'النشر على Linode/Akamai',
+      beginHosting: 'بدء الاستضافة',
+      publishSetup: 'نشر الإعداد',
+      guide: 'الدليل',
+      stackScript: 'StackScript'
+    },
     status: {
       title: 'حالة الإعداد',
       ok: 'OK',
@@ -908,7 +976,17 @@ export const localeText = {
       dnskeyHosted: 'در پنل DNS میزبانی‌شده دنبال تنظیمات DNSSEC، DS یا DNSKEY بگردید. اگر ارائه‌دهنده مستقیما DS می‌دهد، می‌توانید همان DS را در کیف پول یا رجیسترار منتشر کنید و لازم نیست DNSKEY را اینجا بچسبانید.',
       dnskeyQuery: 'اگر سرور مقتدر شما همین حالا پاسخ می‌دهد، DNSKEY عمومی را query کنید و خط DNSKEY این zone را بچسبانید؛ معمولا key-signing key با flags 257:'
     },
-    copy: { copy: 'کپی', copied: 'کپی شد', nothing: '# هنوز چیزی تولید نشده است' },
+    copy: { nothing: '# هنوز چیزی تولید نشده است' },
+    linode: {
+      provisioningTag: 'راه‌اندازی با یک کلیک',
+      cardLink: 'سرور HNS DANE روی Linode/Akamai',
+      cardBody: 'سرور HNS DANE با یک کلیک برای یک نام Handshake. Knot DNS مقتدر همراه DNSSEC، TLSA، داشبورد nginx، بررسی محلی و دستورهای منبع HNS قابل کپی و چسباندن را نصب می‌کند. هرگز seed کیف پول، توکن API لینود، اطلاعات ورود رجیسترار یا داده پرداخت نمی‌خواهد.',
+      deployTitle: 'استقرار روی Linode/Akamai',
+      beginHosting: 'شروع میزبانی',
+      publishSetup: 'انتشار تنظیمات',
+      guide: 'راهنما',
+      stackScript: 'StackScript'
+    },
     status: {
       title: 'وضعیت راه‌اندازی',
       ok: 'OK',
@@ -1025,7 +1103,17 @@ export const localeText = {
       dnskeyHosted: 'בלוח DNS מנוהל, חפשו הגדרות DNSSEC, DS או DNSKEY. אם הספק נותן רשומת DS ישירות, אפשר לפרסם אותה בארנק או אצל הרשם בלי להדביק כאן DNSKEY.',
       dnskeyQuery: 'אם השרת הסמכותי כבר עונה, שאילתו את ה-DNSKEY הציבורי והדביקו את שורת DNSKEY של ה-zone, בדרך כלל מפתח חתימה עם flags 257:'
     },
-    copy: { copy: 'העתק', copied: 'הועתק', nothing: '# עדיין לא נוצר דבר' },
+    copy: { nothing: '# עדיין לא נוצר דבר' },
+    linode: {
+      provisioningTag: 'הקמה בלחיצה אחת',
+      cardLink: 'שרת HNS DANE ב-Linode/Akamai',
+      cardBody: 'שרת HNS DANE בלחיצה אחת לשם Handshake יחיד. מתקין Knot DNS סמכותי עם DNSSEC, TLSA, לוח nginx, אימות מקומי ופקודות משאב HNS להעתקה והדבקה. לעולם לא מבקש seed של ארנק, אסימוני API של Linode, פרטי כניסה לרשם או נתוני תשלום.',
+      deployTitle: 'פריסה ב-Linode/Akamai',
+      beginHosting: 'התחלת אירוח',
+      publishSetup: 'פרסום ההגדרה',
+      guide: 'מדריך',
+      stackScript: 'StackScript'
+    },
     status: {
       title: 'מצב ההגדרה',
       ok: 'OK',

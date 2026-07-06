@@ -139,11 +139,11 @@ The UI should explain that `dig +dnssec` alone does not prove validation and tha
 6. Web server note
 7. Integrator JSON
 
-## Copy policy
+## Output interaction policy
 
-Every output box should be copyable. The copied text should be plain text and usable in a wallet, registrar panel, DNS zone file, or server notes without UI decoration.
+Output boxes show plain text records and commands without browser clipboard actions. Users can select the text they need from the expanded output.
 
-Output cards default to collapsed. The heading row expands or collapses the card content, and the Copy action remains available while collapsed.
+Output cards default to collapsed. The heading row expands or collapses the card content.
 
 ## Tone policy
 

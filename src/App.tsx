@@ -21,7 +21,6 @@ const GITHUB_REPOSITORY_URL = 'https://github.com/denuoweb/dane-record-generator
 const WEB_ADMIN_GUIDE_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/WEB_ADMIN_GUIDE.md`;
 const OS_QUICK_STARTS_URL = `${WEB_ADMIN_GUIDE_URL}#self-hosted-os-quick-starts`;
 const LINODE_BEGINNER_DEPLOY_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/linode-beginner-deploy.md`;
-const LINODE_PREFLIGHT_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/linode-firewall-preflight.md`;
 const LINODE_PUBLISH_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/linode-stackscript-publish.md`;
 const LINODE_STACKSCRIPT_URL = `${GITHUB_REPOSITORY_URL}/blob/main/stackscripts/linode/hns-dane-appliance-bootstrap.sh`;
 const DEFAULT_LINODE_STACKSCRIPT_ID = '2158182';
@@ -47,7 +46,6 @@ interface HowToContext {
 type FieldStatus = 'neutral' | 'needed' | 'error' | 'good';
 type FieldKey = 'domain' | 'nameserverHost' | 'nameserverIpv4' | 'nameserverIpv6' | 'websiteIpv4' | 'websiteIpv6' | 'port' | 'pemInput' | 'dnskeyInput';
 type TouchedFields = Partial<Record<FieldKey, boolean>>;
-type DeploymentWalletStyle = 'generic' | 'bob' | 'hsd-cli';
 
 function withoutRootDot(value: string): string { return value.endsWith('.') ? value.slice(0, -1) : value; }
 
@@ -101,14 +99,6 @@ function asciiHost(value: string): string {
 
 function hostPort(host: string, port: number): string {
   return host.includes(':') && !host.startsWith('[') ? `[${host}]:${port}` : `${host}:${port}`;
-}
-
-function deploymentHnsLabel(value: string): string | null {
-  const trimmed = value.trim();
-  if (!trimmed || trimmed.includes('://')) return null;
-  const label = trimmed.replace(/\/$/, '').replace(/\.$/, '').toLowerCase();
-  if (label.includes('/') || label.includes('.') || label.length > 63) return null;
-  return /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/.test(label) ? label : null;
 }
 
 function Field(props: { children: ReactNode; help?: string; label: string; status?: FieldStatus }) {
@@ -171,18 +161,6 @@ function SelfHostedQuickStarts() {
   );
 }
 
-function CopyButton(props: { text: string; t: LocaleText }) {
-  const [copied, setCopied] = useState(false);
-
-  async function copy() {
-    await navigator.clipboard.writeText(props.text);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1200);
-  }
-
-  return <button type="button" onClick={copy}>{copied ? props.t.copy.copied : props.t.copy.copy}</button>;
-}
-
 function lineText(lines: GeneratedLine[]): string {
   return lines.map((line) => line.value).join('\n\n');
 }
@@ -211,7 +189,6 @@ function OutputBox(props: { section: OutputSection; result: BootstrapResult; t: 
   const [activeTab, setActiveTab] = useState(defaultTab);
   const activeOption = tabOptions.find((line) => line.presentation.tabId === activeTab) ?? tabOptions[0];
   const recordText = lineText(recordLines);
-  const text = tabOptions.length > 0 && activeOption ? [recordText, activeOption.value].filter(Boolean).join('\n\n') : lineText(props.section.lines);
   const tabListLabel = props.section.id === 'authoritative' ? 'Authoritative DNS entry method' : 'HNS wallet entry method';
 
   useEffect(() => {
@@ -239,7 +216,6 @@ function OutputBox(props: { section: OutputSection; result: BootstrapResult; t: 
             <span className="output-title">{localizedSectionTitle(props.section, props.result, props.t)}</span>
           </span>
         </button>
-        <CopyButton text={text} t={props.t} />
       </div>
       <div id={contentId} className="output-content" hidden={!expanded}>
         <pre className={props.section.compact ? 'compact-pre' : undefined}>{recordText || props.t.copy.nothing}</pre>
@@ -329,99 +305,100 @@ function HandoffCard(props: { guidance: HandoffGuidance | null }) {
   );
 }
 
-function LinodeDeployCard(props: {
-  domainInput: string;
-  domainType: DomainType;
-  enableIpv6: boolean;
-  hsdAccountName: string;
-  hsdWalletId: string;
-  onEnableIpv6Change: (value: boolean) => void;
-  onHsdAccountNameChange: (value: string) => void;
-  onHsdWalletIdChange: (value: string) => void;
-  onWalletStyleChange: (value: DeploymentWalletStyle) => void;
-  t: LocaleText;
-  walletStyle: DeploymentWalletStyle;
-}) {
-  const label = deploymentHnsLabel(props.domainInput);
-  const hnsName = label ? `${label}/` : '<handshake-domain/>';
-  const hsdWalletId = props.hsdWalletId.trim() || 'primary';
-  const hsdAccountName = props.hsdAccountName.trim() || 'default';
-  const udfValues = [
-    `hns_name=${hnsName}`,
-    `wallet_style=${props.walletStyle}`,
-    `hsd_wallet_id=${hsdWalletId}`,
-    `hsd_account_name=${hsdAccountName}`,
-    `enable_ipv6=${props.enableIpv6 ? 'yes' : 'no'}`
-  ].join('\n');
-  const disabledReason = props.domainType !== 'hns'
-    ? 'The appliance path is for one Handshake domain. Switch Domain type to Handshake / HNS.'
-    : !label
-      ? 'Enter one Handshake domain such as denuoweb or denuoweb/.'
-      : null;
-  const publicationReason = PUBLISHED_LINODE_STACKSCRIPT_URL
-    ? null
-    : 'Maintainer setup needed: publish the StackScript to Linode and build with VITE_LINODE_STACKSCRIPT_ID.';
+function LinodeSkipCard(props: { onOpen: () => void; t: LocaleText }) {
+  return (
+    <section className="linode-skip-card" aria-label="Linode Akamai one-click provisioning">
+      <p className="section-tag">{props.t.linode.provisioningTag}</p>
+      <a
+        href="#linode-hosting"
+        onClick={(event) => {
+          event.preventDefault();
+          props.onOpen();
+        }}
+      >
+        {props.t.linode.cardLink}
+      </a>
+      <p>{props.t.linode.cardBody}</p>
+    </section>
+  );
+}
+
+function LinodeGuideCard(props: { onBack: () => void; t: LocaleText }) {
+  const primaryHref = PUBLISHED_LINODE_STACKSCRIPT_URL || LINODE_PUBLISH_URL;
+  const primaryLabel = PUBLISHED_LINODE_STACKSCRIPT_URL ? props.t.linode.beginHosting : props.t.linode.publishSetup;
 
   return (
-    <section className={`deploy-card${disabledReason ? ' deploy-card-warn' : ''}`} aria-label="Linode Akamai deployment">
-      <div className="deploy-copy">
-        <p className="section-tag">Beginner deployment</p>
-        <h2>Deploy on Linode/Akamai</h2>
-        <p>
-          Use the thin StackScript to create a VPS in your own Linode account. The server configures Knot DNS, DNSSEC,
-          TLSA, nginx, public wallet records, and the verification dashboard.
-        </p>
-        <p className="deploy-safety">
-          No wallet seed, private key, Linode API token, registrar login, or payment data belongs in this project.
-        </p>
-        {publicationReason && <p className="deploy-warning">{publicationReason}</p>}
-        {disabledReason && <p className="deploy-warning">{disabledReason}</p>}
+    <section className="deploy-card linode-guide-card" id="linode-hosting" aria-label="Linode Akamai deployment tutorial">
+      <div className="linode-guide-top">
+        <button type="button" className="secondary" onClick={props.onBack}>Back</button>
+        <div className="linode-guide-title">
+          <p className="section-tag">{props.t.linode.provisioningTag}</p>
+          <h1>{props.t.linode.deployTitle}</h1>
+        </div>
+        <a className="button-link" href={primaryHref} target="_blank" rel="noreferrer">{primaryLabel}</a>
       </div>
 
-      <div className="deploy-controls" aria-label="StackScript values">
-        <label>
-          <span>Wallet instruction format</span>
-          <select value={props.walletStyle} onChange={(event) => props.onWalletStyleChange(event.target.value as DeploymentWalletStyle)}>
-            <option value="hsd-cli">hsd-cli / hsw-rpc</option>
-            <option value="generic">Generic wallet</option>
-            <option value="bob">Bob Wallet</option>
-          </select>
-        </label>
-        <label>
-          <span>hsd wallet ID</span>
-          <input
-            value={props.hsdWalletId}
-            onChange={(event) => props.onHsdWalletIdChange(event.target.value)}
-            placeholder="primary"
-            required
-          />
-        </label>
-        <label>
-          <span>hsd account name</span>
-          <input
-            value={props.hsdAccountName}
-            onChange={(event) => props.onHsdAccountNameChange(event.target.value)}
-            placeholder="default"
-            required
-          />
-        </label>
-        <label className="checkbox-row">
-          <input
-            type="checkbox"
-            checked={props.enableIpv6}
-            onChange={(event) => props.onEnableIpv6Change(event.target.checked)}
-          />
-          <span>Enable IPv6 if Linode assigns one</span>
-        </label>
-        <pre className="deploy-udf">{udfValues}</pre>
+      <div className="deploy-copy">
+        <h2>Recommended Linode settings</h2>
+        <dl className="linode-settings">
+          <div>
+            <dt>Create From</dt>
+            <dd>StackScripts - HNS DANE One-Name Server</dd>
+          </div>
+          <div>
+            <dt>Region</dt>
+            <dd>Choose the closest core region to your users.</dd>
+          </div>
+          <div>
+            <dt>Image</dt>
+            <dd>Debian 13</dd>
+          </div>
+          <div>
+            <dt>Plan</dt>
+            <dd>Shared CPU - Nanode 1 GB</dd>
+          </div>
+          <div>
+            <dt>Label</dt>
+            <dd><code>hns-dane-YOURNAME</code></dd>
+          </div>
+          <div>
+            <dt>IPv6</dt>
+            <dd>No, unless you plan to publish AAAA and GLUE6 records.</dd>
+          </div>
+          <div>
+            <dt>Authentication</dt>
+            <dd>
+              <p>SSH key recommended. Root password only if you do not have an SSH key.</p>
+              <p>Generate a key:</p>
+              <pre className="inline-code">ssh-keygen -t ed25519 -C "hns-dane-linode" -f ~/.ssh/hns-dane_linode</pre>
+              <p>Show the public key for Linode:</p>
+              <pre className="inline-code">cat ~/.ssh/hns-dane_linode.pub</pre>
+              <p>Back up the key:</p>
+              <pre className="inline-code">mkdir -p ~/hns-dane-backups && cp ~/.ssh/hns-dane_linode ~/.ssh/hns-dane_linode.pub ~/hns-dane-backups/</pre>
+            </dd>
+          </div>
+          <div>
+            <dt>Firewall</dt>
+            <dd>Can skip and set as No firewall because it is handled by UFW.</dd>
+          </div>
+          <div>
+            <dt>Backups</dt>
+            <dd>Optional</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div className="linode-after-card">
+        <h2>After deployment</h2>
+        <ol>
+          <li>Open the dashboard.</li>
+          <li>Copy the generated HNS resource commands.</li>
+          <li>Publish GLUE/NS/DS in your wallet.</li>
+          <li>Verify A, DNSKEY, DS, TLSA, and DANE status.</li>
+        </ol>
         <div className="deploy-actions">
-          {PUBLISHED_LINODE_STACKSCRIPT_URL
-            ? <a className="button-link" href={PUBLISHED_LINODE_STACKSCRIPT_URL} target="_blank" rel="noreferrer">Open Linode</a>
-            : <a className="button-link" href={LINODE_PUBLISH_URL} target="_blank" rel="noreferrer">Publish setup</a>}
-          <CopyButton text={udfValues} t={props.t} />
-          <a className="button-link" href={LINODE_BEGINNER_DEPLOY_URL} target="_blank" rel="noreferrer">Guide</a>
-          <a className="button-link secondary" href={LINODE_STACKSCRIPT_URL} target="_blank" rel="noreferrer">StackScript</a>
-          <a className="button-link secondary" href={LINODE_PREFLIGHT_URL} target="_blank" rel="noreferrer">Firewall</a>
+          <a className="button-link secondary" href={LINODE_BEGINNER_DEPLOY_URL} target="_blank" rel="noreferrer">{props.t.linode.guide}</a>
+          <a className="button-link secondary" href={LINODE_STACKSCRIPT_URL} target="_blank" rel="noreferrer">{props.t.linode.stackScript}</a>
         </div>
       </div>
     </section>
@@ -447,10 +424,7 @@ function App() {
   const [pemInput, setPemInput] = useState(urlPrefill.pemInput);
   const [dnskeyInput, setDnskeyInput] = useState(urlPrefill.dnskeyInput);
   const [dnsServerPreset, setDnsServerPreset] = useState<DnsServerPreset>(urlPrefill.dnsServerPreset);
-  const [deploymentWalletStyle, setDeploymentWalletStyle] = useState<DeploymentWalletStyle>('hsd-cli');
-  const [deploymentHsdWalletId, setDeploymentHsdWalletId] = useState('primary');
-  const [deploymentHsdAccountName, setDeploymentHsdAccountName] = useState('default');
-  const [deploymentEnableIpv6, setDeploymentEnableIpv6] = useState(false);
+  const [showLinodeGuide, setShowLinodeGuide] = useState(false);
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const [result, setResult] = useState<BootstrapResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -578,6 +552,14 @@ function App() {
     };
   }, [domainInput, nameserverHost, nameserverIpv4, nameserverIpv6, port, result?.normalizedDomain, websiteIpv4, websiteIpv6]);
 
+  if (showLinodeGuide) {
+    return (
+      <main>
+        <LinodeGuideCard onBack={() => setShowLinodeGuide(false)} t={t} />
+      </main>
+    );
+  }
+
   return (
     <main>
       <header className="hero">
@@ -606,23 +588,28 @@ function App() {
 
       <HandoffCard guidance={handoffGuidance} />
 
-      <LinodeDeployCard
-        domainInput={domainInput}
-        domainType={domainType}
-        enableIpv6={deploymentEnableIpv6}
-        hsdAccountName={deploymentHsdAccountName}
-        hsdWalletId={deploymentHsdWalletId}
-        onEnableIpv6Change={setDeploymentEnableIpv6}
-        onHsdAccountNameChange={setDeploymentHsdAccountName}
-        onHsdWalletIdChange={setDeploymentHsdWalletId}
-        onWalletStyleChange={setDeploymentWalletStyle}
-        t={t}
-        walletStyle={deploymentWalletStyle}
-      />
-
       <section className="panel grid">
         <div className="form-card">
           <h2>{t.sections.domain}</h2>
+          <LinodeSkipCard onOpen={() => setShowLinodeGuide(true)} t={t} />
+          <Field label={t.fields.domain} help={domainType === 'hns' ? t.fields.hnsDomainHelp : t.fields.domainHelp} status={fieldStatuses.domain}>
+            <input
+              value={domainInput}
+              onBlur={() => markTouched('domain')}
+              onChange={(event) => {
+                markTouched('domain');
+                setDomainInput(event.target.value);
+              }}
+              placeholder={domainPlaceholder}
+              autoComplete="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              pattern={domainType === 'hns' ? '[a-z0-9](?:(?:[a-z0-9]|_|-){0,61}[a-z0-9])?/' : undefined}
+              title={domainType === 'hns' ? t.fields.hnsDomainHelp : undefined}
+            />
+            <FieldHowToText summary={t.faq.domainSummary} body={t.faq.domainBody} />
+            {domainType === 'icann' && <FieldHowToText summary={t.faq.idnSummary} body={t.faq.idnBody} />}
+          </Field>
           <Field label={t.fields.domainType} help={t.fields.domainTypeHelp} status={fieldStatuses.domainType}>
             <select
               value={domainType}
@@ -642,24 +629,6 @@ function App() {
               <option value="hns-inline" disabled={domainType !== 'hns'}>{t.options.hnsInline}</option>
             </select>
             <FieldHowToText summary={t.faq.setupModeSummary} body={t.faq.setupModeBody} />
-          </Field>
-          <Field label={t.fields.domain} help={domainType === 'hns' ? t.fields.hnsDomainHelp : t.fields.domainHelp} status={fieldStatuses.domain}>
-            <input
-              value={domainInput}
-              onBlur={() => markTouched('domain')}
-              onChange={(event) => {
-                markTouched('domain');
-                setDomainInput(event.target.value);
-              }}
-              placeholder={domainPlaceholder}
-              autoComplete="off"
-              autoCapitalize="none"
-              spellCheck={false}
-              pattern={domainType === 'hns' ? '[a-z0-9](?:(?:[a-z0-9]|_|-){0,61}[a-z0-9])?/' : undefined}
-              title={domainType === 'hns' ? t.fields.hnsDomainHelp : undefined}
-            />
-            <FieldHowToText summary={t.faq.domainSummary} body={t.faq.domainBody} />
-            {domainType === 'icann' && <FieldHowToText summary={t.faq.idnSummary} body={t.faq.idnBody} />}
           </Field>
         </div>
 

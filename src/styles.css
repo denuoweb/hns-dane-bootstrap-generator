@@ -56,7 +56,7 @@ main {
 
 .deploy-card {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  grid-template-columns: 1fr;
   gap: 18px;
   align-items: start;
   border-left: 6px solid #2f5f78;
@@ -66,54 +66,97 @@ main {
 
 .deploy-card h2 { margin-bottom: 10px; }
 
-.deploy-copy p,
-.deploy-controls span {
+.deploy-copy p {
   color: #3f4f58;
   line-height: 1.55;
-}
-
-.deploy-safety { font-weight: 750; }
-
-.deploy-warning {
-  border: 1px solid #d8bd70;
-  border-radius: 12px;
-  background: #fff8e3;
-  color: #5f4300;
-  padding: 10px 12px;
-}
-
-.deploy-controls {
-  display: grid;
-  gap: 10px;
-}
-
-.deploy-controls label {
-  display: grid;
-  gap: 6px;
-  font-weight: 800;
-}
-
-.checkbox-row {
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  font-weight: 700;
-}
-
-.checkbox-row input {
-  width: auto;
-  margin-top: 4px;
-}
-
-.deploy-udf {
-  margin: 0;
-  border-radius: 12px;
-  font-size: 0.82rem;
 }
 
 .deploy-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.linode-skip-card {
+  border: 1px solid #d9e3e8;
+  border-radius: 12px;
+  background: #f5fbff;
+  padding: 12px;
+  margin-bottom: 15px;
+}
+
+.linode-skip-card a {
+  display: inline-block;
+  color: #2f5f78;
+  font-size: 1rem;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.linode-skip-card p:not(.section-tag) {
+  color: #3f4f58;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+
+.linode-guide-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.linode-guide-title {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+
+.linode-guide-top h1 {
+  font-size: clamp(1.8rem, 3vw, 2.75rem);
+  margin-bottom: 0;
+}
+
+.linode-settings {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.linode-settings > div {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.32fr) minmax(0, 1fr);
+  gap: 14px;
+  border-top: 1px solid #e5ded0;
+  padding: 14px 0;
+}
+
+.linode-settings dt {
+  font-weight: 850;
+}
+
+.linode-settings dd {
+  color: #3f4f58;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.linode-settings dd p {
+  margin: 0 0 8px;
+}
+
+.linode-after-card {
+  border: 1px solid #d9e3e8;
+  border-radius: 12px;
+  background: #f5fbff;
+  padding: 16px;
+}
+
+.linode-after-card ol {
+  color: #3f4f58;
+  line-height: 1.55;
+  margin-top: 0;
 }
 
 .button-link {
