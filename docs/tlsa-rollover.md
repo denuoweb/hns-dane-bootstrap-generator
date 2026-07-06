@@ -8,7 +8,7 @@ _443._tcp.<name>. IN TLSA 3 1 1 <sha256-of-SPKI>
 
 That value pins the HTTPS service public key. If nginx starts serving a different key before DNS publishes the matching TLSA record, DANE-aware clients can reject the service.
 
-Default v0.1 behavior:
+Current default behavior:
 
 ```text
 TLS key generated once

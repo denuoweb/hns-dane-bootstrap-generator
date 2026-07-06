@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-APPLIANCE_VERSION="${APPLIANCE_VERSION:-v0.1.8}"
+APPLIANCE_VERSION="${APPLIANCE_VERSION:-v0.2.0}"
 APPLIANCE_REPO="${APPLIANCE_REPO:-denuoweb/dane-record-generator}"
 INSTALL_LIB_DIR="${INSTALL_LIB_DIR:-/usr/local/lib/hns-dane-appliance}"
 
@@ -65,10 +65,10 @@ if [[ -r /etc/os-release ]]; then
   source /etc/os-release
   case "${ID:-}:${VERSION_ID:-}" in
     debian:12|debian:13|ubuntu:24.04) ;;
-    *) fail "Unsupported OS for v0.1: ${PRETTY_NAME:-unknown}. Use Debian 13, Debian 12, or Ubuntu 24.04." ;;
+    *) fail "Unsupported OS for this appliance: ${PRETTY_NAME:-unknown}. Use Debian 13, Debian 12, or Ubuntu 24.04." ;;
   esac
 else
-  fail "Cannot detect OS. Debian 13 and Debian 12 are supported for v0.1."
+  fail "Cannot detect OS. Debian 13, Debian 12, and Ubuntu 24.04 are supported."
 fi
 
 ensure_dir 0755 "$INSTALL_LIB_DIR"

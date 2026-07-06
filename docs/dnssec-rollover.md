@@ -4,7 +4,7 @@ The HNS parent resource contains a `DS` record that must match the DNSSEC key se
 
 For that reason, the appliance uses Knot DNS signing with manual key management. Knot refreshes signatures, but parent-facing key generation and rollover are explicit operator actions.
 
-Default v0.1 behavior:
+Current default behavior:
 
 ```text
 algorithm: ECDSAP256SHA256 / 13

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Bumped the Linode StackScript and appliance release pin to `v0.2.0`.
 - Set the public Linode StackScript default to `2158182` for `HNS DANE One-Name Server`.
 - Closed appliance HTTP serving on TCP 80 so the dashboard is exposed only through the HTTPS DANE endpoint.
 - Removed stale appliance UFW `80/tcp` allow rules during upgrades.

@@ -17,7 +17,7 @@ normalize_hns_name() {
   fi
 
   if [[ "$name" == */* && "$name" != */ ]]; then
-    echo "HNS v0.1 accepts one label only; remove extra / characters." >&2
+    echo "This appliance accepts one HNS label only; remove extra / characters." >&2
     return 1
   fi
 
@@ -30,7 +30,7 @@ normalize_hns_name() {
     return 1
   }
   [[ "$name" != *.* ]] || {
-    echo "HNS v0.1 accepts one label only, not dotted hostnames." >&2
+    echo "This appliance accepts one HNS label only, not dotted hostnames." >&2
     return 1
   }
   [[ ${#name} -le 63 ]] || {
