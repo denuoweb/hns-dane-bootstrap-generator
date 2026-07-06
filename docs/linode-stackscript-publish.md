@@ -38,16 +38,15 @@ If publishing manually from `https://cloud.linode.com/stackscripts/create`, use 
 
 ```text
 StackScript Label:
-hns-dane-appliance
+HNS DANE One-Name Server
 
 Description:
-Beginner HNS DANE appliance for one Handshake domain. Installs Knot DNS authoritative DNSSEC, TLSA, nginx dashboard, wallet record exports, and local verification. Does not request wallet seeds, Linode API tokens, registrar credentials, or payment data.
+One-click HNS DANE server for a single Handshake name. Installs Knot DNS authoritative DNSSEC, TLSA, nginx dashboard, local verification, and copy-paste HNS resource commands. Never asks for wallet seeds, Linode API tokens, registrar credentials, or payment data.
 
 Target Images:
 Debian 13
-
-Optional additional target:
 Debian 12
+Ubuntu 24.04 LTS
 
 Revision Note:
 v0.1.8
@@ -69,26 +68,28 @@ The command prints:
 
 ```json
 {
-  "id": 1234567,
-  "label": "hns-dane-appliance",
-  "cloudUrl": "https://cloud.linode.com/stackscripts/1234567",
-  "appEnv": "VITE_LINODE_STACKSCRIPT_ID=1234567"
+  "id": 2158182,
+  "label": "HNS DANE One-Name Server",
+  "cloudUrl": "https://cloud.linode.com/stackscripts/2158182",
+  "appEnv": "VITE_LINODE_STACKSCRIPT_ID=2158182"
 }
 ```
 
 ## 4. Configure the web app
 
-Set the published StackScript ID when building the static app:
-
-```bash
-VITE_LINODE_STACKSCRIPT_ID=1234567 npm run build
-```
-
-When this value is set, the app shows an `Open Linode` deployment button that points at:
+The public StackScript ID is checked into the app as the default:
 
 ```text
-https://cloud.linode.com/stackscripts/1234567
+2158182
 ```
+
+The `Open Linode` deployment button points at:
+
+```text
+https://cloud.linode.com/stackscripts/2158182
+```
+
+To override the ID for a future replacement StackScript, build with `VITE_LINODE_STACKSCRIPT_ID=<published-stackscript-id>`.
 
 The user still deploys inside their own Linode account, and Linode bills them directly.
 

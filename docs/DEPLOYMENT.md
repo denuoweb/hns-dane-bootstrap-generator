@@ -30,7 +30,7 @@ docs/linode-beginner-deploy.md
 
 The StackScript is intentionally thin and fails closed until a real tagged release archive SHA256 replaces `REPLACE_WITH_RELEASE_TARBALL_SHA256`.
 
-For a fully integrated web flow, a maintainer publishes the StackScript to Linode and builds the static app with:
+The static app has the public StackScript ID checked in for the integrated `Open Linode` flow. To override it for a future replacement StackScript, build with:
 
 ```bash
 VITE_LINODE_STACKSCRIPT_ID=<published-stackscript-id> npm run build

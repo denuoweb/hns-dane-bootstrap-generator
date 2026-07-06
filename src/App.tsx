@@ -24,7 +24,8 @@ const LINODE_BEGINNER_DEPLOY_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/lino
 const LINODE_PREFLIGHT_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/linode-firewall-preflight.md`;
 const LINODE_PUBLISH_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/linode-stackscript-publish.md`;
 const LINODE_STACKSCRIPT_URL = `${GITHUB_REPOSITORY_URL}/blob/main/stackscripts/linode/hns-dane-appliance-bootstrap.sh`;
-const PUBLISHED_LINODE_STACKSCRIPT_ID = String(import.meta.env.VITE_LINODE_STACKSCRIPT_ID ?? '').trim();
+const DEFAULT_LINODE_STACKSCRIPT_ID = '2158182';
+const PUBLISHED_LINODE_STACKSCRIPT_ID = String(import.meta.env.VITE_LINODE_STACKSCRIPT_ID ?? DEFAULT_LINODE_STACKSCRIPT_ID).trim();
 const PUBLISHED_LINODE_STACKSCRIPT_URL = PUBLISHED_LINODE_STACKSCRIPT_ID ? `https://cloud.linode.com/stackscripts/${encodeURIComponent(PUBLISHED_LINODE_STACKSCRIPT_ID)}` : '';
 const CERTIFICATE_PLACEHOLDER = `-----BEGIN CERTIFICATE-----
 ...

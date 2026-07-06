@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Set the public Linode StackScript default to `2158182` for `HNS DANE One-Name Server`.
 - Closed appliance HTTP serving on TCP 80 so the dashboard is exposed only through the HTTPS DANE endpoint.
 - Removed stale appliance UFW `80/tcp` allow rules during upgrades.
 - Added the HNS Browser Capsule TXT record to appliance wallet resources and dashboard `sendupdate` commands.
