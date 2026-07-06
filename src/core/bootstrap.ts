@@ -102,9 +102,15 @@ function rootless(name: string): string {
   return name.endsWith('.') ? name.slice(0, -1) : name;
 }
 
-function hnsAuthoritativeDohDeclaration(ns: string): string {
-  const host = rootless(ns);
-  return `hnsdns=1;ns=${ns};doh=https://${host}/dns-query`;
+function authoritativeDohSvcbOwner(ns: string): string {
+  return `_dns.${ns}`;
+}
+
+function authoritativeDohSvcbRecord(ns: string, ttl: number): GeneratedLine {
+  return {
+    value: `${authoritativeDohSvcbOwner(ns)} ${ttl} IN SVCB 1 ${ns} alpn=h2 dohpath=/dns-query{?dns}`,
+    explanation: 'RFC 9461 DNS-server SVCB record advertising the nameserver RFC 8484 DoH endpoint. Publish this in the authoritative DNS zone, not in the HNS parent resource.'
+  };
 }
 
 function defaultHelpTips(domainType: BootstrapInput['domainType'], setupMode: BootstrapInput['setupMode'], preset: DnsServerPreset, domain: string, nameserver: string): string[] {
@@ -118,7 +124,7 @@ function defaultHelpTips(domainType: BootstrapInput['domainType'], setupMode: Bo
 
   if (domainType === 'hns' && setupMode === 'delegated') {
     tips.push(`For HNS delegated mode, GLUE4/GLUE6 is needed when the nameserver lives under the HNS name itself, such as ${nameserver} for ${rootless(domain)}/.`);
-    tips.push(`Add an optional authoritative DoH declaration, TXT "${hnsAuthoritativeDohDeclaration(nameserver)}", when the nameserver also serves RFC 8484 on /dns-query.`);
+    tips.push(`If the nameserver also serves RFC 8484 DoH, publish the RFC 9461 DNS-server SVCB record ${authoritativeDohSvcbOwner(nameserver)} in the authoritative DNS zone.`);
   }
 
   if (setupMode === 'hns-inline') {
@@ -487,14 +493,6 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
       } else {
         parentRecords.push({ value: 'DS <keytag> <algorithm> 2 <sha256-digest>', explanation: 'Placeholder: paste your authoritative-zone DNSKEY to generate the exact parent-side DS record.' });
       }
-      if (hasConcreteNameserverBootstrap && nonEmpty(ns)) {
-        const dohDeclaration = hnsAuthoritativeDohDeclaration(ns);
-        parentRecords.push({
-          value: `TXT "${dohDeclaration}"`,
-          explanation: 'Optional HNS authoritative DoH declaration. Supporting clients can use this RFC 8484 endpoint for the delegated nameserver if UDP/TCP 53 is blocked, then still validate answers against the HNS DS chain.'
-        });
-        parentDraft.push({ type: 'TXT', txt: [dohDeclaration] });
-      }
     } else {
       parentRecords.push({ value: `Nameserver: ${ns}`, explanation: 'Registrar-side nameserver delegation.' });
       parentRecords.push(
@@ -538,6 +536,10 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
 
     if (tlsaRecord) authoritativeRecords.push({ value: tlsaRecord, explanation: 'Authoritative-zone DANE/TLSA record for the TLS service.' });
     else authoritativeRecords.push({ value: `${owner} ${ttl} IN TLSA 3 1 1 <spki-sha256>`, explanation: 'Placeholder: paste a PEM certificate or PUBLIC KEY to generate the exact TLSA association data.' });
+
+    if (input.domainType === 'hns' && isInBailiwick(ns, normalizedDomain)) {
+      authoritativeRecords.push(authoritativeDohSvcbRecord(ns, ttl));
+    }
   }
 
   webServerNotes.push({

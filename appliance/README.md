@@ -7,9 +7,10 @@ The appliance turns one Debian 13 or Debian 12 Linode into:
 - an authoritative Knot DNS server for one Handshake label
 - a DNSSEC-signed zone with parent-facing DS export
 - a dnsdist RFC 8484 DoH frontend for the authoritative zone behind nginx `/dns-query`
+- an RFC 9461 `_dns.ns1` SVCB record advertising that DoH path from the signed authoritative zone
 - a local HTTPS endpoint with TLSA `3 1 1`
 - a static dashboard with exact HNS wallet records
-- public exports for NS, GLUE, DS, authoritative DoH TXT, TLSA, and status
+- public exports for NS, GLUE, DS, authoritative DNS SVCB, TLSA, and status
 - root-only backups for generated private key material
 
 The installer does not ask for wallet seeds, wallet private keys, Linode API tokens, registrar credentials, user-supplied TLS private keys, user-supplied DNSSEC private keys, payment data, or credit card data.

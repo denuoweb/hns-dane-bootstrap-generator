@@ -12,9 +12,9 @@ The app keeps the workflow simple:
 
 ## Main outputs
 
-- **HNS wallet / registrar**: NS, GLUE, DS, SYNTH, and optional authoritative DoH TXT records as appropriate.
-- **Authoritative DoH declaration**: compact HNS `TXT "hnsdns=1;..."` payload that lets supporting clients retry the delegated nameserver over RFC 8484 DoH when UDP/TCP 53 is blocked.
-- **Authoritative DNS server**: tabbed starter config for hosted DNS panels, Generic zone file, BIND, Windows Server DNS, PowerDNS, Knot, or NSD, including NS, A, AAAA, and TLSA records.
+- **HNS wallet / registrar**: NS, GLUE, DS, and SYNTH records as appropriate.
+- **Authoritative DoH discovery**: RFC 9461 DNS-server SVCB records such as `_dns.ns1 IN SVCB 1 ns1 alpn=h2 dohpath=/dns-query{?dns}` for nameservers that also serve RFC 8484 DoH.
+- **Authoritative DNS server**: tabbed starter config for hosted DNS panels, Generic zone file, BIND, Windows Server DNS, PowerDNS, Knot, or NSD, including NS, A, AAAA, SVCB, and TLSA records.
 - **Verify commands**: `dig`/`delv` checks.
 - **Integrator JSON**: optional machine-readable output for wallets and future APIs.
 
@@ -44,10 +44,10 @@ Full DNSSEC + DANE path for a Handshake domain:
 NS ns1.dane.
 GLUE4 ns1.dane. 203.0.113.10
 DS 12345 13 2 7A1B...F09C
-TXT "hnsdns=1;ns=ns1.dane.;doh=https://ns1.dane/dns-query"
 
 # Authoritative DNS server
 dane. 3600 IN NS ns1.dane.
+_dns.ns1.dane. 3600 IN SVCB 1 ns1.dane. alpn=h2 dohpath=/dns-query{?dns}
 dane. 3600 IN A 203.0.113.20
 _443._tcp.dane. 3600 IN TLSA 3 1 1 9B2C...A811
 ```
@@ -67,15 +67,15 @@ dane. 3600 IN A 203.0.113.20
 _443._tcp.dane. 3600 IN TLSA 3 1 1 9B2C...A811
 ```
 
-### HNS authoritative DoH declaration
+### Authoritative DoH discovery
 
-For delegated HNS nameserver setups, the generator can emit a compact TXT declaration that advertises an RFC 8484 DoH endpoint on the delegated nameserver host:
+For delegated HNS nameserver setups, the generator emits RFC 9461 DNS-server SVCB records in the authoritative DNS zone when the delegated nameserver host is in-zone:
 
-```text
-hnsdns=1;ns=ns1.dane.;doh=https://ns1.dane/dns-query
+```zone
+_dns.ns1.dane. 3600 IN SVCB 1 ns1.dane. alpn=h2 dohpath=/dns-query{?dns}
 ```
 
-This is still delegated DNS. The TXT record only tells supporting clients where to send DNS wire messages over HTTPS if port 53 is blocked. Website `A`/`AAAA`, HTTPS/SVCB, and TLSA records still live in the signed authoritative DNS zone and still validate against the HNS DS chain.
+This is still delegated DNS. The HNS parent resource proves the `NS`, `GLUE4`/`GLUE6`, and `DS` delegation; the signed authoritative zone advertises the nameserver's RFC 8484 DoH path. Website `A`/`AAAA`, HTTPS/SVCB, and TLSA records still live in the signed authoritative DNS zone and still validate against the HNS DS chain. RFC 9539 is a separate experimental specification for opportunistic recursive-to-authoritative DoT/DoQ on port 853, not an HNS TXT convention for DoH.
 
 ### ICANN delegated DNSSEC mode
 

@@ -47,6 +47,30 @@ function inZoneNameserverAddressRecords(input: ServerPresetInput, prefix = ''): 
   return inZoneNameserverAddressRecordParts(input).map(({ name, type, address }) => `${prefix}${name} ${input.ttl} IN ${type} ${address}`);
 }
 
+interface NameserverDohSvcbRecord {
+  owner: string;
+  target: string;
+}
+
+function inZoneNameserverDohSvcbRecordParts(input: ServerPresetInput): NameserverDohSvcbRecord[] {
+  const nameservers = input.nameserverHosts?.length ? input.nameserverHosts : [input.nameserverHost];
+  return nameservers.flatMap((nameserver) => {
+    const target = relativeName(nameserver, input.domain);
+    if (target.endsWith('.')) return [];
+    const owner = relativeName(`_dns.${nameserver}`, input.domain);
+    if (owner.endsWith('.')) return [];
+    return [{ owner, target }];
+  });
+}
+
+function svcbRdata(target: string): string {
+  return `1 ${target} alpn=h2 dohpath=/dns-query{?dns}`;
+}
+
+function inZoneNameserverDohSvcbRecords(input: ServerPresetInput, prefix = ''): string[] {
+  return inZoneNameserverDohSvcbRecordParts(input).map(({ owner, target }) => `${prefix}${owner} ${input.ttl} IN SVCB ${svcbRdata(target)}`);
+}
+
 function windowsTtl(input: ServerPresetInput): string {
   return `(New-TimeSpan -Seconds ${input.ttl})`;
 }
@@ -81,6 +105,7 @@ function makeZoneFile(input: ServerPresetInput): string {
     ')',
     ...nameservers.map((nameserver) => `@ ${input.ttl} IN NS ${nameserver}`),
     ...inZoneNameserverAddressRecords(input),
+    ...inZoneNameserverDohSvcbRecords(input),
     ...(input.websiteIpv4 ? [`@ ${input.ttl} IN A ${input.websiteIpv4}`] : []),
     ...(input.websiteIpv6 ? [`@ ${input.ttl} IN AAAA ${input.websiteIpv6}`] : []),
     `${tlsaOwnerRelative(input)} ${input.ttl} IN TLSA ${tlsaRdata(input)}`,
@@ -101,6 +126,9 @@ function hostedDnsPreset(input: ServerPresetInput): string {
     ...nameservers.map((nameserver) => `NS    @                 ${nameserver}`),
     ...inZoneNameserverAddressRecordParts(input).map(({ name, type, address }) => {
       return `${type.padEnd(5)} ${name.padEnd(17)} ${address}`;
+    }),
+    ...inZoneNameserverDohSvcbRecordParts(input).map(({ owner, target }) => {
+      return `SVCB  ${owner.padEnd(17)} ${svcbRdata(target)}`;
     }),
     ...(input.websiteIpv4 ? [`A     @                 ${input.websiteIpv4}`] : []),
     ...(input.websiteIpv6 ? [`AAAA  @                 ${input.websiteIpv6}`] : []),
@@ -176,6 +204,9 @@ function windowsServerPreset(input: ServerPresetInput): string {
       const addressParam = type === 'AAAA' ? 'IPv6Address' : 'IPv4Address';
       return `${cmdlet} -ZoneName "${zoneNoRoot}" -Name "${name}" -${addressParam} "${address}" -TimeToLive ${windowsTtl(input)}`;
     }),
+    ...inZoneNameserverDohSvcbRecordParts(input).map(({ owner, target }) => {
+      return `Add-DnsServerResourceRecord -ZoneName "${zoneNoRoot}" -Name "${owner}" -Type SVCB -RecordData "${svcbRdata(target)}" -TimeToLive ${windowsTtl(input)}`;
+    }),
     ...(input.websiteIpv4 ? [`Add-DnsServerResourceRecordA -ZoneName "${zoneNoRoot}" -Name "." -IPv4Address "${input.websiteIpv4}" -TimeToLive ${windowsTtl(input)}`] : []),
     ...(input.websiteIpv6 ? [`Add-DnsServerResourceRecordAAAA -ZoneName "${zoneNoRoot}" -Name "." -IPv6Address "${input.websiteIpv6}" -TimeToLive ${windowsTtl(input)}`] : []),
     ...windowsTlsaRecord(input),
@@ -239,6 +270,9 @@ function powerDnsPreset(input: ServerPresetInput): string {
     ...nameservers.map((nameserver) => `NS   @                 ${nameserver}`),
     ...inZoneNameserverAddressRecordParts(input).map(({ name, type, address }) => {
       return `${type.padEnd(4)} ${name.padEnd(17)} ${address}`;
+    }),
+    ...inZoneNameserverDohSvcbRecordParts(input).map(({ owner, target }) => {
+      return `SVCB ${owner.padEnd(17)} ${svcbRdata(target)}`;
     }),
     ...(input.websiteIpv4 ? [`A    @                 ${input.websiteIpv4}`] : []),
     ...(input.websiteIpv6 ? [`AAAA @                 ${input.websiteIpv6}`] : []),

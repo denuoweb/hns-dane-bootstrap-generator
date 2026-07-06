@@ -9,20 +9,20 @@ generate_ssh_instructions() {
   config_required
   ensure_dir 0700 "$HNS_DANE_ROOT"
 
-  local label zone dashboard wallet_path readme profile_note ipv4 ipv6 ip_family ipv6_line authoritative_doh
+  local label zone dashboard wallet_path readme profile_note ipv4 ipv6 ip_family ipv6_line ns
   label="$(json_get '.hns.label')"
   zone="$(json_get '.hns.zone')"
   dashboard="$(json_get '.dashboard.publicUrl')"
   wallet_path="$(selected_wallet_path)"
   ipv4="$(json_get '.network.publicIPv4')"
   ipv6="$(json_get '.network.publicIPv6')"
+  ns="$(json_get '.nameservers[0].name')"
   ip_family="IPv4"
   ipv6_line=""
   if [[ -n "$ipv6" && "$ipv6" != "null" ]]; then
     ip_family="IPv4 and IPv6"
     ipv6_line="  IPv6: ${ipv6}"
   fi
-  authoritative_doh="$(hns_authoritative_doh_from_config)"
   readme="$HNS_DANE_ROOT/README-FIRST.txt"
   profile_note="${HNS_DANE_PROFILE_NOTE:-/etc/profile.d/hns-dane-appliance.sh}"
 
@@ -32,9 +32,9 @@ HNS DANE appliance is installed for: ${label}/
 Open the public dashboard:
   ${dashboard}
 
-The dashboard shows the NS, GLUE, DS, and HNS authoritative DoH TXT records to paste into the HNS wallet.
-The generated HNS authoritative DoH TXT declares:
-  ${authoritative_doh}
+The dashboard shows the NS, GLUE, and DS records to paste into the HNS wallet.
+The authoritative DNS zone publishes RFC 9461 DoH discovery for the nameserver:
+  _dns.${ns} IN SVCB 1 ${ns} alpn=h2 dohpath=/dns-query{?dns}
 
 The GLUE records use this appliance's detected public ${ip_family}:
   IPv4: ${ipv4}

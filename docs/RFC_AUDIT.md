@@ -28,6 +28,20 @@ Operational documentation now calls out that DANE is enforced only by clients th
 
 The default flow remains apex HTTPS oriented. Other TLS services need service-specific TLSA owner names, and SMTP DANE remains a separate RFC 7672 workflow.
 
+### Authoritative DoH discovery
+
+Use RFC 8484 for the DoH exchange: HTTPS requests carry DNS wire-format messages with the `application/dns-message` media type.
+
+Use RFC 9461 for DNS-server discovery. When an in-zone nameserver also serves DoH, generated authoritative-zone output includes:
+
+```zone
+_dns.ns1.<name>. IN SVCB 1 ns1.<name>. alpn=h2 dohpath=/dns-query{?dns}
+```
+
+The HNS parent resource remains only delegation material: `NS`, `GLUE4`/`GLUE6`, and `DS` for delegated mode, or `SYNTH4`/`SYNTH6` plus `DS` for SYNTH mode. The generator no longer emits experimental HNS TXT records for authoritative DoH transport.
+
+RFC 9539 is a separate experimental mechanism for unilateral opportunistic recursive-to-authoritative encryption using DoT or DoQ on port 853. It is not a DoH discovery format and does not add fields to HNS resources.
+
 ### Internationalized domain names
 
 Use IDNA2008 as the standards anchor:

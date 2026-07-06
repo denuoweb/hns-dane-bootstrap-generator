@@ -125,14 +125,6 @@ selected_wallet_path() {
   esac
 }
 
-hns_authoritative_doh_from_config() {
-  local ns host
-  ns="$(json_get '.nameservers[0].name')"
-  [[ -n "$ns" ]] || fail "Nameserver is missing from config. Rerun generate-config.sh."
-  host="${ns%.}"
-  printf 'hnsdns=1;ns=%s;doh=https://%s/dns-query\n' "$ns" "$host"
-}
-
 safe_systemctl() {
   if command -v systemctl >/dev/null 2>&1 && [[ "${HNS_DANE_TEST:-0}" != "1" ]]; then
     systemctl "$@" || return 1

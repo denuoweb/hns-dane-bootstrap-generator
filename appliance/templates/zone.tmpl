@@ -11,6 +11,7 @@ $TTL 3600
 
 @ IN NS {{NS}}
 ns1 IN A {{IPV4}}
+_dns.ns1 IN SVCB 1 ns1 alpn=h2 dohpath=/dns-query{?dns}
 @ IN A {{IPV4}}
 www IN A {{IPV4}}
 _443._tcp IN TLSA 3 1 1 {{TLSA}}

@@ -34,6 +34,7 @@ generate_zone() {
     printf ')\n\n'
     printf '@ IN NS %s\n' "$ns"
     printf 'ns1 IN A %s\n' "$ipv4"
+    printf '_dns.ns1 IN SVCB 1 ns1 alpn=h2 dohpath=/dns-query{?dns}\n'
     printf '@ IN A %s\n' "$ipv4"
     printf 'www IN A %s\n' "$ipv4"
     if [[ -n "$ipv6" && "$ipv6" != "null" ]]; then

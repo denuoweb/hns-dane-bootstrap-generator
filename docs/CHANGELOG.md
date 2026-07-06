@@ -5,7 +5,7 @@
 - Set the public Linode StackScript default to `2158182` for `HNS DANE One-Name Server`.
 - Closed appliance HTTP serving on TCP 80 so the dashboard is exposed only through the HTTPS DANE endpoint.
 - Removed stale appliance UFW `80/tcp` allow rules during upgrades.
-- Replaced generated HNS Browser Capsule TXT records with `hnsdns=1` authoritative DoH TXT declarations.
+- Replaced generated HNS authoritative DoH TXT declarations with RFC 9461 `_dns.<nameserver>` SVCB discovery records in the authoritative DNS zone.
 - Added dnsdist-backed RFC 8484 `/dns-query` appliance support behind nginx for delegated authoritative nameservers.
 - Simplified Linode StackScript setup fields by removing site title and deployment mode, renaming the domain field, and defaulting hsd wallet routing to `primary` / `default`.
 - Added explicit `NS` records to appliance HNS resources so new wallet updates replace old delegated resources cleanly.
@@ -13,7 +13,7 @@
 - Added inline HNS wallet CLI submit commands to the appliance dashboard.
 - Fixed generated appliance dashboard contrast in dark-mode browsers by using explicit light-theme colors.
 - Added HNS DANE appliance StackScript fields for hsd wallet id and hsd account name, with account-aware `hsw-rpc sendupdate` instructions.
-- Added HNS authoritative DoH TXT output that emits compact HSD `TXT` resource JSON for delegated nameserver transport tests.
+- Removed the experimental HNS `TXT "hnsdns=1;..."` transport declaration from generated HNS resource JSON.
 - Replaced raw browser base64 decode errors with field-specific PEM/DNSKEY validation messages.
 - Clarified the DANE certificate/public-key field as the TLSA source and shows its how-to instructions whenever TLSA is missing.
 - Added production DANE/DNSSEC guidance for validation, authoritative nameserver hardening, DNSSEC lifecycle, TLSA rollover, client enforcement, service scope, and pasted-input correctness.
