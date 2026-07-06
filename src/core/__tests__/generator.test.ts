@@ -215,18 +215,21 @@ describe('bootstrap generator', () => {
     });
 
     expect(result.parentRecords.some((line) => line.value.startsWith('GLUE4 ns1.dane.'))).toBe(true);
+    expect(result.parentRecords.some((line) => line.value === 'TXT "hnsdns=1;ns=ns1.dane.;doh=https://ns1.dane/dns-query"')).toBe(true);
     const walletCommand = result.parentRecords.find((line) => line.value.includes('hsw-cli rpc sendupdate'));
     expect(walletCommand?.presentation?.tabId).toBe('cli');
     expect(walletCommand?.presentation?.defaultSelected).toBe(true);
-    expect(walletCommand?.value).toContain(`hsw-cli rpc sendupdate 'dane' '{"records":[{"type":"GLUE4","ns":"ns1.dane.","address":"203.0.113.10"}]}'`);
+    expect(walletCommand?.value).toContain(`hsw-cli rpc sendupdate 'dane' '{"records":[{"type":"NS","ns":"ns1.dane."},{"type":"GLUE4","ns":"ns1.dane.","address":"203.0.113.10"},{"type":"TXT","txt":["hnsdns=1;ns=ns1.dane.;doh=https://ns1.dane/dns-query"]}]}'`);
     expect(walletCommand?.value).toContain(`hsd-cli rpc getnameresource 'dane'`);
     const bobOption = result.parentRecords.find((line) => line.presentation?.tabId === 'bob');
     expect(bobOption?.value).toContain('Bob Wallet desktop UI');
     expect(bobOption?.value).toContain('GLUE4: ns=ns1.dane. address=203.0.113.10');
+    expect(bobOption?.value).toContain('TXT: "hnsdns=1;ns=ns1.dane.;doh=https://ns1.dane/dns-query"');
     const shakeOption = result.parentRecords.find((line) => line.presentation?.tabId === 'shake');
     expect(shakeOption?.value).toContain('Shake Wallet / LearnHNS browser wallet UI');
     expect(shakeOption?.value).toContain('const tx = await wallet.sendUpdate("dane", [');
     expect(shakeOption?.value).toContain('"type": "GLUE4"');
+    expect(shakeOption?.value).toContain('"type": "TXT"');
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN A 203.0.113.20'))).toBe(true);
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN TLSA 3 1 1 '))).toBe(true);
     const zoneFileOption = result.authoritativeRecords.find((line) => line.presentation?.tabId === 'generic-zone');
@@ -237,11 +240,7 @@ describe('bootstrap generator', () => {
     expect(result.webServerNotes.some((line) => line.value.includes('current and next TLSA'))).toBe(true);
     expect(result.webServerNotes.some((line) => line.value.includes('ordinary HTTPS clients may ignore'))).toBe(true);
     expect(result.quickSteps.length).toBeGreaterThan(3);
-    const capsule = result.sections.find((section) => section.id === 'capsule');
-    expect(capsule?.title).toBe('HNS Browser Capsule TXT');
-    expect(capsule?.lines[0]?.value).toContain('hnsb=1;host=@;a=203.0.113.20;alpn=h2,h3;tlsa=3,1,1,');
-    expect(capsule?.lines[0]?.value).toContain('"type":"TXT","txt":["hnsb=1;host=@;a=203.0.113.20;alpn=h2,h3;tlsa=3,1,1,');
-    expect(capsule?.lines[0]?.value).toContain('Merge this TXT record with any existing HNS resource records');
+    expect(result.sections.some((section) => section.id === 'capsule')).toBe(false);
   });
 
   it('generates HNS SYNTH nameserver outputs', async () => {

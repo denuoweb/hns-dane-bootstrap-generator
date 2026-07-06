@@ -59,6 +59,8 @@ make_test_env() {
   export HNS_DANE_ZONE_DIR="$tmp/state/zones"
   export HNS_DANE_FILES_DIR="$tmp/web/files"
   export HNS_DANE_KNOT_CONF="$tmp/knot/knot.conf"
+  export HNS_DANE_DNSDIST_CONF="$tmp/dnsdist/dnsdist.conf"
+  export HNS_DANE_DNSDIST_LISTEN="127.0.0.1:8053"
   export HNS_DANE_NGINX_AVAILABLE="$tmp/nginx/sites-available/hns-dane"
   export HNS_DANE_NGINX_ENABLED="$tmp/nginx/sites-enabled/hns-dane"
   export HNS_DANE_SYSTEMD_DIR="$tmp/systemd"

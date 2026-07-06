@@ -5,15 +5,15 @@
 - Set the public Linode StackScript default to `2158182` for `HNS DANE One-Name Server`.
 - Closed appliance HTTP serving on TCP 80 so the dashboard is exposed only through the HTTPS DANE endpoint.
 - Removed stale appliance UFW `80/tcp` allow rules during upgrades.
-- Included the appliance-detected public IPv4 and optional IPv6 in generated HNS Browser Capsule TXT records.
-- Added the HNS Browser Capsule TXT record to appliance wallet resources and dashboard `sendupdate` commands.
+- Replaced generated HNS Browser Capsule TXT records with `hnsdns=1` authoritative DoH TXT declarations.
+- Added dnsdist-backed RFC 8484 `/dns-query` appliance support behind nginx for delegated authoritative nameservers.
 - Simplified Linode StackScript setup fields by removing site title and deployment mode, renaming the domain field, and defaulting hsd wallet routing to `primary` / `default`.
 - Added explicit `NS` records to appliance HNS resources so new wallet updates replace old delegated resources cleanly.
 - Corrected appliance wallet CLI commands to call `hsw-rpc selectwallet` before raw wallet RPC methods such as `sendupdate`.
 - Added inline HNS wallet CLI submit commands to the appliance dashboard.
 - Fixed generated appliance dashboard contrast in dark-mode browsers by using explicit light-theme colors.
 - Added HNS DANE appliance StackScript fields for hsd wallet id and hsd account name, with account-aware `hsw-rpc sendupdate` instructions.
-- Added an experimental HNS Browser Capsule TXT output that reuses TLSA 3 1 1 SPKI hashes and emits compact HSD `TXT` resource JSON for direct browser tests.
+- Added HNS authoritative DoH TXT output that emits compact HSD `TXT` resource JSON for delegated nameserver transport tests.
 - Replaced raw browser base64 decode errors with field-specific PEM/DNSKEY validation messages.
 - Clarified the DANE certificate/public-key field as the TLSA source and shows its how-to instructions whenever TLSA is missing.
 - Added production DANE/DNSSEC guidance for validation, authoritative nameserver hardening, DNSSEC lifecycle, TLSA rollover, client enforcement, service scope, and pasted-input correctness.

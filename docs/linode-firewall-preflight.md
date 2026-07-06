@@ -8,8 +8,7 @@ Allow these ports in both places:
 TCP 22    SSH
 UDP 53    authoritative DNS
 TCP 53    authoritative DNS fallback and large DNSSEC answers
-TCP 80    HTTP dashboard
-TCP 443   HTTPS test site and DANE endpoint
+TCP 443   HTTPS dashboard, DANE endpoint, and authoritative DoH /dns-query
 ```
 
 If DNS tests fail but the server says Knot is running, check the Linode Cloud Firewall first.

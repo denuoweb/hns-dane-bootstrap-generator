@@ -8,7 +8,7 @@ source "$SCRIPT_DIR/common.sh"
 generate_hns_resource() {
   config_required
 
-  local ns ipv4 ipv6 key_tag algorithm digest_type digest capsule
+  local ns ipv4 ipv6 key_tag algorithm digest_type digest authoritative_doh
   ns="$(json_get '.nameservers[0].name')"
   ipv4="$(json_get '.network.publicIPv4')"
   ipv6="$(json_get '.network.publicIPv6')"
@@ -20,7 +20,7 @@ generate_hns_resource() {
   [[ -n "$key_tag" && -n "$algorithm" && -n "$digest_type" && -n "$digest" ]] || {
     fail "DNSSEC DS is missing from config. Configure/sign Knot and rerun this script."
   }
-  capsule="$(hns_browser_capsule_from_config)"
+  authoritative_doh="$(hns_authoritative_doh_from_config)"
 
   ensure_dir 0700 "$HNS_DANE_OUTPUT_DIR"
   ensure_dir 0755 "$HNS_DANE_FILES_DIR"
@@ -33,7 +33,7 @@ generate_hns_resource() {
     --arg algorithm "$algorithm" \
     --arg digestType "$digest_type" \
     --arg digest "$digest" \
-    --arg capsule "$capsule" \
+    --arg authoritativeDoh "$authoritative_doh" \
     '{
       records: (
         [
@@ -51,7 +51,7 @@ generate_hns_resource() {
           },
           {
             type: "TXT",
-            txt: [$capsule]
+            txt: [$authoritativeDoh]
           }
         ]
       )

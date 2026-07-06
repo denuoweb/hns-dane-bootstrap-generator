@@ -109,9 +109,10 @@ export interface DsRecord {
 }
 
 export interface HnsParentRecordDraft {
-  type: 'NS' | 'GLUE4' | 'GLUE6' | 'DS' | 'SYNTH4' | 'SYNTH6';
+  type: 'NS' | 'GLUE4' | 'GLUE6' | 'DS' | 'SYNTH4' | 'SYNTH6' | 'TXT';
   ns?: string;
   address?: string;
+  txt?: string[];
   keyTag?: number;
   algorithm?: number;
   digestType?: 2 | 4;

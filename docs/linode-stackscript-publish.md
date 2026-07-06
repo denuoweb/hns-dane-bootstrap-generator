@@ -41,7 +41,7 @@ StackScript Label:
 HNS DANE One-Name Server
 
 Description:
-One-click HNS DANE server for a single Handshake name. Installs Knot DNS authoritative DNSSEC, TLSA, nginx dashboard, local verification, and copy-paste HNS resource commands. Never asks for wallet seeds, Linode API tokens, registrar credentials, or payment data.
+One-click HNS DANE server for a single Handshake name. Installs Knot DNS authoritative DNSSEC, dnsdist authoritative DoH, TLSA, nginx dashboard, local verification, and copy-paste HNS resource commands. Never asks for wallet seeds, Linode API tokens, registrar credentials, or payment data.
 
 Target Images:
 Debian 13

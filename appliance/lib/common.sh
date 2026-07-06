@@ -28,6 +28,8 @@ fi
 : "${HNS_DANE_ZONE_DIR:=$HNS_DANE_STATE/zones}"
 : "${HNS_DANE_FILES_DIR:=$HNS_DANE_WEB/files}"
 : "${HNS_DANE_KNOT_CONF:=/etc/knot/knot.conf}"
+: "${HNS_DANE_DNSDIST_CONF:=/etc/dnsdist/dnsdist.conf}"
+: "${HNS_DANE_DNSDIST_LISTEN:=127.0.0.1:8053}"
 : "${HNS_DANE_NGINX_AVAILABLE:=/etc/nginx/sites-available/hns-dane}"
 : "${HNS_DANE_NGINX_ENABLED:=/etc/nginx/sites-enabled/hns-dane}"
 : "${HNS_DANE_SYSTEMD_DIR:=/etc/systemd/system}"
@@ -123,26 +125,12 @@ selected_wallet_path() {
   esac
 }
 
-hns_browser_capsule_from_config() {
-  local ipv4 ipv6 spki_sha256 spki_lower capsule
-  ipv4="$(json_get '.network.publicIPv4')"
-  ipv6="$(json_get '.network.publicIPv6')"
-  spki_sha256="$(json_get '.tls.spkiSha256')"
-
-  [[ -n "$ipv4" ]] || fail "Public IPv4 is missing from config. Rerun generate-config.sh so the appliance can detect its external address."
-  is_valid_ipv4 "$ipv4" || fail "Configured public IPv4 is invalid: $ipv4"
-  if [[ -n "$ipv6" && "$ipv6" != "null" ]]; then
-    is_valid_ipv6 "$ipv6" || fail "Configured public IPv6 is invalid: $ipv6"
-  fi
-  [[ -n "$spki_sha256" ]] || fail "TLS SPKI SHA256 is missing from config. Run generate-tlsa.sh first."
-
-  spki_lower="$(printf '%s' "$spki_sha256" | tr '[:upper:]' '[:lower:]')"
-  capsule="hnsb=1;host=@;a=$ipv4"
-  if [[ -n "$ipv6" && "$ipv6" != "null" ]]; then
-    capsule="${capsule};aaaa=$ipv6"
-  fi
-  capsule="${capsule};alpn=h2,h3;tlsa=3,1,1,$spki_lower"
-  printf '%s\n' "$capsule"
+hns_authoritative_doh_from_config() {
+  local ns host
+  ns="$(json_get '.nameservers[0].name')"
+  [[ -n "$ns" ]] || fail "Nameserver is missing from config. Rerun generate-config.sh."
+  host="${ns%.}"
+  printf 'hnsdns=1;ns=%s;doh=https://%s/dns-query\n' "$ns" "$host"
 }
 
 safe_systemctl() {

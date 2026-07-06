@@ -12,6 +12,7 @@ install_packages() {
   apt-get install -y \
     ca-certificates \
     curl \
+    dnsdist \
     dnsutils \
     fail2ban \
     jq \

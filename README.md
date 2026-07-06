@@ -12,8 +12,8 @@ The app keeps the workflow simple:
 
 ## Main outputs
 
-- **HNS wallet / registrar**: NS, GLUE, DS, SYNTH records as appropriate.
-- **Experimental HNS browser capsule**: compact HNS `TXT` payload for the Denuo browser prototype to synthesize A/AAAA, HTTPS, and TLSA without delegated DNS.
+- **HNS wallet / registrar**: NS, GLUE, DS, SYNTH, and optional authoritative DoH TXT records as appropriate.
+- **Authoritative DoH declaration**: compact HNS `TXT "hnsdns=1;..."` payload that lets supporting clients retry the delegated nameserver over RFC 8484 DoH when UDP/TCP 53 is blocked.
 - **Authoritative DNS server**: tabbed starter config for hosted DNS panels, Generic zone file, BIND, Windows Server DNS, PowerDNS, Knot, or NSD, including NS, A, AAAA, and TLSA records.
 - **Verify commands**: `dig`/`delv` checks.
 - **Integrator JSON**: optional machine-readable output for wallets and future APIs.
@@ -26,6 +26,7 @@ This repo now includes an early production-MVP appliance path for beginners who 
 - `appliance/install.sh` is the real versioned installer.
 - `/etc/hns-dane-appliance/config.json` is the server source of truth.
 - Knot DNS signs the authoritative zone with manual parent-facing rollover.
+- dnsdist exposes the Knot authoritative service as RFC 8484 DoH behind nginx `/dns-query`.
 - nginx serves a static dashboard with public GLUE, DS, TLSA, wallet instructions, and verification status.
 - private TLS/DNSSEC material and backups stay on the VPS, outside `/var/www`.
 - two-node reliable mode is documented as a future assisted flow and intentionally not claimed complete.
@@ -40,8 +41,10 @@ Full DNSSEC + DANE path for a Handshake domain:
 
 ```zone
 # HNS wallet / name resource
+NS ns1.dane.
 GLUE4 ns1.dane. 203.0.113.10
 DS 12345 13 2 7A1B...F09C
+TXT "hnsdns=1;ns=ns1.dane.;doh=https://ns1.dane/dns-query"
 
 # Authoritative DNS server
 dane. 3600 IN NS ns1.dane.
@@ -64,15 +67,15 @@ dane. 3600 IN A 203.0.113.20
 _443._tcp.dane. 3600 IN TLSA 3 1 1 9B2C...A811
 ```
 
-### Experimental HNS browser capsule
+### HNS authoritative DoH declaration
 
-For simple HNS browser tests, the generator also emits a compact TXT capsule that can live directly in the HNS name resource:
+For delegated HNS nameserver setups, the generator can emit a compact TXT declaration that advertises an RFC 8484 DoH endpoint on the delegated nameserver host:
 
 ```text
-hnsb=1;host=@;a=203.0.113.20;alpn=h2,h3;tlsa=3,1,1,9b2c...a811
+hnsdns=1;ns=ns1.dane.;doh=https://ns1.dane/dns-query
 ```
 
-This is not delegated DNS and does not change the meaning of HNS `GLUE` or `SYNTH`. It is an explicit browser prototype record for direct apex or single-label child hosts. Keep it under the HNS resource budget and advertise `h3` only when the HTTPS server actually supports HTTP/3.
+This is still delegated DNS. The TXT record only tells supporting clients where to send DNS wire messages over HTTPS if port 53 is blocked. Website `A`/`AAAA`, HTTPS/SVCB, and TLSA records still live in the signed authoritative DNS zone and still validate against the HNS DS chain.
 
 ### ICANN delegated DNSSEC mode
 

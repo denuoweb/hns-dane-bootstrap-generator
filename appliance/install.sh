@@ -92,6 +92,7 @@ fi
 "$SCRIPT_DIR/configure-firewall.sh"
 "$SCRIPT_DIR/generate-tlsa.sh"
 "$SCRIPT_DIR/configure-knot.sh"
+"$SCRIPT_DIR/configure-dnsdist.sh"
 "$SCRIPT_DIR/generate-hns-resource.sh"
 "$SCRIPT_DIR/render-wallet-instructions.sh"
 "$SCRIPT_DIR/configure-nginx.sh"

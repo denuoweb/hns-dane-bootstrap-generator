@@ -23,6 +23,7 @@ assert_eq "GLUE6" "$(jq -r '.records[2].type' "$HNS_DANE_OUTPUT_DIR/hns-resource
 assert_eq "DS" "$(jq -r '.records[3].type' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "DS record type"
 assert_eq "12345" "$(jq -r '.records[3].keyTag' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "DS key tag"
 assert_eq "TXT" "$(jq -r '.records[4].type' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "TXT record type"
-assert_eq "hnsb=1;host=@;a=203.0.113.10;aaaa=2001:db8::10;alpn=h2,h3;tlsa=3,1,1,aabbcc" "$(jq -r '.records[4].txt[0]' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "browser capsule"
+assert_eq "hnsdns=1;ns=ns1.denuoweb.;doh=https://ns1.denuoweb/dns-query" "$(jq -r '.records[4].txt[0]' "$HNS_DANE_OUTPUT_DIR/hns-resource.json")" "authoritative DoH TXT"
+assert_file_not_contains "hnsb=1" "$HNS_DANE_OUTPUT_DIR/hns-resource.json" "legacy capsule removed"
 
 printf 'ok - hns-resource-json\n'

@@ -38,6 +38,15 @@ server {
   add_header X-Content-Type-Options "nosniff" always;
   add_header Referrer-Policy "no-referrer" always;
 
+  location = /dns-query {
+    grpc_pass grpc://$HNS_DANE_DNSDIST_LISTEN;
+    grpc_set_header Host \$host;
+    grpc_set_header X-Real-IP \$remote_addr;
+    grpc_set_header X-Forwarded-Host \$host;
+    grpc_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+    grpc_set_header X-Forwarded-Proto \$scheme;
+  }
+
   location / {
     try_files \$uri \$uri/ =404;
   }

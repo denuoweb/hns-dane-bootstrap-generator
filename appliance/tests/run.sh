@@ -7,6 +7,7 @@ tests=(
   "$SCRIPT_DIR/test-normalize-name.sh"
   "$SCRIPT_DIR/test-html-escaping.sh"
   "$SCRIPT_DIR/test-tlsa-generation.sh"
+  "$SCRIPT_DIR/test-dnsdist-config.sh"
   "$SCRIPT_DIR/test-hns-resource-json.sh"
   "$SCRIPT_DIR/test-zone-render.sh"
   "$SCRIPT_DIR/test-wallet-instructions.sh"

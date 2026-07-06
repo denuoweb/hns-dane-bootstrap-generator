@@ -36,10 +36,6 @@ function estimateHnsResourceSize(records: HnsParentRecordDraft[]): number {
   return new TextEncoder().encode(JSON.stringify({ records })).length;
 }
 
-function estimateHnsResourcePayloadSize(records: unknown[]): number {
-  return new TextEncoder().encode(JSON.stringify({ records })).length;
-}
-
 function dsToDraft(ds: DsRecord): HnsParentRecordDraft {
   return {
     type: 'DS',
@@ -106,6 +102,11 @@ function rootless(name: string): string {
   return name.endsWith('.') ? name.slice(0, -1) : name;
 }
 
+function hnsAuthoritativeDohDeclaration(ns: string): string {
+  const host = rootless(ns);
+  return `hnsdns=1;ns=${ns};doh=https://${host}/dns-query`;
+}
+
 function defaultHelpTips(domainType: BootstrapInput['domainType'], setupMode: BootstrapInput['setupMode'], preset: DnsServerPreset, domain: string, nameserver: string): string[] {
   const tips = [
     'Fastest reliable path: create the authoritative zone, enable DNSSEC signing, paste DNSKEY here, then copy the generated DS to the wallet or registrar.',
@@ -117,6 +118,7 @@ function defaultHelpTips(domainType: BootstrapInput['domainType'], setupMode: Bo
 
   if (domainType === 'hns' && setupMode === 'delegated') {
     tips.push(`For HNS delegated mode, GLUE4/GLUE6 is needed when the nameserver lives under the HNS name itself, such as ${nameserver} for ${rootless(domain)}/.`);
+    tips.push(`Add an optional authoritative DoH declaration, TXT "${hnsAuthoritativeDohDeclaration(nameserver)}", when the nameserver also serves RFC 8484 on /dns-query.`);
   }
 
   if (setupMode === 'hns-inline') {
@@ -281,6 +283,8 @@ function formatHnsRecordForUi(record: HnsParentRecordDraft): string {
       return `${record.type}: address=${record.address ?? '<address>'}`;
     case 'DS':
       return `DS: keyTag=${record.keyTag ?? '<keytag>'} algorithm=${record.algorithm ?? '<algorithm>'} digestType=${record.digestType ?? '<digest-type>'} digest=${record.digest ?? '<digest>'}`;
+    case 'TXT':
+      return `TXT: ${(record.txt ?? ['<text>']).map((value) => `"${value}"`).join(' ')}`;
     default:
       return `Record: ${JSON.stringify(record)}`;
   }
@@ -366,63 +370,12 @@ function buildAuthoritativeDnsOptions(baseInput: Omit<ServerPresetInput, 'preset
   })));
 }
 
-function buildHnsBrowserCapsuleOutput(input: BootstrapInput, domain: string, tlsaRecord?: string): { lines: GeneratedLine[]; sizeBytes?: number } {
-  if (input.domainType !== 'hns') return { lines: [] };
-
-  const fields = ['hnsb=1', 'host=@'];
-  if (nonEmpty(input.websiteIpv4)) fields.push(`a=${input.websiteIpv4}`);
-  if (nonEmpty(input.websiteIpv6)) fields.push(`aaaa=${input.websiteIpv6}`);
-  fields.push('alpn=h2,h3');
-
-  const tlsa = capsuleTlsaValue(tlsaRecord);
-  fields.push(`tlsa=${tlsa ?? '3,1,1,<spki-sha256>'}`);
-  const capsule = fields.join(';');
-  const resourceRecord = { type: 'TXT', txt: [capsule] };
-  const resourceJson = JSON.stringify({ records: [resourceRecord] });
-  const sizeBytes = estimateHnsResourcePayloadSize([resourceRecord]);
-  const name = rootless(domain);
-
-  return {
-    sizeBytes,
-    lines: [
-      {
-        value: [
-          `TXT "${capsule}"`,
-          '',
-          'HSD resource record JSON:',
-          JSON.stringify(resourceRecord),
-          '',
-          'Standalone resource JSON:',
-          resourceJson,
-          '',
-          '# Merge this TXT record with any existing HNS resource records before broadcasting.',
-          `hsw-cli rpc sendupdate ${shellQuote(name)} ${shellQuote(resourceJson)}`
-        ].join('\n'),
-        explanation: 'Experimental HNS Browser Capsule TXT. It lets supporting browsers synthesize apex A/AAAA, HTTPS/SVCB ALPN, and _443._tcp TLSA from HNS-proven TXT data. Keep it compact, and only advertise h3 when the web server actually supports HTTP/3.'
-      }
-    ]
-  };
-}
-
-function capsuleTlsaValue(tlsaRecord?: string): string | undefined {
-  if (!tlsaRecord) return undefined;
-  const match = /\sIN\sTLSA\s+(\d+)\s+(\d+)\s+(\d+)\s+([0-9A-Fa-f]+)\s*$/i.exec(tlsaRecord);
-  if (!match) return undefined;
-  const [, usage, selector, matchingType, associationData] = match;
-  if (!usage || !selector || !matchingType || !associationData) return undefined;
-  if (usage !== '3' || selector !== '1' || matchingType !== '1') return undefined;
-  return `3,1,1,${associationData.toLowerCase()}`;
-}
-
-function buildSections(result: Omit<BootstrapResult, 'sections'>, capsuleRecords: GeneratedLine[] = []): OutputSection[] {
+function buildSections(result: Omit<BootstrapResult, 'sections'>): OutputSection[] {
   const sections: OutputSection[] = [
     { id: 'parent', title: result.parentTitle, audience: 'parent', lines: result.parentRecords },
     { id: 'authoritative', title: result.authoritativeTitle, audience: 'authoritative', lines: result.authoritativeRecords }
   ];
 
-  if (capsuleRecords.length > 0) {
-    sections.push({ id: 'capsule', title: 'HNS Browser Capsule TXT', audience: 'parent', lines: capsuleRecords, compact: true });
-  }
   sections.push({ id: 'verify', title: result.verificationTitle, audience: 'verify', lines: result.verificationCommands, compact: true });
   sections.push({ id: 'web', title: 'Web server note', audience: 'web', lines: result.webServerNotes, compact: true });
   sections.push({ id: 'integrator', title: result.integrationTitle, audience: 'integrator', lines: result.integrationRecords });
@@ -504,31 +457,43 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
     authoritativeNsHosts = [ns];
 
     if (input.domainType === 'hns') {
+      let hasConcreteNameserverBootstrap = !inBailiwickNameserver;
+      parentRecords.push({ value: `NS ${ns}`, explanation: 'HNS wallet-side delegation record naming your authoritative nameserver.' });
       if (inBailiwickNameserver) {
         let hasGlueRecord = false;
         if (nonEmpty(input.nameserverIpv4)) {
           parentRecords.push({ value: `GLUE4 ${ns} ${input.nameserverIpv4}`, explanation: 'HNS wallet-side glue record for the IPv4 address of your in-name authoritative nameserver.' });
           parentDraft.push({ type: 'GLUE4', ns, address: input.nameserverIpv4 });
           hasGlueRecord = true;
+          hasConcreteNameserverBootstrap = true;
         }
         if (nonEmpty(input.nameserverIpv6)) {
           parentRecords.push({ value: `GLUE6 ${ns} ${input.nameserverIpv6}`, explanation: 'HNS wallet-side glue record for the IPv6 address of your in-name authoritative nameserver.' });
           parentDraft.push({ type: 'GLUE6', ns, address: input.nameserverIpv6 });
           hasGlueRecord = true;
+          hasConcreteNameserverBootstrap = true;
         }
         if (!hasGlueRecord) {
           const placeholderHost = nonEmpty(input.nameserverHost) ? ns : '<nameserver-host>';
           parentRecords.push({ value: `GLUE4 ${placeholderHost} <nameserver-ipv4>`, explanation: 'Placeholder: delegated HNS needs an NS or GLUE referral before the DS record. If the nameserver is inside this name, add GLUE4 or GLUE6 with its address; if it is external, use an NS record.' });
         }
-      } else {
-        parentRecords.push({ value: `NS ${ns}`, explanation: 'HNS wallet-side delegation record pointing the name at an external authoritative nameserver.' });
-        parentDraft.push({ type: 'NS', ns });
+      }
+      if (hasConcreteNameserverBootstrap) {
+        parentDraft.unshift({ type: 'NS', ns });
       }
       if (dsRecord && dsRecordText) {
         parentRecords.push({ value: dsRecordText, explanation: 'HNS wallet-side DNSSEC delegation signer record derived from the child-zone DNSKEY.' });
         parentDraft.push(dsToDraft(dsRecord));
       } else {
         parentRecords.push({ value: 'DS <keytag> <algorithm> 2 <sha256-digest>', explanation: 'Placeholder: paste your authoritative-zone DNSKEY to generate the exact parent-side DS record.' });
+      }
+      if (hasConcreteNameserverBootstrap && nonEmpty(ns)) {
+        const dohDeclaration = hnsAuthoritativeDohDeclaration(ns);
+        parentRecords.push({
+          value: `TXT "${dohDeclaration}"`,
+          explanation: 'Optional HNS authoritative DoH declaration. Supporting clients can use this RFC 8484 endpoint for the delegated nameserver if UDP/TCP 53 is blocked, then still validate answers against the HNS DS chain.'
+        });
+        parentDraft.push({ type: 'TXT', txt: [dohDeclaration] });
       }
     } else {
       parentRecords.push({ value: `Nameserver: ${ns}`, explanation: 'Registrar-side nameserver delegation.' });
@@ -615,20 +580,12 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
   const quickSteps = buildQuickSteps(input, effectiveMode, hasDs, hasTlsa);
   const verificationCommands = buildVerificationCommands(input, effectiveMode, normalizedDomain, ns, owner);
   const integrationRecords = buildIntegrationRecord(parentDraft, input, effectiveMode, parentRecords, authoritativeRecords);
-  const capsuleOutput = buildHnsBrowserCapsuleOutput(input, normalizedDomain, tlsaRecord);
   authoritativeRecords.push(...authoritativeDnsOptions);
   const hnsResourceSizeBytes = input.domainType === 'hns' ? estimateHnsResourceSize(parentDraft) : undefined;
 
   if (input.domainType === 'hns' && hnsResourceSizeBytes !== undefined && hnsResourceSizeBytes > 512) {
     notices.push(notice('warning', `Estimated HNS parent-resource draft is ${hnsResourceSizeBytes} bytes. Keep HNS name resources small.`));
   }
-  if (input.domainType === 'hns' && capsuleOutput.sizeBytes !== undefined && capsuleOutput.sizeBytes > 512) {
-    notices.push(notice('warning', `Estimated HNS browser capsule resource is ${capsuleOutput.sizeBytes} bytes, above the 512-byte HNS resource limit.`));
-  }
-  if (input.domainType === 'hns' && tlsaRecord && !capsuleTlsaValue(tlsaRecord)) {
-    notices.push(notice('warning', 'HNS browser capsule output needs TLSA 3 1 1. The current TLSA parameters are not capsule-compatible, so the capsule output uses a placeholder.'));
-  }
-
   const resultWithoutSections: Omit<BootstrapResult, 'sections'> = {
     normalizedDomain,
     displayDomain: readableDomain,
@@ -663,6 +620,6 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
 
   return {
     ...resultWithoutSections,
-    sections: buildSections(resultWithoutSections, capsuleOutput.lines)
+    sections: buildSections(resultWithoutSections)
   };
 }
