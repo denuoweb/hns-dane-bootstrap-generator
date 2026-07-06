@@ -25,8 +25,9 @@ export function base64ToBytes(base64: string, label = 'Base64 input'): Uint8Arra
     return Uint8Array.from(binary, (char) => char.charCodeAt(0));
   }
   // Node test fallback. The browser bundle should normally use atob().
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const bufferCtor = (globalThis as any).Buffer;
+  const bufferCtor = (globalThis as typeof globalThis & {
+    Buffer?: { from(input: string, encoding: 'base64'): Uint8Array };
+  }).Buffer;
   if (!bufferCtor) throw new Error('No base64 decoder available in this runtime.');
   return new Uint8Array(bufferCtor.from(padded, 'base64'));
 }
